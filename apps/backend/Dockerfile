@@ -9,7 +9,7 @@ COPY prisma ./prisma/
 RUN npm install
 RUN npx prisma generate
 
-# Copy source code and build
+# Copy source code and build NestJS
 COPY . .
 RUN npm run build
 
@@ -25,4 +25,4 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
 EXPOSE 4000
-CMD ["node", "dist/main"]
+CMD ["node", "dist/main.js"]
