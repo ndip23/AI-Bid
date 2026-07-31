@@ -136,33 +136,33 @@ export class TenderService {
         matchCalculation = this.matchService.calculateMatch(company, tender, aiSummary);
 
         // Store or update cached match score in DB
-        await this.prisma.matchScore.upsert({
-          where: {
-            companyId_tenderId: { companyId, tenderId: id },
-          },
-          create: {
-            companyId,
-            tenderId: id,
-            overallScore: matchCalculation.overallScore,
-            industryMatchScore: matchCalculation.industryMatchScore,
-            countryMatchScore: matchCalculation.countryMatchScore,
-            experienceScore: matchCalculation.experienceScore,
-            certMatchScore: matchCalculation.certMatchScore,
-            reasons: JSON.parse(JSON.stringify(matchCalculation.reasons)),
-            metRequirements: JSON.parse(JSON.stringify(matchCalculation.metRequirements)),
-            missingRequirements: JSON.parse(JSON.stringify(matchCalculation.missingRequirements)),
-          },
-          update: {
-            overallScore: matchCalculation.overallScore,
-            industryMatchScore: matchCalculation.industryMatchScore,
-            countryMatchScore: matchCalculation.countryMatchScore,
-            experienceScore: matchCalculation.experienceScore,
-            certMatchScore: matchCalculation.certMatchScore,
-            reasons: JSON.parse(JSON.stringify(matchCalculation.reasons)),
-            metRequirements: JSON.parse(JSON.stringify(matchCalculation.metRequirements)),
-            missingRequirements: JSON.parse(JSON.stringify(matchCalculation.missingRequirements)),
-          },
+        const existingScore = await this.prisma.matchScore.findFirst({
+          where: { companyId, tenderId: id },
         });
+
+        const scoreData = {
+          companyId,
+          tenderId: id,
+          overallScore: matchCalculation.overallScore,
+          industryMatchScore: matchCalculation.industryMatchScore,
+          countryMatchScore: matchCalculation.countryMatchScore,
+          experienceScore: matchCalculation.experienceScore,
+          certMatchScore: matchCalculation.certMatchScore,
+          reasons: JSON.parse(JSON.stringify(matchCalculation.reasons)),
+          metRequirements: JSON.parse(JSON.stringify(matchCalculation.metRequirements)),
+          missingRequirements: JSON.parse(JSON.stringify(matchCalculation.missingRequirements)),
+        };
+
+        if (existingScore) {
+          await this.prisma.matchScore.update({
+            where: { id: existingScore.id },
+            data: scoreData,
+          });
+        } else {
+          await this.prisma.matchScore.create({
+            data: scoreData,
+          });
+        }
       }
     }
 

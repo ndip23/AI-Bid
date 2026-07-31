@@ -52,7 +52,7 @@ model Company {
   name           String
   taxId          String?
   industry       String
-  countries      String[]       // List of operational countries e.g. ["USA", "UK", "Germany"]
+  countries      String[]       // List of operational countries e.g. ["Cameroon", "Nigeria", "Kenya"]
   certifications String[]       // List of certifications e.g. ["ISO 27001", "SOC 2 Type II", "ISO 9001"]
   services       String[]       // Key capabilities/services e.g. ["Cloud Migration", "Cybersecurity", "Custom Software"]
   annualRevenue  String?        // e.g. "$10M - $50M"
@@ -91,6 +91,21 @@ model Tender {
   updatedAt      DateTime       @updatedAt
 
   @@map("tenders")
+}
+
+model ProcurementSource {
+  id            String    @id @default(uuid())
+  country       String    // e.g. "Cameroon", "Nigeria", "Kenya", "Ghana", "Rwanda", "South Africa", "Uganda", "Pan-African", "Global"
+  sourceName    String    // e.g. "ARMP", "COLEPS", "BPP", "PPIP", "PPA", "RPPA", "eTender", "PPDA", "AfDB", "World Bank"
+  method        String    // "HTML", "API", "RSS", "SCRAPER"
+  frequency     String    // "Hourly", "Daily"
+  status        String    @default("ACTIVE") // "ACTIVE", "PAUSED"
+  lastSyncAt    DateTime? @default(now())
+  totalIngested Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("procurement_sources")
 }
 
 model SavedTender {
@@ -141,7 +156,6 @@ model MatchScore {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  @@unique([companyId, tenderId])
   @@map("match_scores")
 }
 

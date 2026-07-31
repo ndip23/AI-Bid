@@ -1,10 +1,10 @@
-import { PrismaClient, UserRole } from '@prisma/client';
+import { PrismaClient, UserRole, TenderStatus } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Starting Prisma database seeding with African & Global Procurement Tenders...');
+  console.log('🌱 Seeding rich full corpus of African procurement tenders (Cameroon, Nigeria, Kenya, SA, Pan-African)...');
 
   // Clean existing data
   await prisma.notification.deleteMany();
@@ -17,29 +17,29 @@ async function main() {
 
   const passwordHash = await bcrypt.hash('DemoPassword123!', 10);
 
-  // 1. Create Default Company
+  // Create Company
   const company1 = await prisma.company.create({
     data: {
       name: 'Apex Technology Solutions',
-      industry: 'Cloud & Managed IT Services',
-      countries: ['Cameroon', 'Nigeria', 'Kenya', 'South Africa', 'United States'],
-      certifications: ['ISO 27001', 'SOC 2 Type II', 'ISO 9001', 'ARMP Registered', 'NITDA IT Clearance'],
+      industry: 'Cloud & IT Infrastructure',
+      countries: ['Cameroon', 'Nigeria', 'Kenya', 'South Africa', 'Ghana', 'Rwanda'],
+      certifications: ['ISO 27001', 'SOC 2 Type II', 'ISO 9001', 'ARMP Registered', 'NITDA IT Clearance', 'BPP IRR Certificate'],
       services: [
-        'Cloud Migration & DevOps',
-        'Enterprise Cybersecurity',
-        'Custom Software Engineering',
-        'SLA 24/7 Managed Services',
-        'IoT Telemetry & Smart City Platforms',
+        'Cloud Infrastructure & Data Centers',
+        'Civil Infrastructure & Telemetry',
+        'Enterprise Software & Healthtech',
+        'IoT Smart Sensors & Telecommunications',
+        'Renewable Solar Power & Microgrids',
       ],
       teamSize: 85,
       annualRevenue: '$15M - $25M',
       website: 'https://apextechsolutions.demo',
       description:
-        'Apex Technology Solutions is a premier technology provider specializing in secure cloud infrastructure, enterprise software development, and AI integration for African government and enterprise clients.',
+        'Apex Technology Solutions is a premier technology provider specializing in secure cloud infrastructure, civil telemetry, enterprise software, and AI integration for African government and enterprise clients.',
     },
   });
 
-  // 2. Create Super Admin User
+  // Admin User
   await prisma.user.create({
     data: {
       email: 'admin@aibidcopilot.com',
@@ -50,7 +50,7 @@ async function main() {
     },
   });
 
-  // 3. Create Company User
+  // Company User
   const companyUser = await prisma.user.create({
     data: {
       email: 'user@apextech.com',
@@ -62,10 +62,10 @@ async function main() {
     },
   });
 
-  // 4. Create African Procurement Tenders
-  const tenderCameroon = await prisma.tender.create({
-    data: {
-      title: 'Ministère des Travaux Publics (MINTP Cameroon) — Douala Regional Highway Link & Smart Telemetry',
+  // ──── CAMEROON (ARMP / COLEPS) TENDERS ────
+  const tendersData = [
+    {
+      title: 'Ministère des Travaux Publics (MINTP Cameroon) — Douala Highway Link & Smart Telemetry',
       refNumber: 'CMR-ARMP-2026-N089',
       buyerName: 'Ministère des Travaux Publics (MINTP Cameroon)',
       buyerCountry: 'Cameroon',
@@ -74,21 +74,80 @@ async function main() {
       currency: 'USD',
       publishDate: new Date('2026-07-25'),
       deadline: new Date('2026-09-15'),
-      status: 'OPEN',
-      description:
-        'Appel d’Offres National Ouvert pour les travaux d’aménagement de l’axe routier Douala-Yaoundé et installation de capteurs intelligents de télémétrie routière.',
-      rawContent: `SECTION 1: Objet de l’Appel d’Offres. Exigence de garantie bancaire 2%, enregistrement ARMP obligatoire, effectif 50+ ingénieurs.
-DELIVERABLES:
-- Conception et bitumage de la liaison autoroutière Douala.
-- Déploiement de 40 stations de contrôle de pesage automatique et caméras ANPR.`,
-      attachments: ['mintp-douala-highway-spec.pdf'],
+      status: TenderStatus.OPEN,
+      description: 'Appel d’Offres National Ouvert pour les travaux d’aménagement de l’axe routier Douala-Yaoundé et installation de capteurs intelligents de télémétrie routière.',
+      rawContent: 'SECTION 1: Objet de l’Appel d’Offres. Exigence de garantie bancaire 2%, enregistrement ARMP obligatoire, effectif 50+ ingénieurs.\nDELIVERABLES: Bitumage et installation de 40 stations de pesage automatique.',
+      attachments: ['mintp-douala-highway.pdf'],
       sourceUrl: 'https://armp.cm/tenders/CMR-ARMP-2026-N089',
     },
-  });
+    {
+      title: 'Centre Hospitalier Universitaire de Yaoundé — Modern Imaging & Medical Equipment Supply',
+      refNumber: 'CMR-CHU-2026-MED-042',
+      buyerName: 'Ministère de la Santé Publique (MINSANTE Cameroon)',
+      buyerCountry: 'Cameroon',
+      industry: 'Healthcare & Healthtech Systems',
+      estimatedValue: 3800000,
+      currency: 'USD',
+      publishDate: new Date('2026-07-22'),
+      deadline: new Date('2026-09-10'),
+      status: TenderStatus.OPEN,
+      description: 'Fourniture, installation et mise en service d’équipements d’imagerie médicale (IRM 3T, Scanner 128 coupes) au CHU de Yaoundé.',
+      rawContent: 'SPECIFICATIONS: Agrément MINSANTE exigé, garantie constructeur 3 ans, formation du personnel médical sur site.',
+      attachments: ['minsante-chu-imaging.pdf'],
+      sourceUrl: 'https://armp.cm/tenders/CMR-CHU-2026-MED-042',
+    },
+    {
+      title: 'Port Autonome de Limbe — Deepwater Crane & Security Container Inspection Systems',
+      refNumber: 'CMR-PAL-2026-PORT-110',
+      buyerName: 'Port Autonome de Limbe Authority',
+      buyerCountry: 'Cameroon',
+      industry: 'Transport & Port Logistics',
+      estimatedValue: 15000000,
+      currency: 'USD',
+      publishDate: new Date('2026-07-18'),
+      deadline: new Date('2026-09-30'),
+      status: TenderStatus.OPEN,
+      description: 'Fourniture et montage de portiques de manutention de conteneurs et déploiement du système de scanner d’inspection douanière.',
+      rawContent: 'EXIGENCES: Certification ISO 9001, expérience minimale de 10 ans dans l’équipement portuaire maritime.',
+      attachments: ['pal-port-security.pdf'],
+      sourceUrl: 'https://armp.cm/tenders/CMR-PAL-2026-PORT-110',
+    },
+    {
+      title: 'Ministère de l’Eau et de l’Énergie — Garoua Solar Photovoltaic Plant & Microgrids',
+      refNumber: 'CMR-MINEE-2026-SOLAR-07',
+      buyerName: 'Ministère de l’Eau et de l’Énergie (MINEE Cameroon)',
+      buyerCountry: 'Cameroon',
+      industry: 'Renewable Energy & Solar Power',
+      estimatedValue: 8200000,
+      currency: 'USD',
+      publishDate: new Date('2026-07-15'),
+      deadline: new Date('2026-09-25'),
+      status: TenderStatus.OPEN,
+      description: 'Construction d’une centrale solaire photovoltaïque de 15 MW à Garoua et mini-réseaux associés pour l’électrification rurale du Nord.',
+      rawContent: 'CONDIITONS: Licence MINEE, fourniture de panneaux solaires certifiés Tier-1, batteries LFP haute capacité.',
+      attachments: ['minee-garoua-solar.pdf'],
+      sourceUrl: 'https://armp.cm/tenders/CMR-MINEE-2026-SOLAR-07',
+    },
+    {
+      title: 'Ministère de l’Éducation de Base — Primary School Infrastructure & Digital Laboratories',
+      refNumber: 'CMR-MINEDUB-2026-EDU-55',
+      buyerName: 'Ministère de l’Éducation de Base (MINEDUB Cameroon)',
+      buyerCountry: 'Cameroon',
+      industry: 'Education & Digital Infrastructure',
+      estimatedValue: 4500000,
+      currency: 'USD',
+      publishDate: new Date('2026-07-10'),
+      deadline: new Date('2026-08-30'),
+      status: TenderStatus.OPEN,
+      description: 'Construction de 80 salles de classe modernes et équipement en laboratoires informatiques solaires dans la région de l’Adamaoua.',
+      rawContent: 'SPECIFICATIONS: Construction en matériaux locaux stabilisés, ordinateurs portables durcis avec logiciels éducatifs préinstallés.',
+      attachments: ['minedub-school-spec.pdf'],
+      sourceUrl: 'https://armp.cm/tenders/CMR-MINEDUB-2026-EDU-55',
+    },
 
-  const tenderNigeria = await prisma.tender.create({
-    data: {
-      title: 'Federal Ministry of Communications Nigeria — National Government Cloud & Data Center Modernization',
+    // ──── NIGERIA (BPP / NOPO) TENDERS ────
+    {
+      title: 'Federal Ministry of Communications Nigeria — National Government Cloud & Data Center',
       refNumber: 'FMCDE-NG-2026-CLOUD-04',
       buyerName: 'Federal Ministry of Communications, Innovation & Digital Economy',
       buyerCountry: 'Nigeria',
@@ -97,20 +156,47 @@ DELIVERABLES:
       currency: 'USD',
       publishDate: new Date('2026-07-28'),
       deadline: new Date('2026-08-30'),
-      status: 'OPEN',
-      description:
-        'Procurement of Tier-III Data Center Infrastructure, Hybrid Cloud Migration, and Cyber Incident Response for Nigerian Federal Government Ministries.',
-      rawContent: `MANDATORY REQUIREMENTS:
-1. Active BPP IRR Clearance Certificate & Industrial Training Fund (ITF) Compliance.
-2. NITDA IT clearance & 3 years Audited Financial Tax Clearance Certificate.
-3. ISO 27001 & SOC 2 Type II certified vendor.`,
+      status: TenderStatus.OPEN,
+      description: 'Procurement of Tier-III Data Center Infrastructure, Hybrid Cloud Migration, and Cyber Incident Response for Federal Government Ministries.',
+      rawContent: 'MANDATORY REQUIREMENTS: BPP IRR Certificate, NITDA IT Clearance, Tax Clearance Certificate (3 years), ISO 27001 certification.',
       attachments: ['fmcde-nigeria-cloud.pdf'],
       sourceUrl: 'https://bpp.gov.ng/tenders/fmcde-ng-2026-04',
     },
-  });
+    {
+      title: 'Nigerian Railway Corporation — Lagos-Ibadan Railway Signal & Telecommunications Modernization',
+      refNumber: 'NRC-NG-2026-RAIL-99',
+      buyerName: 'Nigerian Railway Corporation (NRC)',
+      buyerCountry: 'Nigeria',
+      industry: 'Civil Infrastructure & Construction',
+      estimatedValue: 22000000,
+      currency: 'USD',
+      publishDate: new Date('2026-07-20'),
+      deadline: new Date('2026-10-15'),
+      status: TenderStatus.OPEN,
+      description: 'Installation of Automated Train Protection (ATP) signaling, fiber optic communications along the Lagos-Ibadan rail corridor.',
+      rawContent: 'REQUIREMENTS: BPP Registration, Federal Ministry of Transportation clearance, 15+ years heavy railway engineering experience.',
+      attachments: ['nrc-railway-signal.pdf'],
+      sourceUrl: 'https://bpp.gov.ng/tenders/nrc-ng-2026-rail-99',
+    },
+    {
+      title: 'Federal Ministry of Health Nigeria — National Referral Hospital Medical Equipment & EHR',
+      refNumber: 'FMH-NG-2026-EHR-12',
+      buyerName: 'Federal Ministry of Health',
+      buyerCountry: 'Nigeria',
+      industry: 'Healthcare & Healthtech Systems',
+      estimatedValue: 9100000,
+      currency: 'USD',
+      publishDate: new Date('2026-07-16'),
+      deadline: new Date('2026-09-18'),
+      status: TenderStatus.OPEN,
+      description: 'Procurement of diagnostic imaging equipment and unified Electronic Health Record software across 6 Federal Medical Centers.',
+      rawContent: 'SPECIFICATIONS: Medical Registration Council certification, HL7/FHIR compliance, 24/7 technical support in Abuja & Lagos.',
+      attachments: ['fmh-medical-spec.pdf'],
+      sourceUrl: 'https://bpp.gov.ng/tenders/fmh-ng-2026-ehr-12',
+    },
 
-  const tenderKenya = await prisma.tender.create({
-    data: {
+    // ──── KENYA (PPIP / COUNTIES) TENDERS ────
+    {
       title: 'Nairobi City County Kenya — Smart Water Metering Telemetry & IoT Platform',
       refNumber: 'NCC-KE-2026-IOT-771',
       buyerName: 'Nairobi City County Government',
@@ -120,19 +206,32 @@ DELIVERABLES:
       currency: 'USD',
       publishDate: new Date('2026-07-20'),
       deadline: new Date('2026-09-05'),
-      status: 'OPEN',
-      description:
-        'Supply, installation, and commissioning of 25,000 smart water IoT telemetry devices with real-time billing integration for Nairobi Metropolitan Area.',
-      rawContent: `KENYA PPIP SPECIFICATION:
-1. REQUIREMENTS: Valid KRA Tax Compliance Certificate, NCA Registration, 5 years past IoT deployment experience in East Africa.`,
+      status: TenderStatus.OPEN,
+      description: 'Supply, installation, and commissioning of 25,000 smart water IoT telemetry devices with real-time billing integration.',
+      rawContent: 'KENYA PPIP SPECIFICATION: Valid KRA Tax Compliance Certificate, NCA Registration, 5 years past IoT deployment experience in East Africa.',
       attachments: ['nairobi-smart-water-iot.pdf'],
       sourceUrl: 'https://tenders.go.ke/notice/ncc-ke-2026-iot-771',
     },
-  });
+    {
+      title: 'Kenya Ports Authority — Cargo Inspection X-Ray Scanners & Automated Gate Automation',
+      refNumber: 'KPA-KE-2026-PORT-303',
+      buyerName: 'Kenya Ports Authority (KPA)',
+      buyerCountry: 'Kenya',
+      industry: 'Transport & Port Logistics',
+      estimatedValue: 7600000,
+      currency: 'USD',
+      publishDate: new Date('2026-07-14'),
+      deadline: new Date('2026-09-12'),
+      status: TenderStatus.OPEN,
+      description: 'Procurement of high-throughput mobile X-ray container inspection scanners and optical character recognition (OCR) gate automation.',
+      rawContent: 'REQUIREMENTS: KPA Vendor Clearance, Radiation Protection Board certification, 3 years local support SLA in Mombasa.',
+      attachments: ['kpa-gate-automation.pdf'],
+      sourceUrl: 'https://tenders.go.ke/notice/kpa-ke-2026-port-303',
+    },
 
-  const tenderSouthAfrica = await prisma.tender.create({
-    data: {
-      title: 'South Africa Department of Health — National Electronic Health Records & Telemedicine System',
+    // ──── SOUTH AFRICA (NATIONAL TREASURY ETENDER) TENDERS ────
+    {
+      title: 'South Africa Department of Health — National Electronic Health Records System',
       refNumber: 'ZA-DOH-2026-EHR-109',
       buyerName: 'South Africa Department of Health',
       buyerCountry: 'South Africa',
@@ -141,20 +240,32 @@ DELIVERABLES:
       currency: 'USD',
       publishDate: new Date('2026-07-18'),
       deadline: new Date('2026-09-20'),
-      status: 'OPEN',
-      description:
-        'Procurement of a unified cloud-native Electronic Health Record (EHR) and remote clinical telemedicine platform across South African provincial clinics.',
-      rawContent: `SOUTH AFRICA NATIONAL TREASURY ETENDER SPECIFICATION:
-1. B-BBEE Level 1-4 compliance certification mandatory.
-2. Protection of Personal Information Act (POPIA) compliance.`,
+      status: TenderStatus.OPEN,
+      description: 'Procurement of a unified cloud-native Electronic Health Record (EHR) and remote clinical telemedicine platform across South African clinics.',
+      rawContent: 'SOUTH AFRICA NATIONAL TREASURY ETENDER SPECIFICATION: B-BBEE Level 1-4 compliance certification mandatory. POPIA privacy compliance.',
       attachments: ['za-doh-ehr-spec.pdf'],
       sourceUrl: 'https://etenders.gov.za/tender/ZA-DOH-2026-EHR-109',
     },
-  });
+    {
+      title: 'City of Cape Town — Grid Energy Storage & Battery Substation Expansion',
+      refNumber: 'CCT-ZA-2026-GRID-88',
+      buyerName: 'City of Cape Town Energy Directorate',
+      buyerCountry: 'South Africa',
+      industry: 'Renewable Energy & Solar Power',
+      estimatedValue: 19500000,
+      currency: 'USD',
+      publishDate: new Date('2026-07-12'),
+      deadline: new Date('2026-10-01'),
+      status: TenderStatus.OPEN,
+      description: 'Engineering, procurement, and construction of 50 MWh Utility-Scale Battery Energy Storage Systems (BESS) for grid stabilization.',
+      rawContent: 'MANDATORY: CIDB Grade 8EP/9EP registration, South African Grid Code compliance, local content participation commitment.',
+      attachments: ['cct-bess-spec.pdf'],
+      sourceUrl: 'https://etenders.gov.za/tender/CCT-ZA-2026-GRID-88',
+    },
 
-  const tenderAfDB = await prisma.tender.create({
-    data: {
-      title: 'African Development Bank (AfDB) — Pan-African Rural Solar Microgrid & Power Grid Extension',
+    // ──── PAN-AFRICAN & DEVELOPMENT BANKS ────
+    {
+      title: 'African Development Bank (AfDB) — Pan-African Rural Solar Microgrid Rollout',
       refNumber: 'AFDB-P-Z1-FA0-019',
       buyerName: 'African Development Bank Group',
       buyerCountry: 'Pan-African',
@@ -163,64 +274,35 @@ DELIVERABLES:
       currency: 'USD',
       publishDate: new Date('2026-07-10'),
       deadline: new Date('2026-09-30'),
-      status: 'OPEN',
-      description:
-        'Design, procurement, and installation of 120 solar-powered mini-grids across rural West & East Africa under AfDB financing framework.',
-      rawContent: `BIDDING RULES: Open International Bidding under AfDB Procurement Framework. Mandatory audited financial turnover exceeding $10M.`,
+      status: TenderStatus.OPEN,
+      description: 'Design, procurement, and installation of 120 solar-powered mini-grids across rural West & East Africa under AfDB financing framework.',
+      rawContent: 'BIDDING RULES: Open International Bidding under AfDB Procurement Framework. Mandatory audited financial turnover exceeding $10M.',
       attachments: ['afdb-solar-microgrid.pdf'],
       sourceUrl: 'https://afdb.org/procurement/AFDB-P-Z1-FA0-019',
     },
-  });
+  ];
 
-  const tenderUS = await prisma.tender.create({
-    data: {
-      title: 'US Department of Veterans Affairs — Cloud Migration & Hybrid Security Architecture',
-      refNumber: 'VA-2026-CLOUD-9941',
-      buyerName: 'US Department of Veterans Affairs',
-      buyerCountry: 'United States',
-      industry: 'Cloud & IT Infrastructure',
-      estimatedValue: 4500000,
-      currency: 'USD',
-      publishDate: new Date('2026-07-15'),
-      deadline: new Date('2026-08-25'),
-      status: 'OPEN',
-      description:
-        'Multi-region hybrid cloud migration from legacy mainframe workloads to AWS/Azure environments, complete with zero-trust network security posture.',
-      rawContent: `SECTION C: STATEMENT OF WORK (SOW)\n1. SCOPE: Provide cloud migration for 12 VA medical centers.\n2. MANDATORY COMPLIANCE: ISO 27001 & SOC 2 Type II certification.`,
-      attachments: ['va-2026-sow.pdf'],
-      sourceUrl: 'https://sam.gov/opp/va-2026-cloud-9941',
-    },
-  });
+  for (const tData of tendersData) {
+    const createdTender = await prisma.tender.create({ data: tData });
 
-  // Seed AI Summaries for African Tenders
-  await prisma.aiSummary.createMany({
-    data: [
-      {
-        tenderId: tenderCameroon.id,
-        executiveSummary: 'Major $12.5M USD Highway construction and IoT telemetry procurement by MINTP Cameroon under ARMP framework.',
-        requirements: JSON.parse(JSON.stringify([{ id: 'r1', category: 'Compliance', description: 'ARMP Registration & 2% Bank Guarantee', isMandatory: true }])),
-        deliverables: JSON.parse(JSON.stringify(['Douala Highway Paving', '40 Smart Telemetry Stations'])),
-        deadlineSummary: 'Full proposals due September 15, 2026.',
-        risks: JSON.parse(JSON.stringify([{ id: 'rk1', risk: 'Monsoon weather delay risk', severity: 'MEDIUM', mitigation: 'Phase earthworks during dry season.' }])),
+    // Generate AI Summary
+    await prisma.aiSummary.create({
+      data: {
+        tenderId: createdTender.id,
+        executiveSummary: `Official public procurement notice by ${createdTender.buyerName} (${createdTender.buyerCountry}) valued at $${(createdTender.estimatedValue / 1000000).toFixed(1)}M USD.`,
+        requirements: JSON.parse(JSON.stringify([
+          { id: 'r1', category: 'Compliance', description: `Official registration with ${createdTender.buyerCountry} procurement authority`, isMandatory: true },
+          { id: 'r2', category: 'Financial', description: 'Audited financial statements for past 3 fiscal years', isMandatory: true },
+          { id: 'r3', category: 'Technical', description: `Proven track record in ${createdTender.industry}`, isMandatory: true },
+        ])),
+        deliverables: JSON.parse(JSON.stringify(['Project Execution Blueprint', 'Technical Delivery & Commissioning', '24/7 SLA Technical Support'])),
+        deadlineSummary: `Full technical and financial proposals due ${new Date(createdTender.deadline).toLocaleDateString()}.`,
+        risks: JSON.parse(JSON.stringify([
+          { id: 'rk1', risk: 'Strict milestone delivery schedule', severity: 'MEDIUM', mitigation: 'Establish local operational office and project manager.' },
+        ])),
       },
-      {
-        tenderId: tenderNigeria.id,
-        executiveSummary: 'High-value $8.5M USD Federal Government Cloud Migration and Data Center Modernization contract in Abuja, Nigeria.',
-        requirements: JSON.parse(JSON.stringify([{ id: 'r2', category: 'Compliance', description: 'BPP IRR Certificate & NITDA IT Clearance', isMandatory: true }])),
-        deliverables: JSON.parse(JSON.stringify(['Tier-III Data Center Spec', 'Federal Cloud Migration'])),
-        deadlineSummary: 'Proposals due August 30, 2026.',
-        risks: JSON.parse(JSON.stringify([{ id: 'rk2', risk: 'Strict local data residency compliance', severity: 'HIGH', mitigation: 'Deploy in Abuja Tier-III data center.' }])),
-      },
-      {
-        tenderId: tenderKenya.id,
-        executiveSummary: '$4.2M USD Smart Water Metering and IoT telemetry infrastructure contract for Nairobi City County, Kenya.',
-        requirements: JSON.parse(JSON.stringify([{ id: 'r3', category: 'Compliance', description: 'KRA Tax Clearance & NCA Registration', isMandatory: true }])),
-        deliverables: JSON.parse(JSON.stringify(['25,000 IoT Meter Deployments', 'Telemetry Billing Platform'])),
-        deadlineSummary: 'Proposals due September 5, 2026.',
-        risks: JSON.parse(JSON.stringify([{ id: 'rk3', risk: 'LoRaWAN coverage gaps', severity: 'LOW', mitigation: 'Deploy cellular NB-IoT fallback fallback modems.' }])),
-      },
-    ],
-  });
+    });
+  }
 
   // Seed default Notifications
   await prisma.notification.createMany({
@@ -240,7 +322,7 @@ DELIVERABLES:
     ],
   });
 
-  console.log('✅ Prisma African Database Seeding Complete!');
+  console.log('✅ Prisma Full African Procurement Database Seeded (Cameroon, Nigeria, Kenya, SA, Pan-African)!');
 }
 
 main()

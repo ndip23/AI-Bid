@@ -13,6 +13,20 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('error', function(e) {
+                if (e && e.message && (e.message.indexOf('Loading chunk') !== -1 || e.message.indexOf('ChunkLoadError') !== -1)) {
+                  console.warn('ChunkLoadError detected, performing silent reload...');
+                  window.location.reload();
+                }
+              });
+            `,
+          }}
+        />
+      </head>
       <body className="antialiased">
         <Providers>{children}</Providers>
       </body>

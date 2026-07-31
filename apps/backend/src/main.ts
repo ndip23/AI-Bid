@@ -17,8 +17,8 @@ async function bootstrap() {
   // Global exception filter
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  // Global prefix
-  app.setGlobalPrefix('api/v1');
+  // Global prefix with root route exclusion for health status
+  app.setGlobalPrefix('api/v1', { exclude: ['/'] });
 
   // Validation pipe
   app.useGlobalPipes(

@@ -29,13 +29,13 @@ export class AuthService {
       company = await this.prisma.company.create({
         data: {
           name: dto.companyName,
-          industry: dto.industry || 'Technology & IT Services',
-          countries: ['United States', 'United Kingdom'],
-          certifications: ['ISO 27001', 'SOC 2 Type II'],
-          services: ['Cloud Infrastructure', 'Custom Software Development', 'Cybersecurity'],
+          industry: dto.industry || 'Cloud & IT Infrastructure',
+          countries: ['Cameroon', 'Nigeria', 'Kenya', 'South Africa', 'Ghana', 'Rwanda'],
+          certifications: ['ISO 27001', 'ARMP Registered', 'NITDA IT Clearance'],
+          services: ['Cloud Infrastructure', 'Custom Software Engineering', 'Cybersecurity', 'IoT Telemetry'],
           teamSize: 25,
-          annualRevenue: '$5M - $10M',
-          description: `${dto.companyName} provides high-quality software, IT consulting, and enterprise technology services.`,
+          annualRevenue: '$2M - $10M',
+          description: `${dto.companyName} provides high-quality software engineering, cloud infrastructure, and technical consulting across African markets.`,
         },
       });
     }
@@ -91,7 +91,6 @@ export class AuthService {
     });
 
     if (!user) {
-      // Security standard: don't disclose whether email exists
       return { message: 'If your email is registered, you will receive a password reset instructions email shortly.' };
     }
 

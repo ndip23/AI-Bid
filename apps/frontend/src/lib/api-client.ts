@@ -2,6 +2,17 @@ import { Company, SavedTender, Tender, User, NotificationItem } from '../types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
 
+export interface ProcurementSourceItem {
+  id: string;
+  country: string;
+  sourceName: string;
+  method: string;
+  frequency: string;
+  status: string;
+  lastSyncAt: string;
+  totalIngested: number;
+}
+
 export class ApiClient {
   private static getHeaders() {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -110,6 +121,25 @@ export class ApiClient {
       console.error('Failed to fetch notifications', e);
     }
     return [];
+  }
+
+  static async getProcurementSources(): Promise<ProcurementSourceItem[]> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/sources`, { headers: this.getHeaders() });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error('Failed to fetch procurement sources', e);
+    }
+    return [];
+  }
+
+  static async syncProcurementSource(id: string) {
+    const res = await fetch(`${API_BASE_URL}/sources/${id}/sync`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to sync procurement source');
+    return await res.json();
   }
 
   static async getAdminStats() {
