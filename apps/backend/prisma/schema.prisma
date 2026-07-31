@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  COMPANY_USER
+}
+
+enum SavedStatus {
+  BOOKMARKED
+  UNDER_REVIEW
+  BIDDING
+  PASSED
+}
+
+enum TenderStatus {
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         UserRole       @default(COMPANY_USER)
+  companyId    String?
+  company      Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  notifications Notification[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@map("users")
+}
+
+model Company {
+  id             String         @id @default(uuid())
+  name           String
+  taxId          String?
+  industry       String
+  countries      String[]       // List of operational countries e.g. ["USA", "UK", "Germany"]
+  certifications String[]       // List of certifications e.g. ["ISO 27001", "SOC 2 Type II", "ISO 9001"]
+  services       String[]       // Key capabilities/services e.g. ["Cloud Migration", "Cybersecurity", "Custom Software"]
+  annualRevenue  String?        // e.g. "$10M - $50M"
+  teamSize       Int            @default(10)
+  website        String?
+  description    String?        @db.Text
+  users          User[]
+  savedTenders   SavedTender[]
+  matchScores    MatchScore[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@map("companies")
+}
+
+model Tender {
+  id             String         @id @default(uuid())
+  title          String
+  refNumber      String         @unique
+  buyerName      String
+  buyerCountry   String
+  industry       String
+  estimatedValue Float
+  currency       String         @default("USD")
+  publishDate    DateTime
+  deadline       DateTime
+  description    String         @db.Text
+  rawContent     String         @db.Text
+  status         TenderStatus   @default(OPEN)
+  sourceUrl      String?
+  attachments    String[]       // Array of S3 URLs / document paths
+  aiSummary      AiSummary?
+  savedTenders   SavedTender[]
+  matchScores    MatchScore[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@map("tenders")
+}
+
+model SavedTender {
+  id        String      @id @default(uuid())
+  companyId String
+  tenderId  String
+  company   Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  tender    Tender      @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  status    SavedStatus @default(BOOKMARKED)
+  priority  Priority    @default(MEDIUM)
+  notes     String?     @db.Text
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([companyId, tenderId])
+  @@map("saved_tenders")
+}
+
+model AiSummary {
+  id               String   @id @default(uuid())
+  tenderId         String   @unique
+  tender           Tender   @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  executiveSummary String   @db.Text
+  requirements     Json     // List of extracted key requirements with mandatory flag
+  deliverables     Json     // Expected deliverables and scope items
+  deadlineSummary  String
+  risks            Json     // List of identified risks, severity, and mitigation suggestions
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("ai_summaries")
+}
+
+model MatchScore {
+  id                  String   @id @default(uuid())
+  companyId           String
+  tenderId            String
+  company             Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  tender              Tender   @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  overallScore        Int      // 0 to 100 percentage
+  industryMatchScore  Int      // 0 to 100
+  countryMatchScore   Int      // 0 to 100
+  experienceScore     Int      // 0 to 100
+  certMatchScore      Int      // 0 to 100
+  reasons             Json     // Detailed match breakdown reasons
+  metRequirements     Json     // Array of matched eligibility requirements
+  missingRequirements Json     // Array of missing/unmet eligibility requirements
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([companyId, tenderId])
+  @@map("match_scores")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   // "NEW_MATCH", "DEADLINE_WARNING", "STATUS_CHANGE"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}

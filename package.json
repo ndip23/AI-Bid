@@ -1,0 +1,28 @@
+{
+  "name": "ai-bid-copilot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered SaaS platform for discovering, evaluating, scoring, and tracking procurement opportunities",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:backend": "npm --prefix apps/backend run start:dev",
+    "dev:frontend": "npm --prefix apps/frontend run dev",
+    "build:backend": "npm --prefix apps/backend run build",
+    "build:frontend": "npm --prefix apps/frontend run build",
+    "prisma:generate": "npm --prefix apps/backend run prisma:generate",
+    "prisma:seed": "npm --prefix apps/backend run prisma:seed"
+  },
+  "keywords": [
+    "saas",
+    "procurement",
+    "tenders",
+    "ai",
+    "bid-copilot",
+    "nestjs",
+    "nextjs"
+  ],
+  "author": "AI Bid Copilot Team",
+  "license": "MIT"
+}
