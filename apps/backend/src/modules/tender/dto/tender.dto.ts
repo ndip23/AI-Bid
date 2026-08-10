@@ -1,5 +1,23 @@
 import { IsArray, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { SavedStatus, Priority, TenderStatus } from '@prisma/client';
+
+export enum SavedStatus {
+  BOOKMARKED = 'BOOKMARKED',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  BIDDING = 'BIDDING',
+  PASSED = 'PASSED',
+}
+
+export enum Priority {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+}
+
+export enum TenderStatus {
+  OPEN = 'OPEN',
+  CLOSED = 'CLOSED',
+  CANCELLED = 'CANCELLED',
+}
 
 export class QueryTendersDto {
   @IsString()

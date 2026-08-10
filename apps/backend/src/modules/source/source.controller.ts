@@ -1,30 +1,57 @@
-import { Controller, Get, Param, Patch, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Query, Patch } from '@nestjs/common';
 import { SourceService } from './source.service';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
+import { SchedulerService } from './scheduler.service';
+import { PublisherStatus } from '@prisma/client';
 
-@Controller('sources')
-@UseGuards(JwtAuthGuard)
+@Controller('publishers')
 export class SourceController {
-  constructor(private readonly sourceService: SourceService) {}
+  constructor(
+    private readonly sourceService: SourceService,
+    private readonly schedulerService: SchedulerService,
+  ) {}
 
   @Get()
-  findAllSources() {
-    return this.sourceService.findAllSources();
+  async getPublishers(@Query('country') country?: string) {
+    return this.sourceService.findAllPublishers(country);
+  }
+
+  @Get('daily-summary')
+  async getDailySummary() {
+    return this.sourceService.getDailyIngestionSummary();
+  }
+
+  @Get('sync-logs')
+  async getSyncLogs(@Query('limit') limit?: string) {
+    return this.sourceService.getSyncLogs(limit ? parseInt(limit, 10) : 50);
+  }
+
+  @Get(':id')
+  async getPublisherById(@Param('id') id: string) {
+    return this.sourceService.findPublisherById(id);
+  }
+
+  @Post()
+  async createPublisher(@Body() body: any) {
+    return this.sourceService.createPublisher(body);
   }
 
   @Post(':id/sync')
-  @UseGuards(RolesGuard)
-  @Roles('SUPER_ADMIN')
-  syncSource(@Param('id') id: string) {
-    return this.sourceService.syncSource(id);
+  async syncPublisher(@Param('id') id: string) {
+    return this.sourceService.syncPublisher(id);
+  }
+
+  @Post(':id/discover')
+  async discoverPublisher(@Param('id') id: string) {
+    return this.sourceService.discoverPublisher(id);
+  }
+
+  @Post('sync-all-hourly')
+  async triggerGlobalSync() {
+    return this.schedulerService.runHourlyProcurementSync();
   }
 
   @Patch(':id/status')
-  @UseGuards(RolesGuard)
-  @Roles('SUPER_ADMIN')
-  toggleStatus(@Param('id') id: string, @Body('status') status: string) {
-    return this.sourceService.toggleSourceStatus(id, status);
+  async updateStatus(@Param('id') id: string, @Body('status') status: PublisherStatus) {
+    return this.sourceService.togglePublisherStatus(id, status);
   }
 }

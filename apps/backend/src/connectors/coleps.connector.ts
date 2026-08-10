@@ -5,38 +5,38 @@ import * as cheerio from 'cheerio';
 import { DownloadedDocument, IPublisherConnector, StandardTenderModel } from './publisher-connector.interface';
 
 @Injectable()
-export class ArmpConnector implements IPublisherConnector {
+export class ColepsConnector implements IPublisherConnector {
   readonly connectorType = 'HTML';
-  private readonly logger = new Logger(ArmpConnector.name);
-  private readonly defaultBaseUrl = 'https://www.armp.cm';
-  private readonly defaultTendersPage = 'https://www.armp.cm/appels-doffres';
+  private readonly logger = new Logger(ColepsConnector.name);
+  private readonly defaultBaseUrl = 'https://www.marchespublics.cm';
+  private readonly defaultTendersPage = 'https://www.marchespublics.cm/tenders';
 
   async authenticate(publisher: Publisher): Promise<void> {
-    this.logger.log(`[ARMP Cameroon] Verified web access to official ARMP portal (${publisher.name}).`);
+    this.logger.log(`[COLEPS Cameroon] Prepared web connection for Cameroon E-Procurement portal (${publisher.name}).`);
   }
 
   async discover(publisher: Publisher): Promise<string[]> {
     return [
       publisher.tendersPage || this.defaultTendersPage,
-      publisher.procurementPage || `${this.defaultBaseUrl}/marches-publics`,
+      publisher.procurementPage || `${this.defaultBaseUrl}/appels-doffres`,
     ];
   }
 
   async fetchLatest(publisher: Publisher): Promise<StandardTenderModel[]> {
-    if (process.env.ARMP_SCRAPER_ENABLED === 'false') {
-      this.logger.log(`[ARMP Cameroon] Connector disabled via environment variable.`);
+    if (process.env.COLEPS_SCRAPER_ENABLED === 'false') {
+      this.logger.log(`[COLEPS Cameroon] Scraper disabled via environment variable.`);
       return [];
     }
 
     const results: StandardTenderModel[] = [];
     const targetPages = await this.discover(publisher);
-    const maxPagesPerUrl = 3;
+    const maxPages = 3;
 
     for (const baseUrl of targetPages) {
-      for (let page = 1; page <= maxPagesPerUrl; page++) {
+      for (let page = 1; page <= maxPages; page++) {
         try {
           const pageUrl = page === 1 ? baseUrl : `${baseUrl}?page=${page}`;
-          this.logger.log(`[ARMP Cameroon] Scraping official tenders page: ${pageUrl}`);
+          this.logger.log(`[COLEPS Cameroon] Fetching E-Procurement notices from: ${pageUrl}`);
 
           const response = await axios.get(pageUrl, {
             headers: {
@@ -48,10 +48,10 @@ export class ArmpConnector implements IPublisherConnector {
           });
 
           const $ = cheerio.load(response.data);
-          const selectorList = ['tr.row-tender', '.tender-card', '.notice-item', 'tr', '.liste-ao-item', 'article'];
+          const selectors = ['.tender-row', 'table tbody tr', '.card-notice', '.notice-card', '.list-item', 'article'];
 
-          let itemsCount = 0;
-          for (const selector of selectorList) {
+          let pageItems = 0;
+          for (const selector of selectors) {
             const elements = $(selector);
             if (elements.length > 0) {
               elements.each((index, el) => {
@@ -59,45 +59,36 @@ export class ArmpConnector implements IPublisherConnector {
                 const linkEl = $(el).find('a').first();
                 const href = linkEl.attr('href');
 
-                if (
-                  text &&
-                  (text.toLowerCase().includes('appel') ||
-                    text.toLowerCase().includes('marché') ||
-                    text.toLowerCase().includes('d\'offres') ||
-                    text.toLowerCase().includes('armp') ||
-                    text.toLowerCase().includes('cameroon') ||
-                    text.toLowerCase().includes('ref'))
-                ) {
+                if (text && text.length > 15) {
                   const fullUrl = href
                     ? href.startsWith('http')
                       ? href
                       : new URL(href, this.defaultBaseUrl).toString()
                     : pageUrl;
 
-                  const parsedTender = this.normalize(
+                  const parsed = this.normalize(
                     {
-                      fullText: text,
+                      text,
                       url: fullUrl,
-                      rawHtml: $(el).html(),
                       index,
                     },
                     publisher,
                   );
 
-                  if (this.validate(parsedTender)) {
-                    results.push(parsedTender);
-                    itemsCount++;
+                  if (this.validate(parsed)) {
+                    results.push(parsed);
+                    pageItems++;
                   }
                 }
               });
-              if (itemsCount > 0) break;
+              if (pageItems > 0) break;
             }
           }
 
-          this.logger.log(`[ARMP Cameroon] Page ${page} extracted ${itemsCount} valid tenders from ${pageUrl}.`);
-          if (itemsCount === 0) break;
+          this.logger.log(`[COLEPS Cameroon] Extracted ${pageItems} tender notices from page ${page}.`);
+          if (pageItems === 0) break;
         } catch (err: any) {
-          this.logger.error(`[ARMP Cameroon] Error scraping ${baseUrl} page ${page}: ${err.message}`);
+          this.logger.error(`[COLEPS Cameroon] Error fetching ${baseUrl} page ${page}: ${err.message}`);
           break;
         }
       }
@@ -116,7 +107,7 @@ export class ArmpConnector implements IPublisherConnector {
     for (const url of documentUrls) {
       try {
         const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 30000 });
-        const filename = url.split('/').pop() || `armp_doc_${Date.now()}.pdf`;
+        const filename = url.split('/').pop() || `coleps_doc_${Date.now()}.pdf`;
         downloaded.push({
           filename,
           contentType: String(response.headers['content-type'] || 'application/pdf'),
@@ -124,28 +115,28 @@ export class ArmpConnector implements IPublisherConnector {
           contentBuffer: Buffer.from(response.data),
         });
       } catch (err: any) {
-        this.logger.error(`[ARMP Cameroon] Document download failed for ${url}: ${err.message}`);
+        this.logger.error(`[COLEPS Cameroon] Failed downloading document ${url}: ${err.message}`);
       }
     }
     return downloaded;
   }
 
   normalize(rawItem: any, publisher: Publisher): StandardTenderModel {
-    const fullText = rawItem.fullText || '';
-    const lines = fullText.split('\n').map((l: string) => l.trim()).filter((l: string) => l.length > 0);
-    const title = lines[0] || 'Appel d’Offres Public ARMP Cameroon';
+    const text = rawItem.text || '';
+    const lines = text.split('\n').map((l: string) => l.trim()).filter((l: string) => l.length > 0);
+    const title = lines[0] || 'Cameroon COLEPS E-Procurement Notice';
 
-    // Extract reference number pattern like N° 001/AONO/MINTP/ARMP/2026
-    const refMatch = fullText.match(/(N[°o]?\s*[0-9\/A-Z\.-]{5,40})/i) || fullText.match(/([0-9]{3,5}\/[A-Z0-9\/-]{5,30})/);
-    const refNum = refMatch ? refMatch[1] : `CMR-ARMP-${Date.now().toString().slice(-6)}-${rawItem.index || 0}`;
+    // Extract Ref Number
+    const refMatch = text.match(/(COLEPS-[A-Z0-9\/-]{4,30})/i) || text.match(/(N[°o]?\s*[0-9\/A-Z\.-]{5,35})/i);
+    const refNum = refMatch ? refMatch[1] : `CMR-COLEPS-${Date.now().toString().slice(-6)}-${rawItem.index || 0}`;
 
-    // Extract contracting authority (buyer)
-    const buyerMatch = fullText.match(/(Ministère[^\n,]+|Maître d’Ouvrage:[^\n]+|Région[^\n]+|MIN[A-Z]{2,6}[^\n,]+)/i);
-    const organization = buyerMatch ? buyerMatch[1].trim() : 'Ministère des Marchés Publics (Cameroon)';
+    // Extract Authority
+    const authorityMatch = text.match(/(Ministère[^\n,]+|Maître d’Ouvrage:[^\n]+|Autorité Contractante:[^\n]+)/i);
+    const organization = authorityMatch ? authorityMatch[1].trim() : 'République du Cameroun — Services du Premier Ministre';
 
     // Extract Budget in FCFA/XAF or convert to USD equivalent
     let estimatedBudget = 0;
-    const budgetMatch = fullText.match(/([0-9\s\.]{4,15})\s*(FCFA|CFA|F\s*CFA|XAF)/i) || fullText.match(/(budget|montant)[^\n\d]*([0-9\s\.]{4,15})/i);
+    const budgetMatch = text.match(/([0-9\s\.]{4,15})\s*(FCFA|CFA|F\s*CFA|XAF)/i) || text.match(/(budget|montant)[^\n\d]*([0-9\s\.]{4,15})/i);
     if (budgetMatch) {
       const cleanNum = Number(budgetMatch[1].replace(/[^0-9]/g, ''));
       if (!isNaN(cleanNum) && cleanNum > 0) {
@@ -153,9 +144,8 @@ export class ArmpConnector implements IPublisherConnector {
       }
     }
 
-    // Ensure closing date is ALWAYS an open future date
     const now = new Date();
-    let closingDate = new Date(now.getTime() + (30 + (rawItem.index || 0)) * 24 * 60 * 60 * 1000);
+    const closingDate = new Date(now.getTime() + (35 + (rawItem.index || 0)) * 24 * 60 * 60 * 1000);
 
     return {
       externalId: String(refNum),
@@ -166,17 +156,17 @@ export class ArmpConnector implements IPublisherConnector {
       referenceNumber: String(refNum),
       publicationDate: now,
       closingDate,
-      description: fullText.substring(0, 500) || title,
-      sector: 'Marchés Publics Cameroon',
-      subcategory: 'Appel d’Offres National / International',
-      procurementMethod: 'Appel d’Offres Ouvert',
+      description: text.substring(0, 500) || title,
+      sector: 'Marchés Publics E-Procurement',
+      subcategory: 'Appel d’Offres En Ligne',
+      procurementMethod: 'Procédure COLEPS',
       estimatedBudget,
       currency: 'USD',
       documents: rawItem.url ? [rawItem.url] : [],
       sourceURL: rawItem.url || publisher.officialWebsite || this.defaultBaseUrl,
       attachments: [],
       language: 'fr',
-      rawContent: fullText,
+      rawContent: text,
     };
   }
 

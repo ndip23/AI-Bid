@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Company, Tender, AiSummary } from '@prisma/client';
-import { ExtractedRequirement } from '../ai/ai.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 export interface MatchCalculationResult {
   overallScore: number;
@@ -15,6 +15,93 @@ export interface MatchCalculationResult {
 
 @Injectable()
 export class MatchService {
+  private readonly logger = new Logger(MatchService.name);
+
+  constructor(private readonly prisma: PrismaService) {}
+
+  /**
+   * Calculates and saves match scores for all registered companies against a newly ingested tender.
+   */
+  async calculateMatchesForTender(tenderId: string): Promise<void> {
+    const tender = await this.prisma.tender.findUnique({
+      where: { id: tenderId },
+      include: { aiSummary: true },
+    });
+
+    if (!tender) return;
+
+    const companies = await this.prisma.company.findMany();
+    for (const company of companies) {
+      const result = this.calculateMatch(company, tender, tender.aiSummary);
+
+      await this.prisma.matchScore.upsert({
+        where: {
+          id: `${company.id}_${tender.id}`,
+        },
+        create: {
+          companyId: company.id,
+          tenderId: tender.id,
+          overallScore: result.overallScore,
+          industryMatchScore: result.industryMatchScore,
+          countryMatchScore: result.countryMatchScore,
+          experienceScore: result.experienceScore,
+          certMatchScore: result.certMatchScore,
+          reasons: result.reasons as any,
+          metRequirements: result.metRequirements as any,
+          missingRequirements: result.missingRequirements as any,
+        },
+        update: {
+          overallScore: result.overallScore,
+          industryMatchScore: result.industryMatchScore,
+          countryMatchScore: result.countryMatchScore,
+          experienceScore: result.experienceScore,
+          certMatchScore: result.certMatchScore,
+          reasons: result.reasons as any,
+          metRequirements: result.metRequirements as any,
+          missingRequirements: result.missingRequirements as any,
+        },
+      }).catch(async () => {
+        // Fallback for compound unique constraint if not using custom id format
+        const existing = await this.prisma.matchScore.findFirst({
+          where: { companyId: company.id, tenderId: tender.id },
+        });
+
+        if (existing) {
+          await this.prisma.matchScore.update({
+            where: { id: existing.id },
+            data: {
+              overallScore: result.overallScore,
+              industryMatchScore: result.industryMatchScore,
+              countryMatchScore: result.countryMatchScore,
+              experienceScore: result.experienceScore,
+              certMatchScore: result.certMatchScore,
+              reasons: result.reasons as any,
+              metRequirements: result.metRequirements as any,
+              missingRequirements: result.missingRequirements as any,
+            },
+          });
+        } else {
+          await this.prisma.matchScore.create({
+            data: {
+              companyId: company.id,
+              tenderId: tender.id,
+              overallScore: result.overallScore,
+              industryMatchScore: result.industryMatchScore,
+              countryMatchScore: result.countryMatchScore,
+              experienceScore: result.experienceScore,
+              certMatchScore: result.certMatchScore,
+              reasons: result.reasons as any,
+              metRequirements: result.metRequirements as any,
+              missingRequirements: result.missingRequirements as any,
+            },
+          });
+        }
+      });
+    }
+
+    this.logger.log(`[Match Engine] Calculated matches for tender ${tender.refNumber} across ${companies.length} companies.`);
+  }
+
   calculateMatch(company: Company, tender: Tender, aiSummary?: AiSummary | null): MatchCalculationResult {
     const reasons: string[] = [];
     const metRequirements: string[] = [];
@@ -56,20 +143,21 @@ export class MatchService {
 
     // 3. Certifications Match
     let certScore = 100;
-    const reqs = (aiSummary?.requirements as unknown as ExtractedRequirement[]) || [];
-    const certReqs = reqs.filter((r) => r.category === 'Certification' || r.description.toLowerCase().includes('iso') || r.description.toLowerCase().includes('soc'));
+    const reqs = (aiSummary?.requirements as unknown as any[]) || [];
+    const certReqs = reqs.filter((r) => r.category === 'Certification' || (r.description && (r.description.toLowerCase().includes('iso') || r.description.toLowerCase().includes('soc'))));
 
     if (certReqs.length > 0) {
       let matchedCertsCount = 0;
       for (const req of certReqs) {
+        const desc = req.description || req.requirement || '';
         const hasCert = company.certifications.some((cert) =>
-          req.description.toLowerCase().includes(cert.toLowerCase()),
+          desc.toLowerCase().includes(cert.toLowerCase()),
         );
         if (hasCert) {
           matchedCertsCount++;
-          metRequirements.push(req.description);
+          metRequirements.push(desc);
         } else {
-          missingRequirements.push(req.description);
+          missingRequirements.push(desc);
         }
       }
 

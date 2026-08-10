@@ -31,6 +31,47 @@ enum Priority {
   HIGH
 }
 
+enum OrganizationType {
+  NATIONAL_PROCUREMENT_AUTHORITY
+  MINISTRY
+  GOVERNMENT_AGENCY
+  PUBLIC_UNIVERSITY
+  TEACHING_HOSPITAL
+  REGIONAL_COUNCIL
+  MUNICIPALITY
+  STATE_OWNED_ENTERPRISE
+  DEVELOPMENT_PROJECT
+  INTERNATIONAL_ORGANIZATION
+  DEVELOPMENT_BANK
+  NGO
+  PRIVATE_PROCUREMENT
+}
+
+enum ConnectorType {
+  REST_API
+  RSS
+  HTML
+  PDF
+  XML
+  CSV
+  MANUAL_UPLOAD
+}
+
+enum AuthenticationType {
+  NONE
+  API_KEY
+  BEARER_TOKEN
+  BASIC_AUTH
+  SESSION_COOKIE
+}
+
+enum PublisherStatus {
+  ACTIVE
+  PAUSED
+  FAILED
+  DISCOVERING
+}
+
 model User {
   id           String         @id @default(uuid())
   email        String         @unique
@@ -68,38 +109,94 @@ model Company {
   @@map("companies")
 }
 
+model Publisher {
+  id                  String             @id @default(uuid())
+  country             String             // e.g. "Cameroon", "Nigeria", "Kenya", "Ghana"
+  name                String             // e.g. "ARMP Cameroon", "Federal Ministry of Works Nigeria"
+  organizationType    OrganizationType   @default(GOVERNMENT_AGENCY)
+  officialWebsite     String?
+  procurementPage     String?
+  tendersPage         String?
+  newsPage            String?
+  projectsPage        String?
+  rssFeed             String?
+  apiEndpoint         String?
+  connectorType       ConnectorType      @default(HTML)
+  authenticationType  AuthenticationType @default(NONE)
+  crawlInterval       Int                @default(60) // in minutes
+  status              PublisherStatus    @default(ACTIVE)
+  lastSuccessfulSync  DateTime?
+  lastFailedSync      DateTime?
+  parserConfiguration Json?              // Selectors, endpoints mapping, pagination settings
+  tenders             Tender[]
+  syncLogs            SyncLog[]
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@map("publishers")
+}
+
+model SyncLog {
+  id                 String        @id @default(uuid())
+  publisherId        String
+  publisher          Publisher     @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+  country            String
+  connectorType      ConnectorType
+  startTime          DateTime      @default(now())
+  endTime            DateTime?
+  recordsRetrieved   Int           @default(0)
+  newRecords         Int           @default(0)
+  updatedRecords     Int           @default(0)
+  duplicates         Int           @default(0)
+  failedRecords      Int           @default(0)
+  documentsDownloaded Int          @default(0)
+  errors             Json?
+  createdAt          DateTime      @default(now())
+
+  @@map("sync_logs")
+}
+
 model Tender {
-  id             String         @id @default(uuid())
-  title          String
-  refNumber      String         @unique
-  buyerName      String
-  buyerCountry   String
-  industry       String
-  estimatedValue Float
-  currency       String         @default("USD")
-  publishDate    DateTime
-  deadline       DateTime
-  description    String         @db.Text
-  rawContent     String         @db.Text
-  status         TenderStatus   @default(OPEN)
-  sourceUrl      String?
-  attachments    String[]       // Array of S3 URLs / document paths
-  aiSummary      AiSummary?
-  savedTenders   SavedTender[]
-  matchScores    MatchScore[]
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id                 String         @id @default(uuid())
+  title              String
+  refNumber          String         @unique
+  buyerName          String
+  buyerCountry       String
+  industry           String
+  estimatedValue     Float
+  currency           String         @default("USD")
+  publishDate        DateTime
+  deadline           DateTime
+  description        String         @db.Text
+  rawContent         String         @db.Text
+  status             TenderStatus   @default(OPEN)
+  sourceUrl          String?
+  attachments        String[]       // Array of S3 URLs / document paths
+  publisherId        String?
+  publisher          Publisher?     @relation(fields: [publisherId], references: [id], onDelete: SetNull)
+  organization       String?
+  sector             String?
+  subcategory        String?
+  procurementMethod  String?
+  openingDate        DateTime?
+  contactInformation Json?
+  language           String         @default("en")
+  aiSummary          AiSummary?
+  savedTenders       SavedTender[]
+  matchScores        MatchScore[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 
   @@map("tenders")
 }
 
 model ProcurementSource {
   id            String    @id @default(uuid())
-  country       String    // e.g. "Cameroon", "Nigeria", "Kenya", "Ghana", "Rwanda", "South Africa", "Uganda", "Pan-African", "Global"
-  sourceName    String    // e.g. "ARMP", "COLEPS", "BPP", "PPIP", "PPA", "RPPA", "eTender", "PPDA", "AfDB", "World Bank"
-  method        String    // "HTML", "API", "RSS", "SCRAPER"
-  frequency     String    // "Hourly", "Daily"
-  status        String    @default("ACTIVE") // "ACTIVE", "PAUSED"
+  country       String    // Legacy support table
+  sourceName    String
+  method        String
+  frequency     String
+  status        String    @default("ACTIVE")
   lastSyncAt    DateTime? @default(now())
   totalIngested Int       @default(0)
   createdAt     DateTime  @default(now())

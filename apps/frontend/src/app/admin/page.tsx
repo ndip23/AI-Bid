@@ -125,7 +125,7 @@ export default function AdminPortalPage() {
                 <span className="text-xs font-bold text-slate-500">Live Database Tenders</span>
                 <FileText className="w-4 h-4 text-blue-600" />
               </div>
-              <p className="text-2xl font-black text-slate-900">{stats?.totalTenders || 14}</p>
+              <p className="text-2xl font-black text-slate-900">{stats?.totalTenders ?? 0}</p>
               <p className="text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" /> 100% Verified Public Notices
               </p>
@@ -136,7 +136,7 @@ export default function AdminPortalPage() {
                 <span className="text-xs font-bold text-slate-500">Active Procurement Connectors</span>
                 <Globe className="w-4 h-4 text-emerald-600" />
               </div>
-              <p className="text-2xl font-black text-slate-900">{sources.length || 10}</p>
+              <p className="text-2xl font-black text-slate-900">{sources.length}</p>
               <p className="text-[11px] font-semibold text-slate-500">Cameroon, Nigeria, Kenya, SA, AfDB</p>
             </div>
 
@@ -145,7 +145,7 @@ export default function AdminPortalPage() {
                 <span className="text-xs font-bold text-slate-500">Registered Companies</span>
                 <Building2 className="w-4 h-4 text-indigo-600" />
               </div>
-              <p className="text-2xl font-black text-slate-900">{stats?.totalCompanies || 1}</p>
+              <p className="text-2xl font-black text-slate-900">{stats?.totalCompanies ?? 0}</p>
               <p className="text-[11px] font-semibold text-indigo-600">Active Tenant Profiles</p>
             </div>
 
@@ -154,7 +154,7 @@ export default function AdminPortalPage() {
                 <span className="text-xs font-bold text-slate-500">Pipeline Value</span>
                 <TrendingUp className="w-4 h-4 text-emerald-600" />
               </div>
-              <p className="text-2xl font-black text-slate-900">{formattedTotalValue !== '$0' ? formattedTotalValue : '$132.8M'}</p>
+              <p className="text-2xl font-black text-slate-900">{formattedTotalValue}</p>
               <p className="text-[11px] font-semibold text-emerald-600">Active Bidding Opportunities</p>
             </div>
           </div>

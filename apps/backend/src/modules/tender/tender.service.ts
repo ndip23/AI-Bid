@@ -30,11 +30,33 @@ export class TenderService {
     }
 
     if (query.country) {
-      where.buyerCountry = { contains: query.country, mode: 'insensitive' };
+      const c = query.country.toLowerCase();
+      if (c.includes('cameroon') || c.includes('cameroun') || c.includes('cmr')) {
+        where.OR = [
+          ...(where.OR || []),
+          { buyerCountry: { contains: 'Cameroon', mode: 'insensitive' } },
+          { buyerCountry: { contains: 'Cameroun', mode: 'insensitive' } },
+          { buyerCountry: { contains: 'CMR', mode: 'insensitive' } },
+          { title: { contains: 'Cameroon', mode: 'insensitive' } },
+          { title: { contains: 'Cameroun', mode: 'insensitive' } },
+          { title: { contains: 'ARMP', mode: 'insensitive' } },
+          { title: { contains: 'COLEPS', mode: 'insensitive' } },
+          { title: { contains: 'MINTP', mode: 'insensitive' } },
+          { title: { contains: 'MINSANTE', mode: 'insensitive' } },
+          { title: { contains: 'MINMAP', mode: 'insensitive' } },
+          { publisher: { country: { contains: 'Cameroon', mode: 'insensitive' } } },
+        ];
+      } else {
+        where.buyerCountry = { contains: query.country, mode: 'insensitive' };
+      }
     }
 
     if (query.status) {
       where.status = query.status;
+    } else {
+      // By default: Return OPEN active tenders (ignoring expired past deadlines)
+      where.status = 'OPEN';
+      where.deadline = { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) };
     }
 
     let orderBy: Prisma.TenderOrderByWithRelationInput = { deadline: 'asc' };

@@ -19,6 +19,7 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
   const { toast } = useToast();
 
   const formatCurrency = (val: number, curr: string) => {
+    if (!val || val <= 0) return 'Non Spécifié / On Request';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: curr || 'USD',
