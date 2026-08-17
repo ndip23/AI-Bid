@@ -9,19 +9,19 @@ const footerLinks = {
     { label: 'Features', href: '/features' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Documentation', href: '/docs' },
-    { label: 'Release Notes', href: '#' },
+    { label: 'Release Notes', href: '/release-notes' },
   ],
   company: [
     { label: 'About Us', href: '/about' },
     { label: 'Contact', href: '/contact' },
-    { label: 'Careers', href: '#' },
-    { label: 'Blog', href: '#' },
+    { label: 'Careers', href: '/careers' },
+    { label: 'Blog', href: '/blog' },
   ],
   legal: [
-    { label: 'Privacy Policy', href: '#' },
-    { label: 'Terms of Service', href: '#' },
-    { label: 'Security', href: '#' },
-    { label: 'GDPR', href: '#' },
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Security', href: '/security' },
+    { label: 'GDPR', href: '/gdpr' },
   ],
 };
 
