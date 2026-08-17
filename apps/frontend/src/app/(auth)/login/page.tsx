@@ -35,8 +35,12 @@ export default function LoginPage() {
       toast.success('Welcome back!', 'Signed in successfully.');
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Invalid email or password. Please try again.');
-      toast.error('Login Failed', err.message || 'Invalid credentials.');
+      let rawMsg = err?.message || '';
+      if (!rawMsg || /prisma|sql|invocation|column|syntax|undefined|null|table|findunique|exception|stack|nest/i.test(rawMsg)) {
+        rawMsg = 'Invalid work email or password. Please check your credentials and try again.';
+      }
+      setError(rawMsg);
+      toast.error('Login Failed', rawMsg);
     } finally {
       setLoading(false);
     }
@@ -56,8 +60,8 @@ export default function LoginPage() {
         {/* ─── LEFT PANEL (hidden on mobile) ─── */}
         <div className="hidden lg:flex lg:w-[45%] hero-mesh flex-col justify-between p-12 border-r border-slate-200">
           <div className="space-y-6">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
-              <Sparkles className="w-4 h-4 text-blue-600" />
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
+              <Sparkles className="w-4 h-4 text-emerald-600" />
               <span>Enterprise Procurement AI</span>
             </div>
 
@@ -85,7 +89,7 @@ export default function LoginPage() {
               ))}
             </div>
             <p className="text-slate-700 font-medium leading-relaxed text-xs italic">
-              &ldquo;AI Bid Copilot cut our RFP evaluation time from three days to under an hour. We went from reviewing 10 tenders a month to 60.&rdquo;
+              &ldquo;Bidora cut our RFP evaluation time from three days to under an hour. We went from reviewing 10 tenders a month to 60.&rdquo;
             </p>
             <div>
               <div className="font-extrabold text-slate-900 text-xs">Sarah Chen</div>
@@ -127,7 +131,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@company.com"
-                    className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
+                    className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
                   />
                 </div>
               </div>
@@ -138,7 +142,7 @@ export default function LoginPage() {
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
                     Password
                   </label>
-                  <Link href="/reset-password" className="text-xs text-blue-600 font-bold hover:underline">
+                  <Link href="/reset-password" className="text-xs text-emerald-600 font-bold hover:underline">
                     Forgot password?
                   </Link>
                 </div>
@@ -150,7 +154,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••"
-                    className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-11 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
+                    className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-11 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
                   />
                   <button
                     type="button"
@@ -193,7 +197,7 @@ export default function LoginPage() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => fillDemo('user')}
-                className="py-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-xs font-extrabold hover:bg-blue-100 transition-colors"
+                className="py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-extrabold hover:bg-emerald-100 transition-colors"
               >
                 Company User Demo
               </button>
@@ -208,7 +212,7 @@ export default function LoginPage() {
             {/* Register link */}
             <p className="text-center text-sm text-slate-500 font-medium">
               Don&apos;t have an account?{' '}
-              <Link href="/register" className="text-blue-600 font-extrabold hover:underline">
+              <Link href="/register" className="text-emerald-600 font-extrabold hover:underline">
                 Create one free →
               </Link>
             </p>

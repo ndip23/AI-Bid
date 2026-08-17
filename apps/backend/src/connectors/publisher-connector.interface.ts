@@ -22,6 +22,23 @@ export interface StandardTenderModel {
   attachments: string[];
   language: string;
   rawContent?: string;
+
+  // Expanded Business Opportunity & Procurement Fields
+  opportunityType?: string;
+  sourceCategory?: string;
+  buyerType?: string;
+  buyerIntent?: string;
+  fundingOrganization?: string;
+  projectName?: string;
+  projectId?: string;
+  implementingAgency?: string;
+  region?: string;
+  city?: string;
+  eligibility?: any;
+  sourceQualityScore?: number;
+  originalSource?: string;
+  originalUrl?: string;
+  originalExternalId?: string;
 }
 
 export interface DownloadedDocument {

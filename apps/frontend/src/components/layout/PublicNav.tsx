@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sparkles, Menu, X, ArrowRight } from 'lucide-react';
+import { BidoraLogo } from '../ui/BidoraLogo';
 
 const navLinks = [
   { href: '/features', label: 'Features' },
@@ -33,14 +34,8 @@ export const PublicNav: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-6 md:px-10 h-18 flex items-center justify-between py-4">
         {/* Brand */}
-        <Link href="/" className="flex items-center space-x-2.5 group">
-          <div className="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-md shadow-blue-600/20 group-hover:scale-105 transition-transform">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <div className="flex items-baseline">
-            <span className="font-extrabold text-xl text-slate-900 tracking-tight">AI Bid</span>
-            <span className="font-bold text-xl text-blue-600 ml-1">Copilot</span>
-          </div>
+        <Link href="/" className="hover:opacity-90 transition-opacity">
+          <BidoraLogo size="md" />
         </Link>
 
         {/* Desktop Nav */}
@@ -53,7 +48,7 @@ export const PublicNav: React.FC = () => {
                 href={link.href}
                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                   isActive
-                    ? 'text-blue-600 bg-blue-50'
+                    ? 'text-emerald-700 bg-emerald-50'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
@@ -67,7 +62,7 @@ export const PublicNav: React.FC = () => {
         <div className="hidden md:flex items-center space-x-3">
           <Link
             href="/login"
-            className="px-4 py-2 rounded-lg text-sm font-bold text-slate-700 hover:text-blue-600 transition-colors"
+            className="px-4 py-2 rounded-lg text-sm font-bold text-slate-700 hover:text-emerald-700 transition-colors"
           >
             Sign In
           </Link>
@@ -98,7 +93,7 @@ export const PublicNav: React.FC = () => {
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="block px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-all"
+              className="block px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600 transition-all"
             >
               {link.label}
             </Link>

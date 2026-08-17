@@ -9,21 +9,32 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#0B132B',
+        background: '#061933',
         foreground: '#F8FAFC',
         card: {
-          DEFAULT: 'rgba(15, 23, 42, 0.75)',
+          DEFAULT: 'rgba(11, 37, 69, 0.75)',
           border: 'rgba(255, 255, 255, 0.1)',
         },
         brand: {
-          50: '#EEF2FF',
-          100: '#E0E7FF',
-          500: '#6366F1',
-          600: '#4F46E5',
-          700: '#4338CA',
+          50: '#E8F5E9',
+          100: '#C8E6C9',
+          500: '#388E3C',
+          600: '#2E7D32',
+          700: '#1B5E20',
+          800: '#0F2C59',
+          900: '#061933',
         },
-        cyanAccent: '#06B6D4',
-        emeraldAccent: '#10B981',
+        navy: {
+          50: '#F0F4F8',
+          100: '#D9E2EC',
+          500: '#1B365D',
+          600: '#0F2540',
+          700: '#0B2545',
+          800: '#061933',
+          900: '#030D1B',
+        },
+        cyanAccent: '#0284C7',
+        emeraldAccent: '#2E7D32',
         roseAccent: '#F43F5E',
       },
       fontFamily: {

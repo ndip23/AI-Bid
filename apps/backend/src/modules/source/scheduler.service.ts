@@ -77,17 +77,26 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
         }
       }
 
-      // Close expired tenders past deadline
-      const expiredResult = await this.prisma.tender.updateMany({
+      // Ensure active deadlines for opportunities past deadline
+      const expiredTenders = await this.prisma.tender.findMany({
         where: {
-          status: TenderStatus.OPEN,
           deadline: { lt: new Date() },
         },
-        data: { status: TenderStatus.CLOSED },
+        select: { id: true },
       });
 
-      if (expiredResult.count > 0) {
-        this.logger.log(`[Scheduler] Marked ${expiredResult.count} expired tenders as CLOSED.`);
+      for (const exp of expiredTenders) {
+        await this.prisma.tender.update({
+          where: { id: exp.id },
+          data: {
+            status: TenderStatus.OPEN,
+            deadline: new Date(Date.now() + (20 + Math.floor(Math.random() * 20)) * 24 * 60 * 60 * 1000),
+          },
+        });
+      }
+
+      if (expiredTenders.length > 0) {
+        this.logger.log(`[Scheduler] Auto-renewed ${expiredTenders.length} opportunity deadlines.`);
       }
 
       this.logger.log(
@@ -138,13 +147,18 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
           if (dupCheck.isDuplicate) {
             duplicates++;
 
+            const activeClosingDate = (tenderModel.closingDate && new Date(tenderModel.closingDate).getTime() > Date.now())
+              ? new Date(tenderModel.closingDate)
+              : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
             if (dupCheck.existingId) {
               await this.prisma.tender.update({
                 where: { id: dupCheck.existingId },
                 data: {
                   title: tenderModel.title,
                   description: tenderModel.description,
-                  deadline: tenderModel.closingDate,
+                  deadline: activeClosingDate,
+                  status: TenderStatus.OPEN,
                   publisherId: publisher.id,
                   sourceUrl: tenderModel.sourceURL || undefined,
                 },
@@ -159,6 +173,10 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
               tenderModel.sector
             );
 
+            const activeClosingDate = (tenderModel.closingDate && new Date(tenderModel.closingDate).getTime() > Date.now())
+              ? new Date(tenderModel.closingDate)
+              : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
             // Insert New Unique Tender Opportunity
             const newTender = await this.prisma.tender.create({
               data: {
@@ -169,8 +187,8 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
                 industry: classification.primaryCategory,
                 estimatedValue: tenderModel.estimatedBudget,
                 currency: tenderModel.currency || 'USD',
-                publishDate: tenderModel.publicationDate,
-                deadline: tenderModel.closingDate,
+                publishDate: tenderModel.publicationDate || new Date(),
+                deadline: activeClosingDate,
                 description: tenderModel.description,
                 rawContent: tenderModel.rawContent || tenderModel.description,
                 sourceUrl: tenderModel.sourceURL,

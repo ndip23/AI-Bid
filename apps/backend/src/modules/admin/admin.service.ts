@@ -51,8 +51,7 @@ export class AdminService {
       select: {
         id: true,
         email: true,
-        firstName: true,
-        lastName: true,
+        username: true,
         role: true,
         createdAt: true,
         company: {

@@ -14,12 +14,12 @@ export default function DocsPage() {
       <main className="flex-1 max-w-7xl mx-auto px-6 md:px-12 pt-28 pb-16 space-y-12 w-full">
         {/* Title */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold shadow-sm">
-            <Sparkles className="w-4 h-4 text-blue-600" />
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold shadow-sm">
+            <Sparkles className="w-4 h-4 text-emerald-600" />
             <span>Developer Hub & Documentation</span>
           </div>
 
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight">AI Bid Copilot API Reference</h1>
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">Bidora API Reference</h1>
           <p className="text-sm text-slate-600 font-medium">
             Learn how to integrate our AI match engine and tender ingestion API into your enterprise apps.
           </p>
@@ -30,7 +30,7 @@ export default function DocsPage() {
           {/* Section 1 */}
           <div className="glass-panel rounded-3xl p-6 bg-white border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-700 font-bold">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 font-bold">
                 <Code className="w-5 h-5" />
               </div>
               <div>
@@ -45,7 +45,7 @@ export default function DocsPage() {
               href="http://localhost:4000/api/docs"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center text-xs font-extrabold text-blue-600 hover:text-blue-700 gap-1"
+              className="inline-flex items-center text-xs font-extrabold text-emerald-600 hover:text-emerald-700 gap-1"
             >
               Open Swagger API Console <ExternalLink className="w-3.5 h-3.5" />
             </a>
@@ -74,7 +74,7 @@ export default function DocsPage() {
         {/* User Guide Card */}
         <div className="glass-panel rounded-3xl p-8 bg-white border border-slate-200 shadow-sm space-y-6">
           <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-blue-600" />
+            <FileText className="w-5 h-5 text-emerald-600" />
             Platform Architecture & AI Workflow Guide
           </h2>
 

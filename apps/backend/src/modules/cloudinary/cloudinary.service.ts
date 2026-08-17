@@ -34,7 +34,7 @@ export class CloudinaryService {
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          folder: `ai-bid/${folder}`,
+          folder: `bidora/${folder}`,
           resource_type: 'auto',
           public_id: `${Date.now()}-${fileName.replace(/\.[^/.]+$/, '')}`,
         },

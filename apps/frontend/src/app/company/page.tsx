@@ -144,7 +144,7 @@ export default function CompanyCapabilityPage() {
         <main className="flex-1 p-4 md:p-8 space-y-6 overflow-y-auto min-w-0">
           <div>
             <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-              <Building2 className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+              <Building2 className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
               Company Profile & African Market Capability Matrix
             </h1>
             <p className="text-xs text-slate-500 font-medium">
@@ -163,7 +163,7 @@ export default function CompanyCapabilityPage() {
             {/* Basic Info */}
             <div className="glass-panel rounded-2xl p-4 md:p-6 space-y-4 bg-white border border-slate-200 shadow-sm">
               <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-blue-600" />
+                <Sparkles className="w-4 h-4 text-emerald-600" />
                 General Organization Profile
               </h3>
 
@@ -175,7 +175,7 @@ export default function CompanyCapabilityPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter company name..."
-                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
                   />
                 </div>
 
@@ -184,7 +184,7 @@ export default function CompanyCapabilityPage() {
                   <select
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
                   >
                     {africanSectors.map((sec) => (
                       <option key={sec} value={sec}>{sec}</option>
@@ -198,7 +198,7 @@ export default function CompanyCapabilityPage() {
                     type="number"
                     value={teamSize}
                     onChange={(e) => setTeamSize(Number(e.target.value))}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
                   />
                 </div>
 
@@ -208,7 +208,7 @@ export default function CompanyCapabilityPage() {
                     type="text"
                     value={annualRevenue}
                     onChange={(e) => setAnnualRevenue(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
                     placeholder="e.g. $2M - $10M USD"
                   />
                 </div>
@@ -221,7 +221,7 @@ export default function CompanyCapabilityPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Describe your primary technical capabilities and African market experience..."
-                  className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-900 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                  className="w-full bg-white border border-slate-200 rounded-xl p-3 text-slate-900 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
                 />
               </div>
             </div>
@@ -244,7 +244,7 @@ export default function CompanyCapabilityPage() {
                   value={newCountry}
                   onChange={(e) => setNewCountry(e.target.value)}
                   placeholder="Add African or global country (e.g. Nigeria, Kenya, Rwanda)..."
-                  className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                  className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
                 />
                 <button
                   type="button"
@@ -308,7 +308,7 @@ export default function CompanyCapabilityPage() {
                   value={newCert}
                   onChange={(e) => setNewCert(e.target.value)}
                   placeholder="Add certification (e.g. ISO 27001, NITDA, Public Procurement Authority)..."
-                  className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                  className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
                 />
                 <button
                   type="button"
@@ -341,7 +341,7 @@ export default function CompanyCapabilityPage() {
             {/* Core Services Manager */}
             <div className="glass-panel rounded-2xl p-4 md:p-6 space-y-4 bg-white border border-slate-200 shadow-sm">
               <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                <Layers className="w-4 h-4 text-blue-600" />
+                <Layers className="w-4 h-4 text-emerald-600" />
                 Core Technical Services & Capabilities
               </h3>
 
@@ -351,7 +351,7 @@ export default function CompanyCapabilityPage() {
                   value={newService}
                   onChange={(e) => setNewService(e.target.value)}
                   placeholder="Add service (e.g. Enterprise Cloud, Digital Payments, Healthtech)..."
-                  className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                  className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
                 />
                 <button
                   type="button"
@@ -369,7 +369,7 @@ export default function CompanyCapabilityPage() {
                   services.map((s, idx) => (
                     <span
                       key={idx}
-                      className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold shadow-sm"
+                      className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold shadow-sm"
                     >
                       <span>{s}</span>
                       <button type="button" onClick={() => removeTag('service', idx)}>
@@ -385,7 +385,7 @@ export default function CompanyCapabilityPage() {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-3 rounded-2xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-blue-600/20 hover:opacity-95 transition-all flex items-center space-x-2"
+              className="px-6 py-3 rounded-2xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 hover:opacity-95 transition-all flex items-center space-x-2"
             >
               <Save className="w-4 h-4" />
               <span>{saving ? 'Saving Changes...' : 'Save Capability Profile'}</span>

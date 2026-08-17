@@ -32,8 +32,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
         error = (resObj.error as string) || error;
       }
     } else if (exception instanceof Error) {
-      message = exception.message;
       this.logger.error(`Unhandled exception: ${exception.message}`, exception.stack);
+      message = 'An unexpected server error occurred. Please try again.';
     }
 
     response.status(status).json({

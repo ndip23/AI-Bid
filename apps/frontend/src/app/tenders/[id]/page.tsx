@@ -127,7 +127,7 @@ export default function TenderDetailPage() {
           <Sidebar />
           <main className="flex-1 p-8 flex items-center justify-center">
             <div className="text-center space-y-3">
-              <Sparkles className="w-8 h-8 text-blue-600 mx-auto animate-spin" />
+              <Sparkles className="w-8 h-8 text-emerald-600 mx-auto animate-spin" />
               <p className="text-slate-500 text-xs font-bold">Loading tender details...</p>
             </div>
           </main>
@@ -158,11 +158,11 @@ export default function TenderDetailPage() {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="space-y-3 max-w-3xl">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-extrabold uppercase px-3 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
+                  <span className="text-xs font-extrabold uppercase px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
                     {tender.industry}
                   </span>
                   <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-50 border border-slate-200">
-                    <Globe className="w-3.5 h-3.5 text-blue-600" />
+                    <Globe className="w-3.5 h-3.5 text-emerald-600" />
                     {tender.buyerCountry}
                   </span>
                   <span className="text-xs font-mono text-slate-500 px-3 py-1 rounded-lg bg-slate-50 border border-slate-200 font-bold">
@@ -173,22 +173,22 @@ export default function TenderDetailPage() {
                 <h1 className="text-xl md:text-3xl font-extrabold text-slate-900 leading-snug">
                   {tender.title}
                 </h1>
-                <p className="text-xs font-bold text-blue-600">Buyer: {tender.buyerName}</p>
+                <p className="text-xs font-bold text-emerald-600">Buyer: {tender.buyerName}</p>
               </div>
 
               {/* Action Bar & Score Pill */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 shrink-0">
                 {tender.matchScore !== undefined && (
-                  <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-center shadow-sm">
+                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center shadow-sm">
                     <div className="text-2xl font-black text-slate-900">{tender.matchScore}%</div>
-                    <div className="text-[10px] uppercase font-extrabold text-blue-600">Match Score</div>
+                    <div className="text-[10px] uppercase font-extrabold text-emerald-600">Match Score</div>
                   </div>
                 )}
 
                 <div className="relative">
                   <button
                     onClick={() => setShowStatusMenu(!showStatusMenu)}
-                    className="px-5 py-3 rounded-2xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-blue-600/20 flex items-center space-x-2 hover:opacity-95 transition-opacity"
+                    className="px-5 py-3 rounded-2xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 flex items-center space-x-2 hover:opacity-95 transition-opacity"
                   >
                     <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-white' : ''}`} />
                     <span>{isSaved ? savedStatus.replace('_', ' ') : 'Save Tender'}</span>
@@ -200,10 +200,10 @@ export default function TenderDetailPage() {
                         <button
                           key={st}
                           onClick={() => handleSave(st)}
-                          className="w-full text-left px-3 py-2 rounded-xl text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center justify-between font-bold"
+                          className="w-full text-left px-3 py-2 rounded-xl text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center justify-between font-bold"
                         >
                           <span>{st.replace('_', ' ')}</span>
-                          {savedStatus === st && <Check className="w-4 h-4 text-blue-600" />}
+                          {savedStatus === st && <Check className="w-4 h-4 text-emerald-600" />}
                         </button>
                       ))}
                     </div>
@@ -239,7 +239,7 @@ export default function TenderDetailPage() {
                     href={tender.sourceUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
+                    className="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1"
                   >
                     <span>View Official Specs</span> <ExternalLink className="w-3 h-3" />
                   </a>
@@ -256,7 +256,7 @@ export default function TenderDetailPage() {
               onClick={() => setActiveTab('summary')}
               className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
                 activeTab === 'summary'
-                  ? 'border-blue-600 text-blue-600'
+                  ? 'border-emerald-600 text-emerald-600'
                   : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -267,7 +267,7 @@ export default function TenderDetailPage() {
               onClick={() => setActiveTab('match')}
               className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
                 activeTab === 'match'
-                  ? 'border-blue-600 text-blue-600'
+                  ? 'border-emerald-600 text-emerald-600'
                   : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -278,7 +278,7 @@ export default function TenderDetailPage() {
               onClick={() => setActiveTab('checklist')}
               className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
                 activeTab === 'checklist'
-                  ? 'border-blue-600 text-blue-600'
+                  ? 'border-emerald-600 text-emerald-600'
                   : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -289,7 +289,7 @@ export default function TenderDetailPage() {
               onClick={() => setActiveTab('workspace')}
               className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
                 activeTab === 'workspace'
-                  ? 'border-blue-600 text-blue-600 font-extrabold'
+                  ? 'border-emerald-600 text-emerald-600 font-extrabold'
                   : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -303,7 +303,7 @@ export default function TenderDetailPage() {
               onClick={() => setActiveTab('raw')}
               className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
                 activeTab === 'raw'
-                  ? 'border-blue-600 text-blue-600'
+                  ? 'border-emerald-600 text-emerald-600'
                   : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -352,12 +352,12 @@ export default function TenderDetailPage() {
                     value={newTaskTitle}
                     onChange={(e) => setNewTaskTitle(e.target.value)}
                     placeholder="Assign new proposal task (e.g. Prepare Tax Clearance Certificate)..."
-                    className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                    className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
                   />
                   <select
                     value={newTaskAssignee}
                     onChange={(e) => setNewTaskAssignee(e.target.value)}
-                    className="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-700 font-bold focus:outline-none focus:border-blue-600 shadow-sm"
+                    className="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-700 font-bold focus:outline-none focus:border-emerald-600 shadow-sm"
                   >
                     <option value="Lead Engineer">Lead Engineer</option>
                     <option value="Lawyer / Legal">Lawyer / Legal</option>
@@ -391,11 +391,11 @@ export default function TenderDetailPage() {
                             <p className="text-xs font-bold text-slate-900 leading-snug">{t.title}</p>
                             <div className="flex items-center justify-between text-[11px]">
                               <span className="text-slate-500 font-medium flex items-center gap-1">
-                                <UserCheck className="w-3.5 h-3.5 text-blue-600" /> {t.assignee}
+                                <UserCheck className="w-3.5 h-3.5 text-emerald-600" /> {t.assignee}
                               </span>
                               <button
                                 onClick={() => toggleTaskStatus(t.id)}
-                                className="text-xs font-bold text-blue-600 hover:underline"
+                                className="text-xs font-bold text-emerald-600 hover:underline"
                               >
                                 Start →
                               </button>
@@ -406,10 +406,10 @@ export default function TenderDetailPage() {
                   </div>
 
                   {/* IN PROGRESS */}
-                  <div className="glass-panel rounded-2xl p-4 bg-blue-50/40 border border-blue-200/80 space-y-3">
-                    <div className="flex items-center justify-between font-extrabold text-xs text-blue-800 border-b border-blue-200 pb-2">
-                      <span className="flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-blue-600 animate-pulse" /> In Progress</span>
-                      <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px]">
+                  <div className="glass-panel rounded-2xl p-4 bg-emerald-50/40 border border-emerald-200/80 space-y-3">
+                    <div className="flex items-center justify-between font-extrabold text-xs text-emerald-800 border-b border-emerald-200 pb-2">
+                      <span className="flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" /> In Progress</span>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px]">
                         {tasks.filter((t) => t.status === 'IN_PROGRESS').length}
                       </span>
                     </div>
@@ -418,11 +418,11 @@ export default function TenderDetailPage() {
                       {tasks
                         .filter((t) => t.status === 'IN_PROGRESS')
                         .map((t) => (
-                          <div key={t.id} className="p-3.5 rounded-xl bg-white border border-blue-200 shadow-xs space-y-2">
+                          <div key={t.id} className="p-3.5 rounded-xl bg-white border border-emerald-200 shadow-xs space-y-2">
                             <p className="text-xs font-bold text-slate-900 leading-snug">{t.title}</p>
                             <div className="flex items-center justify-between text-[11px]">
                               <span className="text-slate-500 font-medium flex items-center gap-1">
-                                <UserCheck className="w-3.5 h-3.5 text-blue-600" /> {t.assignee}
+                                <UserCheck className="w-3.5 h-3.5 text-emerald-600" /> {t.assignee}
                               </span>
                               <button
                                 onClick={() => toggleTaskStatus(t.id)}

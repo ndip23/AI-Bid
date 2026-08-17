@@ -15,7 +15,7 @@ export const TeamTable: React.FC<TeamTableProps> = ({ users = [] }) => {
       <CardHeader
         title="Team Members & Portal Access"
         description="Users associated with this company profile who can manage saved bids"
-        icon={<Users className="w-5 h-5 text-blue-600" />}
+        icon={<Users className="w-5 h-5 text-emerald-600" />}
       />
 
       <div className="overflow-x-auto">
@@ -33,7 +33,7 @@ export const TeamTable: React.FC<TeamTableProps> = ({ users = [] }) => {
               users.map((u) => (
                 <tr key={u.id} className="hover:bg-slate-50 transition-colors font-medium">
                   <td className="py-3 px-4 font-bold text-slate-900 flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-700 font-extrabold text-xs">
+                    <div className="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 font-extrabold text-xs">
                       {u.firstName[0]}
                       {u.lastName[0]}
                     </div>

@@ -35,7 +35,7 @@ export class AfdbConnector implements IPublisherConnector {
 
       const response = await axios.get(feedUrl, {
         timeout: 15000,
-        headers: { 'User-Agent': 'AI-Bid-Copilot/1.0 (AfDB Procurement Connector)' },
+        headers: { 'User-Agent': 'Bidora/1.0 (AfDB Procurement Connector)' },
       });
 
       const parser = new xml2js.Parser({ explicitArray: false });

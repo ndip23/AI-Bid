@@ -4,10 +4,15 @@ import './globals.css';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'AI Bid Copilot – Win More Government & Enterprise Contracts',
+  title: 'Bidora – Win More Government & Enterprise Contracts',
   description:
     'AI-powered procurement intelligence platform. Discover, score and track RFPs automatically. Used by 500+ enterprise bid management teams.',
   keywords: 'procurement software, RFP automation, bid management, government contracts, AI tender matching',
+  icons: {
+    icon: '/logo-icon.jpg',
+    shortcut: '/logo-icon.jpg',
+    apple: '/logo-icon.jpg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

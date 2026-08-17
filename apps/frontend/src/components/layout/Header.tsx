@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '../../lib/auth-context';
 import { Bell, Sparkles, CheckCircle2, AlertCircle, Menu, User } from 'lucide-react';
 import { ApiClient } from '../../lib/api-client';
+import { BidoraLogo } from '../ui/BidoraLogo';
 import { Sidebar } from './Sidebar';
 
 export const Header: React.FC = () => {
@@ -34,14 +35,8 @@ export const Header: React.FC = () => {
             <Menu className="w-5 h-5" />
           </button>
 
-          <Link href="/dashboard" className="flex items-center space-x-2.5 group">
-            <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl gradient-bg flex items-center justify-center shadow-md shadow-blue-600/20 group-hover:scale-105 transition-transform">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <span className="font-extrabold text-base md:text-lg text-slate-900 tracking-tight">AI BID</span>
-              <span className="font-bold text-base md:text-lg text-blue-600 ml-1">COPILOT</span>
-            </div>
+          <Link href="/dashboard" className="hover:opacity-90 transition-opacity">
+            <BidoraLogo size="sm" />
           </Link>
         </div>
 
@@ -56,14 +51,14 @@ export const Header: React.FC = () => {
               aria-label="Notifications"
             >
               <Bell className="w-4.5 h-4.5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             </button>
 
             {showNotifications && (
               <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 z-50 animate-in fade-in slide-in-from-top-2">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
                   <span className="font-bold text-sm text-slate-900">Notifications</span>
-                  <span onClick={() => setNotifications([])} className="text-xs text-blue-600 font-semibold cursor-pointer hover:underline">Clear All</span>
+                  <span onClick={() => setNotifications([])} className="text-xs text-emerald-600 font-semibold cursor-pointer hover:underline">Clear All</span>
                 </div>
                 <div className="space-y-2.5 max-h-64 overflow-y-auto">
                   {notifications.length === 0 ? (

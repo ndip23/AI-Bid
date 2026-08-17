@@ -19,8 +19,7 @@ export class CompanyService {
           select: {
             id: true,
             email: true,
-            firstName: true,
-            lastName: true,
+            username: true,
             role: true,
             createdAt: true,
           },
@@ -69,8 +68,7 @@ export class CompanyService {
     const newUser = await this.prisma.user.create({
       data: {
         email: dto.email.toLowerCase(),
-        firstName: dto.firstName,
-        lastName: dto.lastName,
+        username: dto.username || dto.email.split('@')[0],
         passwordHash,
         role: 'COMPANY_USER',
         companyId,
@@ -78,8 +76,7 @@ export class CompanyService {
       select: {
         id: true,
         email: true,
-        firstName: true,
-        lastName: true,
+        username: true,
         role: true,
         createdAt: true,
       },

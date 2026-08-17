@@ -123,24 +123,57 @@ export class SourceService {
   }
 
   /**
-   * Computes real-time Daily Ingestion KPI Metrics (Target: >= 50 unique tenders / day).
+   * Computes real-time Daily Ingestion KPI Metrics targeting NEW ACTIVE UNIQUE CAMEROON OPPORTUNITIES (Target: >= 50 / day).
    */
   async getDailyIngestionSummary() {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
-    const [todayTendersCount, syncLogsToday, activePublishersCount] = await Promise.all([
+    const [todayCameroonOpportunitiesCount, syncLogsToday, activePublishersCount] = await Promise.all([
       this.prisma.tender.count({
-        where: { createdAt: { gte: startOfDay } },
+        where: {
+          buyerCountry: { contains: 'Cameroon', mode: 'insensitive' },
+          status: 'OPEN',
+          createdAt: { gte: startOfDay },
+        },
       }),
       this.prisma.syncLog.findMany({
         where: { startTime: { gte: startOfDay } },
-        include: { publisher: { select: { name: true, country: true } } },
+        include: { publisher: { select: { name: true, country: true, sourceCategory: true } } },
       }),
       this.prisma.publisher.count({
         where: { status: PublisherStatus.ACTIVE },
       }),
     ]);
+
+    // Fetch breakdown by SourceCategory for today's active Cameroon opportunities
+    const categoryCountsRaw = await this.prisma.tender.groupBy({
+      by: ['sourceCategory'],
+      where: {
+        buyerCountry: { contains: 'Cameroon', mode: 'insensitive' },
+        status: 'OPEN',
+        createdAt: { gte: startOfDay },
+      },
+      _count: { id: true },
+    });
+
+    const categoryBreakdown: Record<string, number> = {
+      GOVERNMENT: 0,
+      STATE_OWNED_ENTERPRISE: 0,
+      SUBCONTRACTING: 0,
+      PRIVATE_PROCUREMENT: 0,
+      DONOR_PROCUREMENT: 0,
+      NGO_PROCUREMENT: 0,
+      UNIVERSITY: 0,
+      HEALTHCARE: 0,
+      MUNICIPAL: 0,
+      OTHER: 0,
+    };
+
+    for (const item of categoryCountsRaw) {
+      const catKey = item.sourceCategory ? String(item.sourceCategory) : 'GOVERNMENT';
+      categoryBreakdown[catKey] = item._count.id;
+    }
 
     let totalRetrieved = 0;
     let totalNewRecords = 0;
@@ -166,16 +199,17 @@ export class SourceService {
     }
 
     const kpiTarget = 50;
-    const isHealthy = todayTendersCount >= kpiTarget;
+    const isHealthy = todayCameroonOpportunitiesCount >= kpiTarget;
 
     return {
       date: new Date().toISOString().split('T')[0],
       kpiMetrics: {
-        newUniqueTendersToday: todayTendersCount,
+        newActiveUniqueCameroonOpportunitiesToday: todayCameroonOpportunitiesCount,
         kpiTarget,
         status: isHealthy ? 'HEALTHY' : 'BUILDING_CAPACITY',
-        achievementPercentage: Math.min(100, Math.round((todayTendersCount / kpiTarget) * 100)),
+        achievementPercentage: Math.min(100, Math.round((todayCameroonOpportunitiesCount / kpiTarget) * 100)),
       },
+      categoryBreakdown,
       ingestionTotals: {
         totalScraped: totalRetrieved,
         totalInserted: totalNewRecords,
@@ -188,13 +222,28 @@ export class SourceService {
   }
 
   /**
-   * Seeds official procurement publishers across Cameroon ministries, African hubs & international bodies.
+   * Seeds official procurement publishers across Cameroon ministries, state enterprises, ports & international bodies.
    */
   async seedAfricanPublishers() {
-    this.logger.log(`[Publisher Registry] Seeding official Cameroon ministries & African procurement publishers...`);
+    this.logger.log(`[Publisher Registry] Seeding official Cameroon primary sources & procurement publishers...`);
 
-    const defaultPublishers = [
-      // Primary Cameroon Authorities & Portals
+    const defaultPublishers: Array<{
+      country: string;
+      name: string;
+      organizationType: OrganizationType;
+      officialWebsite?: string;
+      procurementPage?: string;
+      tendersPage?: string;
+      rssFeed?: string;
+      apiEndpoint?: string;
+      connectorType: ConnectorType;
+      sourceCategory?: any;
+      defaultBuyerType?: any;
+      status?: PublisherStatus;
+      requiresAuth?: boolean;
+      parserConfiguration?: any;
+    }> = [
+      // Primary Cameroon Government Authorities
       {
         country: 'Cameroon',
         name: 'ARMP - Agence de Régulation des Marchés Publics Cameroon',
@@ -203,6 +252,8 @@ export class SourceService {
         procurementPage: 'https://www.armp.cm/appels-doffres',
         tendersPage: 'https://www.armp.cm/marches-publics',
         connectorType: ConnectorType.HTML,
+        sourceCategory: 'GOVERNMENT',
+        defaultBuyerType: 'GOVERNMENT',
       },
       {
         country: 'Cameroon',
@@ -211,101 +262,43 @@ export class SourceService {
         officialWebsite: 'https://www.marchespublics.cm',
         tendersPage: 'https://www.marchespublics.cm/tenders',
         connectorType: ConnectorType.HTML,
+        sourceCategory: 'GOVERNMENT',
+        defaultBuyerType: 'GOVERNMENT',
       },
 
-      // Official Cameroon Ministries
+      // Subcontracting Matchmaking Platform (BSTP-CMR)
       {
         country: 'Cameroon',
-        name: 'MINTP - Ministère des Travaux Publics',
-        organizationType: OrganizationType.MINISTRY,
-        officialWebsite: 'https://www.mintp.cm',
-        procurementPage: 'https://www.mintp.cm/appels-doffres',
+        name: 'BSTP-CMR - Bourse de Sous-Traitance et de Partenariat',
+        organizationType: OrganizationType.PRIVATE_PROCUREMENT,
+        officialWebsite: 'https://www.bstp-cameroun.cm',
+        procurementPage: 'https://www.bstp-cameroun.cm/en/find/business-opportunities/',
         connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/appels-doffres', '/marches-publics'] },
-      },
-      {
-        country: 'Cameroon',
-        name: 'MINSANTE - Ministère de la Santé Publique',
-        organizationType: OrganizationType.MINISTRY,
-        officialWebsite: 'https://www.minsante.cm',
-        procurementPage: 'https://www.minsante.cm/site_minsante/appels-doffres',
-        connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/appels-doffres', '/tenders'] },
-      },
-      {
-        country: 'Cameroon',
-        name: 'MINEE - Ministère de l’Eau et de l’Énergie',
-        organizationType: OrganizationType.MINISTRY,
-        officialWebsite: 'https://www.minee.cm',
-        procurementPage: 'https://www.minee.cm/marches-publics',
-        connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/marches-publics', '/appels-doffres'] },
-      },
-      {
-        country: 'Cameroon',
-        name: 'MINEDUB - Ministère de l’Éducation de Base',
-        organizationType: OrganizationType.MINISTRY,
-        officialWebsite: 'https://www.minedub.cm',
-        procurementPage: 'https://www.minedub.cm/appels-doffres',
-        connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/appels-doffres'] },
-      },
-      {
-        country: 'Cameroon',
-        name: 'MINESEC - Ministère de l’Enseignement Secondaire',
-        organizationType: OrganizationType.MINISTRY,
-        officialWebsite: 'https://www.minesec.gov.cm',
-        procurementPage: 'https://www.minesec.gov.cm/marches-publics',
-        connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/marches-publics', '/appels-doffres'] },
-      },
-      {
-        country: 'Cameroon',
-        name: 'MINADER - Ministère de l’Agriculture et du Développement Rural',
-        organizationType: OrganizationType.MINISTRY,
-        officialWebsite: 'https://www.minader.cm',
-        procurementPage: 'https://www.minader.cm/appels-doffres',
-        connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/appels-doffres'] },
-      },
-      {
-        country: 'Cameroon',
-        name: 'MINPOSTEL - Ministère des Postes et Télécommunications',
-        organizationType: OrganizationType.MINISTRY,
-        officialWebsite: 'https://www.minpostel.gov.cm',
-        procurementPage: 'https://www.minpostel.gov.cm/marches-publics',
-        connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/marches-publics', '/appels-doffres'] },
-      },
-      {
-        country: 'Cameroon',
-        name: 'MINHDU - Ministère de l’Habitat et du Développement Urbain',
-        organizationType: OrganizationType.MINISTRY,
-        officialWebsite: 'https://www.minhdu.gov.cm',
-        procurementPage: 'https://www.minhdu.gov.cm/appels-doffres',
-        connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/appels-doffres'] },
-      },
-      {
-        country: 'Cameroon',
-        name: 'MINEPAT - Ministère de l’Économie et de la Planification',
-        organizationType: OrganizationType.MINISTRY,
-        officialWebsite: 'https://www.minepat.gov.cm',
-        procurementPage: 'https://www.minepat.gov.cm/appels-doffres',
-        connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/appels-doffres'] },
-      },
-      {
-        country: 'Cameroon',
-        name: 'MINEPDED - Ministère de l’Environnement et du Développement Durable',
-        organizationType: OrganizationType.MINISTRY,
-        officialWebsite: 'https://www.minepded.gov.cm',
-        procurementPage: 'https://www.minepded.gov.cm/appels-doffres',
-        connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/appels-doffres'] },
+        sourceCategory: 'SUBCONTRACTING',
+        defaultBuyerType: 'PRIVATE_COMPANY',
       },
 
-      // Key Cameroon State Enterprises & Infrastructure Agencies
+      // State-Owned Enterprises (SOEs) & Public Ports
+      {
+        country: 'Cameroon',
+        name: 'PAK - Port Autonome de Kribi',
+        organizationType: OrganizationType.STATE_OWNED_ENTERPRISE,
+        officialWebsite: 'https://www.pak.cm',
+        procurementPage: 'https://www.pak.cm/fr/affaires/appels-doffres/',
+        connectorType: ConnectorType.HTML,
+        sourceCategory: 'STATE_OWNED_ENTERPRISE',
+        defaultBuyerType: 'STATE_OWNED_ENTERPRISE',
+      },
+      {
+        country: 'Cameroon',
+        name: 'PAD - Port Autonome de Douala',
+        organizationType: OrganizationType.STATE_OWNED_ENTERPRISE,
+        officialWebsite: 'https://www.pad.cm',
+        procurementPage: 'https://www.pad.cm/appels-doffre/',
+        connectorType: ConnectorType.HTML,
+        sourceCategory: 'STATE_OWNED_ENTERPRISE',
+        defaultBuyerType: 'STATE_OWNED_ENTERPRISE',
+      },
       {
         country: 'Cameroon',
         name: 'SONATREL - Société Nationale de Transport d’Électricité',
@@ -313,7 +306,8 @@ export class SourceService {
         officialWebsite: 'https://www.sonatrel.cm',
         procurementPage: 'https://www.sonatrel.cm/appels-doffres',
         connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/appels-doffres'] },
+        sourceCategory: 'STATE_OWNED_ENTERPRISE',
+        defaultBuyerType: 'STATE_OWNED_ENTERPRISE',
       },
       {
         country: 'Cameroon',
@@ -322,28 +316,43 @@ export class SourceService {
         officialWebsite: 'https://www.camwater.cm',
         procurementPage: 'https://www.camwater.cm/marches-publics',
         connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/marches-publics'] },
+        sourceCategory: 'STATE_OWNED_ENTERPRISE',
+        defaultBuyerType: 'STATE_OWNED_ENTERPRISE',
       },
       {
         country: 'Cameroon',
-        name: 'PAD - Port Autonome de Douala',
-        organizationType: OrganizationType.STATE_OWNED_ENTERPRISE,
-        officialWebsite: 'https://www.pad.cm',
-        procurementPage: 'https://www.pad.cm/appels-doffres',
+        name: 'ENEO Cameroon S.A.',
+        organizationType: OrganizationType.PRIVATE_PROCUREMENT,
+        officialWebsite: 'https://www.eneocameroon.cm',
+        procurementPage: 'https://www.eneocameroon.cm/index.php/fr/fournisseurs-et-prestataires',
         connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/appels-doffres'] },
-      },
-      {
-        country: 'Cameroon',
-        name: 'PAK - Port Autonome de Kribi',
-        organizationType: OrganizationType.STATE_OWNED_ENTERPRISE,
-        officialWebsite: 'https://www.pak.cm',
-        procurementPage: 'https://www.pak.cm/appels-doffres',
-        connectorType: ConnectorType.HTML,
-        parserConfiguration: { procurementPaths: ['/appels-doffres'] },
+        sourceCategory: 'PRIVATE_PROCUREMENT',
+        defaultBuyerType: 'PRIVATE_COMPANY',
       },
 
-      // International & Pan-African Organizations
+      // Key Official Ministries
+      {
+        country: 'Cameroon',
+        name: 'MINHDU - Ministère de l’Habitat et du Développement Urbain',
+        organizationType: OrganizationType.MINISTRY,
+        officialWebsite: 'https://www.minhdu.gov.cm',
+        procurementPage: 'https://www.minhdu.gov.cm/appels-doffres',
+        connectorType: ConnectorType.HTML,
+        sourceCategory: 'GOVERNMENT',
+        defaultBuyerType: 'GOVERNMENT',
+      },
+      {
+        country: 'Cameroon',
+        name: 'MINTP - Ministère des Travaux Publics',
+        organizationType: OrganizationType.MINISTRY,
+        officialWebsite: 'https://www.mintp.cm',
+        procurementPage: 'https://www.mintp.cm/appels-doffres',
+        connectorType: ConnectorType.HTML,
+        sourceCategory: 'GOVERNMENT',
+        defaultBuyerType: 'GOVERNMENT',
+      },
+
+      // International Donors
       {
         country: 'Global / Africa',
         name: 'World Bank Group Procurement Notices',
@@ -351,14 +360,8 @@ export class SourceService {
         officialWebsite: 'https://www.worldbank.org',
         apiEndpoint: 'https://search.worldbank.org/api/v2/procurement',
         connectorType: ConnectorType.REST_API,
-      },
-      {
-        country: 'Global / Africa',
-        name: 'UNGM - United Nations Global Marketplace',
-        organizationType: OrganizationType.INTERNATIONAL_ORGANIZATION,
-        officialWebsite: 'https://www.ungm.org',
-        apiEndpoint: 'https://api.ungm.org/v1/notices',
-        connectorType: ConnectorType.REST_API,
+        sourceCategory: 'DONOR_PROCUREMENT',
+        defaultBuyerType: 'GOVERNMENT',
       },
       {
         country: 'Pan-African',
@@ -368,30 +371,20 @@ export class SourceService {
         procurementPage: 'https://www.afdb.org/en/projects-and-operations/procurement',
         rssFeed: 'https://www.afdb.org/en/rss/procurement',
         connectorType: ConnectorType.RSS,
+        sourceCategory: 'DONOR_PROCUREMENT',
+        defaultBuyerType: 'GOVERNMENT',
       },
       {
-        country: 'Nigeria',
-        name: 'BPP - Bureau of Public Procurement Nigeria',
-        organizationType: OrganizationType.NATIONAL_PROCUREMENT_AUTHORITY,
-        officialWebsite: 'https://www.bpp.gov.ng',
-        tendersPage: 'https://www.bpp.gov.ng/tenders',
-        connectorType: ConnectorType.HTML,
-      },
-      {
-        country: 'Kenya',
-        name: 'PPIP - Public Procurement Information Portal Kenya',
-        organizationType: OrganizationType.NATIONAL_PROCUREMENT_AUTHORITY,
-        officialWebsite: 'https://tenders.go.ke',
-        apiEndpoint: 'https://tenders.go.ke/api/tenders',
+        country: 'Global / Africa',
+        name: 'UNGM - United Nations Global Marketplace',
+        organizationType: OrganizationType.INTERNATIONAL_ORGANIZATION,
+        officialWebsite: 'https://www.ungm.org',
+        apiEndpoint: 'https://api.ungm.org/v1/notices',
         connectorType: ConnectorType.REST_API,
-      },
-      {
-        country: 'Ghana',
-        name: 'PPA - Public Procurement Authority Ghana',
-        organizationType: OrganizationType.NATIONAL_PROCUREMENT_AUTHORITY,
-        officialWebsite: 'https://ppa.gov.gh',
-        tendersPage: 'https://ppa.gov.gh/tenders',
-        connectorType: ConnectorType.HTML,
+        sourceCategory: 'DONOR_PROCUREMENT',
+        defaultBuyerType: 'NGO',
+        status: PublisherStatus.AUTH_REQUIRED,
+        requiresAuth: true,
       },
     ];
 
@@ -412,13 +405,16 @@ export class SourceService {
             rssFeed: pub.rssFeed,
             apiEndpoint: pub.apiEndpoint,
             connectorType: pub.connectorType,
-            status: PublisherStatus.ACTIVE,
+            sourceCategory: pub.sourceCategory || 'GOVERNMENT',
+            defaultBuyerType: pub.defaultBuyerType || 'GOVERNMENT',
+            status: pub.status || PublisherStatus.ACTIVE,
+            requiresAuth: pub.requiresAuth || false,
             parserConfiguration: pub.parserConfiguration || {},
           },
         });
       }
     }
 
-    this.logger.log(`[Publisher Registry] Successfully seeded ${defaultPublishers.length} Cameroon ministries and African procurement publishers.`);
+    this.logger.log(`[Publisher Registry] Successfully registered primary Cameroon & international procurement sources.`);
   }
 }

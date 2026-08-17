@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { PublicNav } from '../components/layout/PublicNav';
 import { PublicFooter } from '../components/layout/PublicFooter';
+import { ApiClient } from '../lib/api-client';
 import {
   Sparkles,
   ArrowRight,
@@ -95,7 +96,7 @@ const features = [
 ];
 
 const colorMap: Record<string, string> = {
-  blue:   'bg-blue-50 border-blue-200 text-blue-700',
+  blue:   'bg-emerald-50 border-emerald-200 text-emerald-700',
   emerald:'bg-emerald-50 border-emerald-200 text-emerald-700',
   sky:    'bg-sky-50 border-sky-200 text-sky-700',
   violet: 'bg-violet-50 border-violet-200 text-violet-700',
@@ -106,7 +107,7 @@ const colorMap: Record<string, string> = {
 /* ─── Testimonials ─── */
 const testimonials = [
   {
-    quote: 'AI Bid Copilot cut our RFP evaluation time from three days to under an hour. We went from reviewing 10 tenders a month to 60.',
+    quote: 'Bidora cut our RFP evaluation time from three days to under an hour. We went from reviewing 10 tenders a month to 60.',
     name: 'Sarah Chen',
     role: 'VP of Business Development, Nexus Federal Solutions',
     rating: 5,
@@ -155,12 +156,29 @@ const faqs = [
 export default function HomePage() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [statsVisible, setStatsVisible] = useState(false);
+  const [liveStats, setLiveStats] = useState<any>(null);
   const statsRef = useRef<HTMLDivElement>(null);
 
-  const c1 = useCounter(stats[0].value, 1600, statsVisible);
-  const c2 = useCounter(stats[1].value, 1800, statsVisible);
-  const c3 = useCounter(stats[2].value, 1400, statsVisible);
-  const c4 = useCounter(stats[3].value, 1600, statsVisible);
+  useEffect(() => {
+    ApiClient.getAdminStats().then((data) => {
+      if (data) setLiveStats(data);
+    }).catch(console.error);
+  }, []);
+
+  const totalTendersVal = liveStats?.totalTenders || 160;
+  const totalCompaniesVal = liveStats?.totalCompanies || 50;
+
+  const dynamicStats: Array<{ value: number; suffix: string; label: string; icon: any; prefix?: string }> = [
+    { value: totalTendersVal, suffix: '+', label: 'Ingested Procurement Notices', icon: BarChart3, prefix: '' },
+    { value: 94, suffix: '%', label: 'Average Match Accuracy', icon: Award, prefix: '' },
+    { value: 12, suffix: 'x', label: 'Faster RFP Evaluation', icon: Zap, prefix: '' },
+    { value: totalCompaniesVal, suffix: '+', label: 'Enterprise Teams', icon: TrendingUp, prefix: '' },
+  ];
+
+  const c1 = useCounter(dynamicStats[0].value, 1600, statsVisible);
+  const c2 = useCounter(dynamicStats[1].value, 1800, statsVisible);
+  const c3 = useCounter(dynamicStats[2].value, 1400, statsVisible);
+  const c4 = useCounter(dynamicStats[3].value, 1600, statsVisible);
   const counters = [c1, c2, c3, c4];
 
   useEffect(() => {
@@ -179,13 +197,13 @@ export default function HomePage() {
       {/* ─── HERO ─── */}
       <section className="hero-mesh relative pt-28 pb-20 px-6 md:px-10 overflow-hidden">
         {/* Decorative blobs */}
-        <div className="absolute top-20 right-10 w-72 h-72 rounded-full bg-blue-100/60 blur-3xl pointer-events-none" />
+        <div className="absolute top-20 right-10 w-72 h-72 rounded-full bg-emerald-100/60 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-10 w-56 h-56 rounded-full bg-cyan-100/50 blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
           {/* Left */}
           <div className="lg:col-span-7 space-y-7 animate-fade-in-up">
-            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
+            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
               <Sparkles className="w-3.5 h-3.5 animate-pulse" />
               <span>AI Procurement Intelligence · Now with Gemini 1.5 Flash</span>
             </div>
@@ -196,7 +214,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-lg text-slate-600 leading-relaxed font-medium max-w-xl">
-              AI Bid Copilot automatically reads, scores and tracks government & enterprise procurement opportunities — so your bid team focuses on winning, not reading.
+              Bidora automatically reads, scores and tracks government & enterprise procurement opportunities — so your bid team focuses on winning, not reading.
             </p>
 
             <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -209,7 +227,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/features"
-                className="flex items-center space-x-2 px-8 py-4 rounded-2xl bg-white border border-slate-200 text-slate-800 hover:text-blue-600 hover:border-blue-300 font-bold text-base shadow-sm transition-all"
+                className="flex items-center space-x-2 px-8 py-4 rounded-2xl bg-white border border-slate-200 text-slate-800 hover:text-emerald-600 hover:border-emerald-300 font-bold text-base shadow-sm transition-all"
               >
                 <span>See How It Works</span>
                 <ChevronRight className="w-4 h-4" />
@@ -254,7 +272,7 @@ export default function HomePage() {
                 {/* Tender Snippet */}
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <span className="px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-extrabold">
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-extrabold">
                       US FEDERAL · $18.4M
                     </span>
                   </div>
@@ -335,12 +353,12 @@ export default function HomePage() {
       {/* ─── STATS ─── */}
       <section className="bg-white py-16 px-6 md:px-10" ref={statsRef}>
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((stat, i) => {
+          {dynamicStats.map((stat, i) => {
             const Icon = stat.icon;
             return (
               <div key={stat.label} className="text-center space-y-2">
-                <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto">
-                  <Icon className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-blue-100 flex items-center justify-center mx-auto">
+                  <Icon className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div className="text-3xl font-black text-slate-900 stat-number">
                   {stat.prefix || ''}{counters[i]}{stat.suffix}
@@ -356,7 +374,7 @@ export default function HomePage() {
       <section className="bg-slate-50 py-20 px-6 md:px-10 border-t border-slate-200">
         <div className="max-w-7xl mx-auto space-y-14">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
-            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
+            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Everything Your Bid Desk Needs</span>
             </div>
@@ -397,7 +415,7 @@ export default function HomePage() {
           <div className="text-center">
             <Link
               href="/features"
-              className="inline-flex items-center space-x-2 text-sm font-extrabold text-blue-600 hover:text-blue-700 transition-colors"
+              className="inline-flex items-center space-x-2 text-sm font-extrabold text-emerald-600 hover:text-emerald-700 transition-colors"
             >
               <span>See full feature list</span>
               <ArrowRight className="w-4 h-4" />
@@ -443,7 +461,7 @@ export default function HomePage() {
               const Icon = s.icon;
               return (
                 <div key={s.step} className="flex flex-col items-center text-center space-y-4 relative">
-                  <div className="w-20 h-20 rounded-3xl gradient-bg flex items-center justify-center shadow-lg shadow-blue-600/15 relative z-10">
+                  <div className="w-20 h-20 rounded-3xl gradient-bg flex items-center justify-center shadow-lg shadow-emerald-600/15 relative z-10">
                     <Icon className="w-8 h-8 text-white" />
                   </div>
                   <div className="font-black text-4xl text-slate-100 -mt-2 select-none">{s.step}</div>
@@ -493,7 +511,7 @@ export default function HomePage() {
             <h2 className="text-3xl font-black text-slate-900 tracking-tight">Frequently asked questions</h2>
             <p className="text-sm text-slate-500 font-medium">
               Have another question?{' '}
-              <Link href="/contact" className="text-blue-600 font-bold hover:underline">
+              <Link href="/contact" className="text-emerald-600 font-bold hover:underline">
                 Contact our team
               </Link>
             </p>
@@ -510,7 +528,7 @@ export default function HomePage() {
                   >
                     <span className="font-bold text-sm text-slate-900 pr-4">{faq.q}</span>
                     <ChevronRight
-                      className={`w-5 h-5 text-blue-600 shrink-0 transition-transform duration-200 ${
+                      className={`w-5 h-5 text-emerald-600 shrink-0 transition-transform duration-200 ${
                         isOpen ? 'rotate-90' : ''
                       }`}
                     />

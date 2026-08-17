@@ -1,5 +1,5 @@
 {
-  "name": "ai-bid-copilot",
+  "name": "bidora",
   "version": "1.0.0",
   "private": true,
   "description": "AI-powered SaaS platform for discovering, evaluating, scoring, and tracking procurement opportunities",
@@ -23,7 +23,7 @@
     "nestjs",
     "nextjs"
   ],
-  "author": "AI Bid Copilot Team",
+  "author": "Bidora Team",
   "license": "MIT",
   "dependencies": {
     "@nestjs/cli": "^10.3.0",

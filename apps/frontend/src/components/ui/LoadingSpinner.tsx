@@ -23,7 +23,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   return (
     <div className={`flex flex-col items-center justify-center space-y-3 p-4 ${className}`}>
       <div className="relative">
-        <Loader2 className={`${sizeMap[size]} text-blue-600 animate-spin`} />
+        <Loader2 className={`${sizeMap[size]} text-emerald-600 animate-spin`} />
         {size === 'lg' && (
           <Sparkles className="w-4 h-4 text-sky-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
         )}

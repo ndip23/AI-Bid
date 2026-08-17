@@ -50,7 +50,7 @@ export default function TendersDiscoveryPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                <Search className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+                <Search className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
                 African & Global Tender Discovery
               </h1>
               <p className="text-xs text-slate-500 font-medium">
@@ -78,7 +78,7 @@ export default function TendersDiscoveryPage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search all tenders, ref #, or buyer..."
-                  className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                  className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
                 />
               </div>
 
@@ -86,7 +86,7 @@ export default function TendersDiscoveryPage() {
               <select
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
-                className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
               >
                 <option value="">All Industries & Sectors</option>
                 <option value="Cloud & IT Infrastructure">Cloud & IT Infrastructure</option>
@@ -102,7 +102,7 @@ export default function TendersDiscoveryPage() {
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
               >
                 <option value="">All African & Global Markets</option>
                 <optgroup label="🌍 African Target Markets">
@@ -169,7 +169,7 @@ export default function TendersDiscoveryPage() {
                   setCountry('');
                   setMinScore(0);
                 }}
-                className="px-4 py-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 font-bold text-xs hover:bg-blue-100 transition-colors"
+                className="px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold text-xs hover:bg-emerald-100 transition-colors"
               >
                 Reset All Filters
               </button>

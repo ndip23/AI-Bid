@@ -35,8 +35,7 @@ const steps = ['Your Details', 'Company Info', 'Review & Create'];
 export default function RegisterPage() {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    username: '',
     email: '',
     password: '',
     companyName: '',
@@ -58,9 +57,14 @@ export default function RegisterPage() {
 
   const validateStep = () => {
     if (step === 0) {
-      if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+      if (!formData.username || !formData.email || !formData.password) {
         setError('Please fill in all fields.');
         toast.error('Validation Error', 'Please fill in all required fields.');
+        return false;
+      }
+      if (formData.username.length < 3) {
+        setError('Username must be at least 3 characters.');
+        toast.error('Username Too Short', 'Must be at least 3 characters.');
         return false;
       }
       if (!formData.email.includes('@')) {
@@ -98,7 +102,7 @@ export default function RegisterPage() {
     setError('');
     try {
       await register(formData);
-      toast.success('Account Created!', 'Welcome to AI Bid Copilot.');
+      toast.success('Account Created!', 'Welcome to Bidora.');
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
@@ -117,8 +121,8 @@ export default function RegisterPage() {
         <div className="hidden lg:flex lg:w-[42%] hero-mesh flex-col justify-between p-12 border-r border-slate-200">
           <div className="space-y-8">
             <div className="space-y-3">
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
-                <Sparkles className="w-4 h-4 text-blue-600" />
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
+                <Sparkles className="w-4 h-4 text-emerald-600" />
                 <span>Start Your 14-Day Free Trial</span>
               </div>
               <h2 className="text-3xl font-black text-slate-900 leading-tight">
@@ -150,7 +154,7 @@ export default function RegisterPage() {
           </div>
 
           <p className="text-xs text-slate-400 font-medium">
-            © {new Date().getFullYear()} AI Bid Copilot, Inc.
+            © {new Date().getFullYear()} Bidora, Inc.
           </p>
         </div>
 
@@ -200,26 +204,19 @@ export default function RegisterPage() {
               {/* ── STEP 0: Personal Details ── */}
               {step === 0 && (
                 <div className="space-y-4 animate-fade-in">
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      { field: 'firstName', label: 'First Name', placeholder: 'Jane', icon: User },
-                      { field: 'lastName', label: 'Last Name', placeholder: 'Smith', icon: User },
-                    ].map(({ field, label, placeholder, icon: Icon }) => (
-                      <div key={field} className="space-y-1.5">
-                        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">{label}</label>
-                        <div className="relative">
-                          <Icon className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                          <input
-                            type="text"
-                            required
-                            value={(formData as any)[field]}
-                            onChange={set(field)}
-                            placeholder={placeholder}
-                            className="w-full bg-white border border-slate-200 rounded-xl pl-8 pr-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
-                          />
-                        </div>
-                      </div>
-                    ))}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Username</label>
+                    <div className="relative">
+                      <User className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        required
+                        value={formData.username}
+                        onChange={set('username')}
+                        placeholder="your_username"
+                        className="w-full bg-white border border-slate-200 rounded-xl pl-8 pr-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-1.5">
@@ -232,7 +229,7 @@ export default function RegisterPage() {
                         value={formData.email}
                         onChange={set('email')}
                         placeholder="jane@company.com"
-                        className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
+                        className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
                       />
                     </div>
                   </div>
@@ -247,7 +244,7 @@ export default function RegisterPage() {
                         value={formData.password}
                         onChange={set('password')}
                         placeholder="Min. 6 characters"
-                        className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-11 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
+                        className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-11 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
                       />
                       <button
                         type="button"
@@ -296,7 +293,7 @@ export default function RegisterPage() {
                         value={formData.companyName}
                         onChange={set('companyName')}
                         placeholder="Acme Defense Ltd"
-                        className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
+                        className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
                       />
                     </div>
                   </div>
@@ -306,7 +303,7 @@ export default function RegisterPage() {
                     <select
                       value={formData.industry}
                       onChange={set('industry')}
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-blue-600/10 transition-all font-medium"
                     >
                       {industries.map((ind) => (
                         <option key={ind} value={ind}>{ind}</option>
@@ -314,7 +311,7 @@ export default function RegisterPage() {
                     </select>
                   </div>
 
-                  <p className="text-xs text-slate-500 font-medium bg-blue-50 border border-blue-100 rounded-xl p-3.5">
+                  <p className="text-xs text-slate-500 font-medium bg-emerald-50 border border-blue-100 rounded-xl p-3.5">
                     💡 You can add detailed certifications, geographies and capabilities after registration to improve your AI match scores.
                   </p>
 
@@ -344,7 +341,7 @@ export default function RegisterPage() {
                   <div className="glass-panel rounded-2xl p-5 space-y-3 bg-slate-50">
                     <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Account Summary</p>
                     {[
-                      { label: 'Name', value: `${formData.firstName} ${formData.lastName}` },
+                      { label: 'Username', value: formData.username },
                       { label: 'Email', value: formData.email },
                       { label: 'Company', value: formData.companyName },
                       { label: 'Industry', value: formData.industry },
@@ -361,13 +358,13 @@ export default function RegisterPage() {
                       type="checkbox"
                       checked={agreed}
                       onChange={(e) => setAgreed(e.target.checked)}
-                      className="mt-1 w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
+                      className="mt-1 w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-blue-600"
                     />
                     <span className="text-xs text-slate-600 font-medium leading-relaxed">
-                      I agree to AI Bid Copilot&apos;s{' '}
-                      <a href="#" className="text-blue-600 font-bold hover:underline">Terms of Service</a>{' '}
+                      I agree to Bidora&apos;s{' '}
+                      <a href="#" className="text-emerald-600 font-bold hover:underline">Terms of Service</a>{' '}
                       and{' '}
-                      <a href="#" className="text-blue-600 font-bold hover:underline">Privacy Policy</a>.
+                      <a href="#" className="text-emerald-600 font-bold hover:underline">Privacy Policy</a>.
                       I understand my data is encrypted and never shared.
                     </span>
                   </label>
@@ -404,7 +401,7 @@ export default function RegisterPage() {
 
             <p className="text-center text-sm text-slate-500 font-medium">
               Already have an account?{' '}
-              <Link href="/login" className="text-blue-600 font-extrabold hover:underline">
+              <Link href="/login" className="text-emerald-600 font-extrabold hover:underline">
                 Sign in →
               </Link>
             </p>

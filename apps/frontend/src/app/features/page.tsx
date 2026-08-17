@@ -94,7 +94,7 @@ export default function FeaturesPage() {
       {/* Hero */}
       <section className="hero-mesh pt-32 pb-16 px-6 md:px-10 text-center">
         <div className="max-w-3xl mx-auto space-y-5 animate-fade-in-up">
-          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
+          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Platform Capabilities</span>
           </div>
@@ -124,7 +124,7 @@ export default function FeaturesPage() {
               onClick={() => setActiveTab(tab)}
               className={`px-5 py-4 text-sm font-bold whitespace-nowrap border-b-2 transition-all ${
                 activeTab === tab
-                  ? 'text-blue-600 border-blue-600'
+                  ? 'text-emerald-600 border-emerald-600'
                   : 'text-slate-500 border-transparent hover:text-slate-900 hover:border-slate-300'
               }`}
             >
@@ -147,7 +147,7 @@ export default function FeaturesPage() {
               const Icon = f.icon;
               return (
                 <div key={f.title} className="glass-panel glass-panel-hover rounded-3xl p-7 space-y-4 bg-white">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
                     <Icon className="w-6 h-6" />
                   </div>
                   <h3 className="text-base font-extrabold text-slate-900">{f.title}</h3>

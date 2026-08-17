@@ -53,8 +53,8 @@ export default function DashboardPage() {
               {/* Welcome Banner */}
               <div className="glass-panel rounded-3xl p-6 md:p-8 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-white border border-slate-200 shadow-sm animate-fade-in">
                 <div className="space-y-2 z-10">
-                  <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
-                    <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+                  <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
                     <span>AI Copilot Engine Active</span>
                   </div>
                   <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
@@ -62,7 +62,7 @@ export default function DashboardPage() {
                   </h1>
                   <p className="text-xs md:text-sm text-slate-600 max-w-xl font-medium">
                     Evaluating opportunities for{' '}
-                    <strong className="text-blue-600 font-bold">{company?.name || user?.email || 'Your Organization'}</strong>.
+                    <strong className="text-emerald-600 font-bold">{company?.name || user?.email || 'Your Organization'}</strong>.
                     You have <span className="text-emerald-600 font-extrabold">{highMatchCount} high-matching tenders</span> ready for review.
                   </p>
                 </div>
@@ -70,7 +70,7 @@ export default function DashboardPage() {
                 <div className="flex items-center space-x-3 shrink-0 z-10">
                   <Link
                     href="/tenders"
-                    className="px-5 py-3 rounded-2xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-blue-600/20 hover:opacity-95 transition-all flex items-center space-x-2"
+                    className="px-5 py-3 rounded-2xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 hover:opacity-95 transition-all flex items-center space-x-2"
                   >
                     <Search className="w-4 h-4" />
                     <span>Explore Opportunities</span>
@@ -84,7 +84,7 @@ export default function DashboardPage() {
                 <div className="glass-panel rounded-2xl p-5 space-y-2 bg-white border border-slate-200 shadow-sm glass-panel-hover">
                   <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
                     <span>Matching Opportunities</span>
-                    <Sparkles className="w-4 h-4 text-blue-600" />
+                    <Sparkles className="w-4 h-4 text-emerald-600" />
                   </div>
                   <div className="text-2xl font-black text-slate-900">{highMatchCount}</div>
                   <p className="text-[11px] text-emerald-600 font-bold">≥80% capability alignment</p>
@@ -128,7 +128,7 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-base md:text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                      <ShieldCheck className="w-5 h-5 text-blue-600" />
+                      <ShieldCheck className="w-5 h-5 text-emerald-600" />
                       Top Recommended Opportunities
                     </h2>
                     <p className="text-xs text-slate-500 font-medium">
@@ -138,7 +138,7 @@ export default function DashboardPage() {
 
                   <Link
                     href="/tenders"
-                    className="text-xs font-extrabold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    className="text-xs font-extrabold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
                   >
                     <span>View All Tenders</span>
                     <ArrowRight className="w-4 h-4" />

@@ -12,7 +12,7 @@ import { JwtStrategy } from './jwt.strategy';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET', 'ai-bid-copilot-jwt-super-secret-key-2026'),
+        secret: configService.get<string>('JWT_SECRET', 'bidora-jwt-super-secret-key-2026'),
         signOptions: {
           expiresIn: '7d',
         },

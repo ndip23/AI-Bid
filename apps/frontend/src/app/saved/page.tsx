@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/layout/Header';
 import { Sidebar } from '../../components/layout/Sidebar';
 import { ApiClient } from '../../lib/api-client';
+import { useToast } from '../../lib/toast-context';
 import { SavedTender, SavedStatus } from '../../types';
 import { BookmarkCheck, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
@@ -11,6 +12,7 @@ import Link from 'next/link';
 export default function SavedPipelinePage() {
   const [savedItems, setSavedItems] = useState<SavedTender[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   const loadSaved = async () => {
     setLoading(true);
@@ -29,7 +31,7 @@ export default function SavedPipelinePage() {
   }, []);
 
   const columns: { status: SavedStatus; label: string; color: string }[] = [
-    { status: 'BOOKMARKED', label: 'Bookmarked', color: 'border-blue-300 text-blue-700' },
+    { status: 'BOOKMARKED', label: 'Bookmarked', color: 'border-emerald-300 text-emerald-700' },
     { status: 'UNDER_REVIEW', label: 'Under Review', color: 'border-sky-300 text-sky-700' },
     { status: 'BIDDING', label: 'Bidding / In Progress', color: 'border-emerald-300 text-emerald-700' },
     { status: 'PASSED', label: 'Passed / Declined', color: 'border-rose-300 text-rose-700' },
@@ -45,7 +47,7 @@ export default function SavedPipelinePage() {
         <main className="flex-1 p-4 md:p-8 space-y-6 overflow-y-auto min-w-0">
           <div>
             <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-              <BookmarkCheck className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+              <BookmarkCheck className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
               Saved Tenders Pipeline
             </h1>
             <p className="text-xs text-slate-500 font-medium">
@@ -86,12 +88,12 @@ export default function SavedPipelinePage() {
                         itemsInCol.map((item) => (
                           <div
                             key={item.id}
-                            className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 hover:border-blue-300 transition-all text-xs"
+                            className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 hover:border-emerald-300 transition-all text-xs"
                           >
                             <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-bold">
                               <span>{item.tender.refNumber}</span>
                               {item.matchDetails?.overallScore && (
-                                <span className="font-extrabold text-blue-600">
+                                <span className="font-extrabold text-emerald-600">
                                   {item.matchDetails.overallScore}% Match
                                 </span>
                               )}
@@ -99,7 +101,7 @@ export default function SavedPipelinePage() {
 
                             <Link
                               href={`/tenders/${item.tender.id}`}
-                              className="font-bold text-slate-900 hover:text-blue-600 transition-colors block line-clamp-2"
+                              className="font-bold text-slate-900 hover:text-emerald-600 transition-colors block line-clamp-2"
                             >
                               {item.tender.title}
                             </Link>
@@ -112,12 +114,28 @@ export default function SavedPipelinePage() {
                               <span className="text-emerald-700 font-extrabold">
                                 ${item.tender.estimatedValue.toLocaleString()}
                               </span>
-                              <Link
-                                href={`/tenders/${item.tender.id}`}
-                                className="text-blue-600 hover:text-blue-700 font-bold flex items-center gap-0.5"
-                              >
-                                View <ChevronRight className="w-3.5 h-3.5" />
-                              </Link>
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      await ApiClient.unsaveTender(item.tender.id);
+                                      setSavedItems(savedItems.filter(i => i.id !== item.id));
+                                      toast.info('Tender Removed', 'Opportunity removed from pipeline.');
+                                    } catch (e) {
+                                      toast.error('Failed to Remove', 'Could not update pipeline.');
+                                    }
+                                  }}
+                                  className="text-[10px] text-rose-500 hover:underline font-bold"
+                                >
+                                  Remove
+                                </button>
+                                <Link
+                                  href={`/tenders/${item.tender.id}`}
+                                  className="text-emerald-600 hover:text-emerald-700 font-bold flex items-center gap-0.5"
+                                >
+                                  View <ChevronRight className="w-3.5 h-3.5" />
+                                </Link>
+                              </div>
                             </div>
                           </div>
                         ))

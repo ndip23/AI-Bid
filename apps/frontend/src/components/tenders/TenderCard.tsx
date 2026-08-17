@@ -60,11 +60,11 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
         {/* Top Meta Bar */}
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center space-x-2">
-            <span className="text-[11px] font-extrabold uppercase px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 tracking-wider">
+            <span className="text-[11px] font-extrabold uppercase px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 tracking-wider">
               {tender.industry}
             </span>
             <span className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
-              <Globe className="w-3.5 h-3.5 text-blue-600" />
+              <Globe className="w-3.5 h-3.5 text-emerald-600" />
               {tender.buyerCountry}
             </span>
           </div>
@@ -79,7 +79,7 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
         </div>
 
         {/* Title */}
-        <Link href={`/tenders/${tender.id}`} className="group-hover:text-blue-600 transition-colors">
+        <Link href={`/tenders/${tender.id}`} className="group-hover:text-emerald-700 transition-colors">
           <h3 className="text-base font-bold text-slate-900 line-clamp-2 leading-snug">
             {tender.title}
           </h3>
@@ -103,7 +103,7 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
           </div>
           <div>
             <span className="text-[10px] uppercase font-bold text-slate-400 block">Closing Date</span>
-            <span className="font-bold text-sky-700 flex items-center gap-1">
+            <span className="font-bold text-emerald-700 flex items-center gap-1">
               <Calendar className="w-3 h-3" />
               {calculateDaysLeft(tender.deadline)}
             </span>
@@ -116,11 +116,11 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
             onClick={() => setShowStatusMenu(!showStatusMenu)}
             className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center space-x-1.5 transition-all ${
               isSaved
-                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                 : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300'
             }`}
           >
-            <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-blue-600 text-blue-600' : ''}`} />
+            <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-emerald-600 text-emerald-600' : ''}`} />
             <span>{isSaved ? savedStatus.replace('_', ' ') : 'Save Tender'}</span>
           </button>
 
@@ -130,10 +130,10 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
                 <button
                   key={status}
                   onClick={() => handleToggleSave(status)}
-                  className="w-full text-left px-3 py-2 rounded-lg text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center justify-between font-bold"
+                  className="w-full text-left px-3 py-2 rounded-lg text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center justify-between font-bold"
                 >
                   <span>{status.replace('_', ' ')}</span>
-                  {savedStatus === status && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                  {savedStatus === status && <Check className="w-3.5 h-3.5 text-emerald-600" />}
                 </button>
               ))}
             </div>
@@ -141,7 +141,7 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
 
           <Link
             href={`/tenders/${tender.id}`}
-            className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+            className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
           >
             <ChevronRight className="w-4 h-4" />
           </Link>

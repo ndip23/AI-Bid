@@ -45,7 +45,7 @@ export default function ContactPage() {
       {/* ─── HERO ─── */}
       <section className="hero-mesh pt-32 pb-16 px-6 md:px-10 text-center">
         <div className="max-w-2xl mx-auto space-y-5 animate-fade-in-up">
-          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
+          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Get in Touch</span>
           </div>
@@ -53,7 +53,7 @@ export default function ContactPage() {
             We'd love to hear from you
           </h1>
           <p className="text-base text-slate-600 font-medium leading-relaxed">
-            Whether you're evaluating AI Bid Copilot for your team, need support, or want to explore a partnership — our team typically responds within 2 business hours.
+            Whether you're evaluating Bidora for your team, need support, or want to explore a partnership — our team typically responds within 2 business hours.
           </p>
         </div>
       </section>
@@ -97,7 +97,7 @@ export default function ContactPage() {
                   const Icon = item.icon;
                   return (
                     <div key={item.label} className="flex items-start space-x-4">
-                      <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700 shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 shrink-0">
                         <Icon className="w-4 h-4" />
                       </div>
                       <div>
@@ -114,7 +114,7 @@ export default function ContactPage() {
             {/* Response SLA card */}
             <div className="glass-panel rounded-2xl p-5 space-y-3 bg-white">
               <div className="flex items-center space-x-2 text-sm font-extrabold text-slate-900">
-                <Clock className="w-4 h-4 text-blue-600" />
+                <Clock className="w-4 h-4 text-emerald-600" />
                 <span>Response Times</span>
               </div>
               {[
@@ -158,7 +158,7 @@ export default function ContactPage() {
                 </p>
                 <button
                   onClick={() => { setSubmitted(false); setForm({ name: '', email: '', company: '', type: 'sales', message: '' }); }}
-                  className="text-sm font-bold text-blue-600 hover:underline"
+                  className="text-sm font-bold text-emerald-600 hover:underline"
                 >
                   Send another message
                 </button>
@@ -181,11 +181,11 @@ export default function ContactPage() {
                           onClick={() => setForm({ ...form, type: ct.id })}
                           className={`p-3 rounded-xl border text-left transition-all ${
                             form.type === ct.id
-                              ? 'border-blue-600 bg-blue-50 shadow-sm'
+                              ? 'border-emerald-600 bg-emerald-50 shadow-sm'
                               : 'border-slate-200 bg-white hover:border-slate-300'
                           }`}
                         >
-                          <div className={`text-xs font-extrabold ${form.type === ct.id ? 'text-blue-700' : 'text-slate-900'}`}>
+                          <div className={`text-xs font-extrabold ${form.type === ct.id ? 'text-emerald-700' : 'text-slate-900'}`}>
                             {ct.label}
                           </div>
                           <div className="text-[11px] text-slate-500 font-medium mt-0.5">{ct.desc}</div>
@@ -204,7 +204,7 @@ export default function ContactPage() {
                         value={form.name}
                         onChange={set('name')}
                         placeholder="Jane Smith"
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 transition-colors font-medium"
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition-colors font-medium"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -215,7 +215,7 @@ export default function ContactPage() {
                         value={form.email}
                         onChange={set('email')}
                         placeholder="jane@company.com"
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 transition-colors font-medium"
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition-colors font-medium"
                       />
                     </div>
                   </div>
@@ -228,7 +228,7 @@ export default function ContactPage() {
                       value={form.company}
                       onChange={set('company')}
                       placeholder="Acme Defense Ltd"
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 transition-colors font-medium"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition-colors font-medium"
                     />
                   </div>
 
@@ -241,7 +241,7 @@ export default function ContactPage() {
                       value={form.message}
                       onChange={set('message')}
                       placeholder="Tell us about your team, how many tenders you evaluate per month, and what you're looking to achieve..."
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 transition-colors font-medium resize-none"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition-colors font-medium resize-none"
                     />
                   </div>
 
@@ -266,7 +266,7 @@ export default function ContactPage() {
 
                   <p className="text-center text-[11px] text-slate-400 font-medium">
                     By submitting, you agree to our{' '}
-                    <a href="#" className="text-blue-600 hover:underline font-bold">Privacy Policy</a>.
+                    <a href="#" className="text-emerald-600 hover:underline font-bold">Privacy Policy</a>.
                     We'll never share your data.
                   </p>
                 </form>

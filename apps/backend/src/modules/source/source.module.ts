@@ -18,6 +18,8 @@ import { AfdbConnector } from '../../connectors/afdb.connector';
 import { ArmpConnector } from '../../connectors/armp.connector';
 import { ColepsConnector } from '../../connectors/coleps.connector';
 import { GenericProcurementCrawler } from '../../connectors/generic-procurement-crawler';
+import { BstpConnector } from '../../connectors/bstp.connector';
+import { CorporateProcurementCrawler } from '../../connectors/corporate-procurement-crawler';
 import { DocumentProcessorService } from '../tender/document-processor.service';
 import { MatchModule } from '../match/match.module';
 import { QueueModule } from '../queue/queue.module';
@@ -44,6 +46,8 @@ import { AiModule } from '../ai/ai.module';
     AfdbConnector,
     ArmpConnector,
     ColepsConnector,
+    BstpConnector,
+    CorporateProcurementCrawler,
     GenericProcurementCrawler,
     DocumentProcessorService,
   ],

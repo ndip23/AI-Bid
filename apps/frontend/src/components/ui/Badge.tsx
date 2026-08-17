@@ -21,7 +21,7 @@ const variantClasses: Record<BadgeVariant, string> = {
   danger: 'bg-rose-50 text-rose-700 border-rose-200',
   info: 'bg-sky-50 text-sky-700 border-sky-200',
   purple: 'bg-purple-50 text-purple-700 border-purple-200',
-  indigo: 'bg-blue-50 text-blue-700 border-blue-200',
+  indigo: 'bg-emerald-50 text-emerald-800 border-emerald-200',
 };
 
 const dotColors: Record<BadgeVariant, string> = {

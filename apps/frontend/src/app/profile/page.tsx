@@ -88,7 +88,7 @@ export default function UserProfilePage() {
           {/* Header */}
           <div>
             <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-              <User className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+              <User className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
               Account & Profile Settings
             </h1>
             <p className="text-xs text-slate-500 font-medium">
@@ -109,7 +109,7 @@ export default function UserProfilePage() {
                     {user?.firstName} {user?.lastName}
                   </h3>
                   <p className="text-xs text-slate-500 font-medium">{user?.email}</p>
-                  <span className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-bold">
+                  <span className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-bold">
                     {user?.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Company Member'}
                   </span>
                 </div>
@@ -133,7 +133,7 @@ export default function UserProfilePage() {
               {/* Personal Details Form */}
               <div className="glass-panel rounded-2xl p-6 bg-white border border-slate-200 shadow-sm space-y-4">
                 <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                  <User className="w-4 h-4 text-blue-600" />
+                  <User className="w-4 h-4 text-emerald-600" />
                   Personal Information
                 </h3>
 
@@ -153,7 +153,7 @@ export default function UserProfilePage() {
                         required
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm"
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-emerald-600 shadow-sm"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -163,7 +163,7 @@ export default function UserProfilePage() {
                         required
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm"
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-emerald-600 shadow-sm"
                       />
                     </div>
                   </div>
@@ -177,7 +177,7 @@ export default function UserProfilePage() {
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm"
+                        className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-emerald-600 shadow-sm"
                       />
                     </div>
                   </div>
@@ -185,7 +185,7 @@ export default function UserProfilePage() {
                   <button
                     type="submit"
                     disabled={savingProfile}
-                    className="px-5 py-2.5 rounded-xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-blue-600/20 hover:opacity-95 transition-all"
+                    className="px-5 py-2.5 rounded-xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 hover:opacity-95 transition-all"
                   >
                     {savingProfile ? 'Saving...' : 'Update Personal Info'}
                   </button>
@@ -223,7 +223,7 @@ export default function UserProfilePage() {
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm"
+                        className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-emerald-600 shadow-sm"
                       />
                     </div>
                   </div>
@@ -237,7 +237,7 @@ export default function UserProfilePage() {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="Min. 6 characters"
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm"
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-emerald-600 shadow-sm"
                       />
                     </div>
 
@@ -249,7 +249,7 @@ export default function UserProfilePage() {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Re-type new password"
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm"
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:outline-none focus:border-emerald-600 shadow-sm"
                       />
                     </div>
                   </div>

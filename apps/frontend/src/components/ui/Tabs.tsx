@@ -29,17 +29,17 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, className
             className={clsx(
               'flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all duration-200 border-b-2 whitespace-nowrap',
               isActive
-                ? 'border-blue-600 text-blue-700 bg-blue-50/50'
+                ? 'border-emerald-600 text-emerald-800 bg-emerald-50/50'
                 : 'border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-100/60',
             )}
           >
-            {tab.icon && <span className={clsx(isActive ? 'text-blue-600' : 'text-slate-400')}>{tab.icon}</span>}
+            {tab.icon && <span className={clsx(isActive ? 'text-emerald-600' : 'text-slate-400')}>{tab.icon}</span>}
             <span>{tab.label}</span>
             {tab.badge !== undefined && (
               <span
                 className={clsx(
                   'px-1.5 py-0.5 text-[10px] font-extrabold rounded-md',
-                  isActive ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500',
+                  isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500',
                 )}
               >
                 {tab.badge}

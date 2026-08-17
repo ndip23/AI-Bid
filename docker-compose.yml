@@ -3,12 +3,12 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: ai_bid_postgres
+    container_name: bidora_postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespassword2026
-      POSTGRES_DB: aibidcopilot
+      POSTGRES_DB: bidora_db
     ports:
       - '5432:5432'
     volumes:
@@ -16,7 +16,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: ai_bid_redis
+    container_name: bidora_redis
     restart: always
     ports:
       - '6379:6379'
@@ -25,16 +25,16 @@ services:
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
-    container_name: ai_bid_backend
+    container_name: bidora_backend
     restart: always
     ports:
       - '4000:4000'
     environment:
       PORT: 4000
-      DATABASE_URL: postgresql://postgres:postgrespassword2026@postgres:5432/aibidcopilot?schema=public
+      DATABASE_URL: postgresql://postgres:postgrespassword2026@postgres:5432/bidora_db?schema=public
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      JWT_SECRET: ai-bid-copilot-jwt-super-secret-key-2026
+      JWT_SECRET: bidora-jwt-super-secret-key-2026
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     depends_on:
       - postgres
@@ -44,7 +44,7 @@ services:
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
-    container_name: ai_bid_frontend
+    container_name: bidora_frontend
     restart: always
     ports:
       - '3000:3000'

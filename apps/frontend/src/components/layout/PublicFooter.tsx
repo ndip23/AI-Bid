@@ -25,6 +25,8 @@ const footerLinks = {
   ],
 };
 
+import { BidoraLogo } from '../ui/BidoraLogo';
+
 export const PublicFooter: React.FC = () => {
   return (
     <footer className="bg-slate-900 text-slate-300">
@@ -39,7 +41,7 @@ export const PublicFooter: React.FC = () => {
           </p>
           <Link
             href="/register"
-            className="inline-flex items-center space-x-2 px-8 py-3.5 rounded-xl bg-white text-blue-700 font-extrabold text-sm shadow-lg hover:bg-blue-50 hover:scale-105 transition-all"
+            className="inline-flex items-center space-x-2 px-8 py-3.5 rounded-xl bg-white text-emerald-800 font-extrabold text-sm shadow-lg hover:bg-emerald-50 hover:scale-105 transition-all"
           >
             <span>Start Free 14-Day Trial</span>
             <ArrowRight className="w-4 h-4" />
@@ -52,14 +54,8 @@ export const PublicFooter: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
           {/* Brand Column */}
           <div className="md:col-span-2 space-y-5">
-            <Link href="/" className="flex items-center space-x-2.5">
-              <div className="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <div className="flex items-baseline">
-                <span className="font-extrabold text-xl text-white">AI Bid</span>
-                <span className="font-bold text-xl text-blue-400 ml-1">Copilot</span>
-              </div>
+            <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
+              <BidoraLogo variant="dark" size="lg" showTagline={true} />
             </Link>
 
             <p className="text-sm text-slate-400 leading-relaxed font-medium max-w-xs">
@@ -108,7 +104,7 @@ export const PublicFooter: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <span>© {new Date().getFullYear()} AI Bid Copilot, Inc. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Bidora, Inc. All rights reserved.</span>
           <div className="flex items-center space-x-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>All systems operational</span>

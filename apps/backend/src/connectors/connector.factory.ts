@@ -12,6 +12,8 @@ import { UngmConnector } from './ungm.connector';
 import { AfdbConnector } from './afdb.connector';
 import { ArmpConnector } from './armp.connector';
 import { ColepsConnector } from './coleps.connector';
+import { BstpConnector } from './bstp.connector';
+import { CorporateProcurementCrawler } from './corporate-procurement-crawler';
 import { GenericProcurementCrawler } from './generic-procurement-crawler';
 
 @Injectable()
@@ -30,6 +32,8 @@ export class ConnectorFactory {
     private readonly afdbConnector: AfdbConnector,
     private readonly armpConnector: ArmpConnector,
     private readonly colepsConnector: ColepsConnector,
+    private readonly bstpConnector: BstpConnector,
+    private readonly corporateProcurementCrawler: CorporateProcurementCrawler,
     private readonly genericProcurementCrawler: GenericProcurementCrawler,
   ) {}
 
@@ -37,6 +41,9 @@ export class ConnectorFactory {
     const nameLower = (publisherName || '').toLowerCase();
 
     // Specific Source Connector Overrides
+    if (nameLower.includes('bstp') || nameLower.includes('bourse de sous-traitance')) {
+      return this.bstpConnector;
+    }
     if (nameLower.includes('world bank') || nameLower.includes('banque mondiale')) {
       return this.worldBankConnector;
     }
@@ -51,6 +58,18 @@ export class ConnectorFactory {
     }
     if (nameLower.includes('coleps') || nameLower.includes('marchespublics.cm')) {
       return this.colepsConnector;
+    }
+    if (
+      nameLower.includes('port') ||
+      nameLower.includes('pak') ||
+      nameLower.includes('pad') ||
+      nameLower.includes('camwater') ||
+      nameLower.includes('sonatrel') ||
+      nameLower.includes('eneo') ||
+      nameLower.includes('corporate') ||
+      nameLower.includes('enterprise')
+    ) {
+      return this.corporateProcurementCrawler;
     }
     if (nameLower.includes('ministry') || nameLower.includes('ministère') || nameLower.includes('crawler')) {
       return this.genericProcurementCrawler;

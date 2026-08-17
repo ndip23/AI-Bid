@@ -104,7 +104,7 @@ export default function AdminPortalPage() {
 
             <button
               onClick={() => setShowModal(true)}
-              className="px-5 py-2.5 rounded-2xl bg-blue-600 text-white font-extrabold text-xs shadow-md shadow-blue-600/20 hover:opacity-95 transition-opacity flex items-center space-x-2 self-start sm:self-auto"
+              className="px-5 py-2.5 rounded-2xl bg-blue-600 text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 hover:opacity-95 transition-opacity flex items-center space-x-2 self-start sm:self-auto"
             >
               <Plus className="w-4 h-4" />
               <span>Ingest New Tender</span>
@@ -123,7 +123,7 @@ export default function AdminPortalPage() {
             <div className="glass-panel p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500">Live Database Tenders</span>
-                <FileText className="w-4 h-4 text-blue-600" />
+                <FileText className="w-4 h-4 text-emerald-600" />
               </div>
               <p className="text-2xl font-black text-slate-900">{stats?.totalTenders ?? 0}</p>
               <p className="text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
@@ -164,7 +164,7 @@ export default function AdminPortalPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
               <div>
                 <h2 className="text-base font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                  <Database className="w-5 h-5 text-blue-600" />
+                  <Database className="w-5 h-5 text-emerald-600" />
                   Procurement Source Registry & Connectors
                 </h2>
                 <p className="text-xs text-slate-500 font-medium">
@@ -203,7 +203,7 @@ export default function AdminPortalPage() {
                       </td>
                       <td className="py-3.5 px-4 font-bold text-slate-800">{src.sourceName}</td>
                       <td className="py-3.5 px-4 text-slate-600">
-                        <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-bold text-[11px]">
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[11px]">
                           {src.method}
                         </span>
                       </td>
@@ -238,7 +238,7 @@ export default function AdminPortalPage() {
               <div className="glass-panel w-full max-w-xl p-6 rounded-3xl bg-white border border-slate-200 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                   <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-blue-600" />
+                    <Sparkles className="w-5 h-5 text-emerald-600" />
                     Ingest Public Tender Notice
                   </h3>
                   <button
@@ -258,7 +258,7 @@ export default function AdminPortalPage() {
                       value={newTender.title}
                       onChange={(e) => setNewTender({ ...newTender, title: e.target.value })}
                       placeholder="e.g. MINTP Cameroon — Douala Highway Telemetry"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
                     />
                   </div>
 
@@ -271,7 +271,7 @@ export default function AdminPortalPage() {
                         value={newTender.refNumber}
                         onChange={(e) => setNewTender({ ...newTender, refNumber: e.target.value })}
                         placeholder="CMR-ARMP-2026-N089"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
                       />
                     </div>
 
@@ -280,7 +280,7 @@ export default function AdminPortalPage() {
                       <select
                         value={newTender.buyerCountry}
                         onChange={(e) => setNewTender({ ...newTender, buyerCountry: e.target.value })}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
                       >
                         <option value="Cameroon">Cameroon</option>
                         <option value="Nigeria">Nigeria</option>
@@ -301,7 +301,7 @@ export default function AdminPortalPage() {
                       value={newTender.buyerName}
                       onChange={(e) => setNewTender({ ...newTender, buyerName: e.target.value })}
                       placeholder="e.g. Ministère des Travaux Publics Cameroon"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
                     />
                   </div>
 
@@ -313,7 +313,7 @@ export default function AdminPortalPage() {
                         required
                         value={newTender.estimatedValue}
                         onChange={(e) => setNewTender({ ...newTender, estimatedValue: Number(e.target.value) })}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
                       />
                     </div>
 
@@ -324,7 +324,7 @@ export default function AdminPortalPage() {
                         required
                         value={newTender.deadline}
                         onChange={(e) => setNewTender({ ...newTender, deadline: e.target.value })}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
                       />
                     </div>
                   </div>
@@ -336,7 +336,7 @@ export default function AdminPortalPage() {
                       value={newTender.description}
                       onChange={(e) => setNewTender({ ...newTender, description: e.target.value })}
                       placeholder="Provide tender scope and requirements..."
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
                     />
                   </div>
 
@@ -350,7 +350,7 @@ export default function AdminPortalPage() {
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 rounded-xl bg-blue-600 text-white font-extrabold text-xs shadow-md shadow-blue-600/20 hover:opacity-95"
+                      className="px-5 py-2 rounded-xl bg-blue-600 text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 hover:opacity-95"
                     >
                       Publish Tender
                     </button>

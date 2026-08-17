@@ -12,12 +12,20 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const existingUser = await this.prisma.user.findUnique({
+    const existingEmail = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase() },
     });
 
-    if (existingUser) {
+    if (existingEmail) {
       throw new BadRequestException('User with this email already exists');
+    }
+
+    const existingUsername = await this.prisma.user.findUnique({
+      where: { username: dto.username },
+    });
+
+    if (existingUsername) {
+      throw new BadRequestException('Username is already taken');
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -43,9 +51,8 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: {
         email: dto.email.toLowerCase(),
+        username: dto.username,
         passwordHash,
-        firstName: dto.firstName,
-        lastName: dto.lastName,
         role: 'COMPANY_USER',
         companyId: company?.id || null,
       },

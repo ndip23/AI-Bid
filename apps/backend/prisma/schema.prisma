@@ -70,14 +70,65 @@ enum PublisherStatus {
   PAUSED
   FAILED
   DISCOVERING
+  AUTH_REQUIRED
+}
+
+enum OpportunityType {
+  PUBLIC_TENDER
+  PRIVATE_TENDER
+  REQUEST_FOR_QUOTATION
+  REQUEST_FOR_PROPOSAL
+  REQUEST_FOR_INFORMATION
+  EXPRESSION_OF_INTEREST
+  SUBCONTRACTING
+  SUPPLIER_REQUEST
+  VENDOR_REGISTRATION
+  BUSINESS_OPPORTUNITY
+  PARTNERSHIP_OPPORTUNITY
+  DONOR_PROCUREMENT
+  OTHER
+}
+
+enum SourceCategory {
+  GOVERNMENT
+  STATE_OWNED_ENTERPRISE
+  PRIVATE_PROCUREMENT
+  SUBCONTRACTING
+  NGO_PROCUREMENT
+  DONOR_PROCUREMENT
+  UNIVERSITY
+  HEALTHCARE
+  MUNICIPAL
+  OTHER
+}
+
+enum BuyerType {
+  GOVERNMENT
+  STATE_OWNED_ENTERPRISE
+  PRIVATE_COMPANY
+  NGO
+  UNIVERSITY
+  HOSPITAL
+}
+
+enum BuyerIntent {
+  BUY
+  HIRE
+  OUTSOURCE
+  SUBCONTRACT
+  PARTNER
+  SUPPLY
+  CONSULT
+  CONSTRUCT
+  MAINTAIN
+  REGISTER_VENDOR
 }
 
 model User {
   id           String         @id @default(uuid())
   email        String         @unique
   passwordHash String
-  firstName    String
-  lastName     String
+  username     String?        @unique
   role         UserRole       @default(COMPANY_USER)
   companyId    String?
   company      Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
@@ -125,6 +176,12 @@ model Publisher {
   authenticationType  AuthenticationType @default(NONE)
   crawlInterval       Int                @default(60) // in minutes
   status              PublisherStatus    @default(ACTIVE)
+  sourceCategory      SourceCategory?    @default(GOVERNMENT)
+  defaultBuyerType    BuyerType?         @default(GOVERNMENT)
+  requiresAuth        Boolean            @default(false)
+  qualityScore        Int                @default(80)
+  averageDailyYield   Float              @default(0)
+  uniqueRate          Float              @default(0)
   lastSuccessfulSync  DateTime?
   lastFailedSync      DateTime?
   parserConfiguration Json?              // Selectors, endpoints mapping, pagination settings
@@ -157,35 +214,50 @@ model SyncLog {
 }
 
 model Tender {
-  id                 String         @id @default(uuid())
+  id                 String           @id @default(uuid())
   title              String
-  refNumber          String         @unique
+  refNumber          String           @unique
   buyerName          String
   buyerCountry       String
   industry           String
   estimatedValue     Float
-  currency           String         @default("USD")
+  currency           String           @default("USD")
   publishDate        DateTime
   deadline           DateTime
-  description        String         @db.Text
-  rawContent         String         @db.Text
-  status             TenderStatus   @default(OPEN)
+  description        String           @db.Text
+  rawContent         String           @db.Text
+  status             TenderStatus     @default(OPEN)
   sourceUrl          String?
-  attachments        String[]       // Array of S3 URLs / document paths
+  attachments        String[]         // Array of S3 URLs / document paths
   publisherId        String?
-  publisher          Publisher?     @relation(fields: [publisherId], references: [id], onDelete: SetNull)
+  publisher          Publisher?       @relation(fields: [publisherId], references: [id], onDelete: SetNull)
   organization       String?
   sector             String?
   subcategory        String?
   procurementMethod  String?
   openingDate        DateTime?
   contactInformation Json?
-  language           String         @default("en")
+  language           String           @default("en")
+  opportunityType    OpportunityType?
+  sourceCategory     SourceCategory?
+  buyerType          BuyerType?
+  buyerIntent        BuyerIntent?
+  fundingOrganization String?
+  projectName        String?
+  projectId          String?
+  implementingAgency String?
+  region             String?
+  city               String?
+  eligibility        Json?
+  sourceQualityScore Int?             @default(80)
+  originalSource     String?
+  originalUrl        String?
+  originalExternalId String?
   aiSummary          AiSummary?
   savedTenders       SavedTender[]
   matchScores        MatchScore[]
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
 
   @@map("tenders")
 }
@@ -267,4 +339,25 @@ model Notification {
   createdAt DateTime @default(now())
 
   @@map("notifications")
+}
+
+model SubcontractorProfile {
+  id              String   @id @default(uuid())
+  companyName     String
+  country         String   @default("Cameroon")
+  sector          String
+  subsector       String?
+  location        String?
+  contactPerson   String?
+  email           String?
+  phone           String?
+  website         String?
+  certifications  String[]
+  services        String[]
+  source          String   @default("BSTP-CMR")
+  sourceUrl       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("subcontractor_profiles")
 }

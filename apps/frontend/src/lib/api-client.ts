@@ -13,6 +13,26 @@ export interface ProcurementSourceItem {
   totalIngested: number;
 }
 
+function sanitizeErrorMessage(errData: any, fallbackMsg: string): string {
+  let rawMsg = '';
+  if (typeof errData === 'string') {
+    rawMsg = errData;
+  } else if (errData && typeof errData.message === 'string') {
+    rawMsg = errData.message;
+  } else if (errData && Array.isArray(errData.message)) {
+    rawMsg = errData.message.join('. ');
+  }
+
+  if (
+    !rawMsg ||
+    /prisma|sql|invocation|column|syntax|undefined|null|table|findunique|exception|stack|nest/i.test(rawMsg)
+  ) {
+    return fallbackMsg;
+  }
+
+  return rawMsg;
+}
+
 export class ApiClient {
   private static getHeaders() {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -31,12 +51,12 @@ export class ApiClient {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Invalid email or password');
+      throw new Error(sanitizeErrorMessage(err, 'Invalid work email or password. Please check your credentials and try again.'));
     }
     return await res.json();
   }
 
-  static async register(data: { email: string; password: string; firstName: string; lastName: string; companyName?: string; industry?: string }) {
+  static async register(data: { email: string; password: string; username?: string; firstName?: string; lastName?: string; companyName?: string; industry?: string }) {
     const res = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: this.getHeaders(),
@@ -44,7 +64,7 @@ export class ApiClient {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Registration failed');
+      throw new Error(sanitizeErrorMessage(err, 'Could not complete registration. Please verify your details or try a different work email.'));
     }
     return await res.json();
   }
@@ -100,6 +120,15 @@ export class ApiClient {
       body: JSON.stringify({ status, notes }),
     });
     if (!res.ok) throw new Error('Failed to save tender');
+    return await res.json();
+  }
+
+  static async unsaveTender(tenderId: string) {
+    const res = await fetch(`${API_BASE_URL}/tenders/${tenderId}/save`, {
+      method: 'DELETE',
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to remove tender from saved pipeline');
     return await res.json();
   }
 

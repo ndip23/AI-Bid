@@ -95,7 +95,7 @@ export default function AboutPage() {
             <span className="gradient-text">when we ran bid desks.</span>
           </h1>
           <p className="text-base text-slate-600 font-medium leading-relaxed max-w-2xl mx-auto">
-            Evaluating complex RFPs requires hours of manual document parsing, cross-referencing compliance requirements, and verifying organizational capability. AI Bid Copilot was engineered to eliminate this friction—empowering procurement and proposal teams with instant document intelligence, automated eligibility verification, and objective match scoring.
+            Evaluating complex RFPs requires hours of manual document parsing, cross-referencing compliance requirements, and verifying organizational capability. Bidora was engineered to eliminate this friction—empowering procurement and proposal teams with instant document intelligence, automated eligibility verification, and objective match scoring.
           </p>
           <p className="text-base text-slate-600 font-medium leading-relaxed max-w-2xl mx-auto">
             By leveraging advanced multi-model AI pipelines, we help capture managers filter out non-viable opportunities early and focus their resources on high-probability bids.
@@ -132,7 +132,7 @@ export default function AboutPage() {
               const Icon = v.icon;
               return (
                 <div key={v.title} className="glass-panel glass-panel-hover rounded-3xl p-7 space-y-4 bg-white">
-                  <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700">
+                  <div className="w-11 h-11 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
                     <Icon className="w-5 h-5" />
                   </div>
                   <h3 className="text-base font-extrabold text-slate-900">{v.title}</h3>
@@ -163,10 +163,10 @@ export default function AboutPage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="font-extrabold text-slate-900">{member.name}</div>
-                  <div className="text-xs font-bold text-blue-600">{member.role}</div>
+                  <div className="text-xs font-bold text-emerald-600">{member.role}</div>
                   <p className="text-xs text-slate-600 font-medium leading-relaxed">{member.bio}</p>
                   <div className="flex items-center space-x-2 pt-1">
-                    <a href="#" className="text-slate-400 hover:text-blue-600 transition-colors">
+                    <a href="#" className="text-slate-400 hover:text-emerald-600 transition-colors">
                       <Linkedin className="w-4 h-4" />
                     </a>
                     <a href="#" className="text-slate-400 hover:text-sky-500 transition-colors">
@@ -192,7 +192,7 @@ export default function AboutPage() {
             {milestones.map((m, i) => (
               <div key={m.year} className="flex items-start space-x-6 pb-8 relative">
                 <div className="w-20 shrink-0 text-right">
-                  <span className="text-sm font-extrabold text-blue-600">{m.year}</span>
+                  <span className="text-sm font-extrabold text-emerald-600">{m.year}</span>
                 </div>
                 <div className="relative shrink-0 mt-1">
                   <div className="w-4 h-4 rounded-full bg-blue-600 border-2 border-white shadow-md z-10 relative" />

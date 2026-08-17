@@ -5,7 +5,7 @@ export class AppController {
   @Get()
   getHealth() {
     return {
-      name: 'AI Bid Copilot Backend API',
+      name: 'Bidora Backend API',
       status: 'ONLINE',
       version: '1.0.0',
       timestamp: new Date().toISOString(),

@@ -63,11 +63,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile, isM
                 onClick={onCloseMobile}
                 className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
                   isActive
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200/80 shadow-sm'
+                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-sm'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
-                <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-emerald-600' : 'text-slate-400'}`} />
                 <span>{item.label}</span>
               </Link>
             );
@@ -77,9 +77,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile, isM
 
       {/* Footer Banner & Logout */}
       <div className="space-y-3">
-        <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-          <div className="flex items-center space-x-2 text-blue-700 font-bold text-xs mb-1">
-            <Sparkles className="w-4 h-4 text-blue-600" />
+        <div className="p-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100">
+          <div className="flex items-center space-x-2 text-emerald-800 font-bold text-xs mb-1">
+            <Sparkles className="w-4 h-4 text-emerald-600" />
             <span>AI Match Engine active</span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed font-medium">

@@ -29,7 +29,7 @@ export class RestApiConnector implements IPublisherConnector {
 
     try {
       this.logger.log(`[REST_API] Fetching latest notices from ${endpoint}`);
-      const headers: Record<string, string> = { 'User-Agent': 'AI-Bid-ProcurementEngine/1.0' };
+      const headers: Record<string, string> = { 'User-Agent': 'Bidora-ProcurementEngine/1.0' };
       const config = (publisher.parserConfiguration as Record<string, any>) || {};
 
       if (publisher.authenticationType === 'API_KEY' && config.apiKey) {

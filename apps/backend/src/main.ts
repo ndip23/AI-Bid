@@ -31,7 +31,7 @@ async function bootstrap() {
 
   // Swagger Documentation
   const config = new DocumentBuilder()
-    .setTitle('AI Bid Copilot API')
+    .setTitle('Bidora API')
     .setDescription('Procurement Opportunity Evaluation & Matching SaaS API')
     .setVersion('1.0')
     .addBearerAuth()

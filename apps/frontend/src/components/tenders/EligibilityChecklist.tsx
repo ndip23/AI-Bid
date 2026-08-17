@@ -94,7 +94,7 @@ export const EligibilityChecklist: React.FC<Props> = ({ matchDetails }) => {
               <div className="pt-2">
                 <Link
                   href="/company"
-                  className="inline-flex items-center text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                  className="inline-flex items-center text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
                 >
                   Update Company Capability Profile <ArrowRight className="w-3.5 h-3.5 ml-1" />
                 </Link>

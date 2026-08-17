@@ -70,7 +70,7 @@ export const CapabilityForm: React.FC<CapabilityFormProps> = ({ company, onSave 
         <CardHeader
           title="Company Identification & Business Overview"
           description="General company details used by the AI engine to evaluate buyer eligibility"
-          icon={<Building2 className="w-5 h-5 text-blue-600" />}
+          icon={<Building2 className="w-5 h-5 text-emerald-600" />}
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
@@ -118,7 +118,7 @@ export const CapabilityForm: React.FC<CapabilityFormProps> = ({ company, onSave 
             rows={3}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:border-blue-600 font-medium shadow-sm"
+            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:border-emerald-600 font-medium shadow-sm"
             placeholder="Describe core capabilities, track record, and value proposition..."
           />
         </div>

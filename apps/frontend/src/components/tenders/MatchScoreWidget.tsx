@@ -25,7 +25,7 @@ export const MatchScoreWidget: React.FC<Props> = ({ matchDetails, overallScore }
       <div className="flex items-center justify-between border-b border-slate-100 pb-5">
         <div>
           <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-            <Award className="w-5 h-5 text-blue-600" />
+            <Award className="w-5 h-5 text-emerald-600" />
             Company Match Score
           </h3>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
@@ -37,7 +37,7 @@ export const MatchScoreWidget: React.FC<Props> = ({ matchDetails, overallScore }
         <div className="flex items-center space-x-3">
           <div className="text-right">
             <div className="text-2xl font-black tracking-tight text-slate-900">{score}%</div>
-            <div className="text-[10px] uppercase tracking-wider font-extrabold text-blue-600">
+            <div className="text-[10px] uppercase tracking-wider font-extrabold text-emerald-600">
               Match Score
             </div>
           </div>
@@ -58,14 +58,14 @@ export const MatchScoreWidget: React.FC<Props> = ({ matchDetails, overallScore }
           <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
             <div className="flex items-center justify-between text-xs font-bold">
               <span className="text-slate-700 flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-blue-600" />
+                <Layers className="w-3.5 h-3.5 text-emerald-600" />
                 Industry Alignment
               </span>
               <span className="text-slate-900 font-extrabold">{matchDetails.industryMatchScore}%</span>
             </div>
             <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
               <div
-                className="bg-blue-600 h-full rounded-full transition-all duration-500"
+                className="bg-emerald-600 h-full rounded-full transition-all duration-500"
                 style={{ width: `${matchDetails.industryMatchScore}%` }}
               />
             </div>

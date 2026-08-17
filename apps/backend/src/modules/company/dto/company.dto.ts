@@ -51,10 +51,7 @@ export class AddTeamMemberDto {
   email: string;
 
   @IsString()
-  firstName: string;
-
-  @IsString()
-  lastName: string;
+  username: string;
 
   @IsString()
   @IsOptional()

@@ -56,7 +56,7 @@ export class MinistryDiscoveryService {
     try {
       const response = await axios.get(publisher.officialWebsite, {
         headers: {
-          'User-Agent': 'AI-Bid-MinistryDiscoveryEngine/1.0',
+          'User-Agent': 'Bidora-MinistryDiscoveryEngine/1.0',
         },
         timeout: 15000,
       });

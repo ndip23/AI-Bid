@@ -44,10 +44,9 @@ async function main() {
   if (!existingAdmin) {
     await prisma.user.create({
       data: {
-        email: 'admin@aibidcopilot.com',
+        email: 'admin@bidora.io',
+        username: 'admin',
         passwordHash,
-        firstName: 'Sarah',
-        lastName: 'Director',
         role: UserRole.SUPER_ADMIN,
       },
     });
@@ -62,9 +61,8 @@ async function main() {
     await prisma.user.create({
       data: {
         email: 'user@apextech.com',
+        username: 'david_miller',
         passwordHash,
-        firstName: 'David',
-        lastName: 'Miller',
         role: UserRole.COMPANY_USER,
         companyId: company1.id,
       },
