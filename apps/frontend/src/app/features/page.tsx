@@ -92,12 +92,8 @@ export default function FeaturesPage() {
       <PublicNav />
 
       {/* Hero */}
-      <section className="hero-mesh pt-32 pb-16 px-6 md:px-10 text-center">
-        <div className="max-w-3xl mx-auto space-y-5 animate-fade-in-up">
-          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Platform Capabilities</span>
-          </div>
+      <section className="hero-mesh pt-20 pb-10 px-6 md:px-10 text-center">
+        <div className="max-w-3xl mx-auto space-y-4 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
             Every tool your bid desk needs.<br />
             <span className="gradient-text">Nothing it doesn't.</span>

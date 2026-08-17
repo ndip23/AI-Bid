@@ -121,10 +121,6 @@ export default function RegisterPage() {
         <div className="hidden lg:flex lg:w-[42%] hero-mesh flex-col justify-between p-12 border-r border-slate-200">
           <div className="space-y-8">
             <div className="space-y-3">
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span>Start Your 14-Day Free Trial</span>
-              </div>
               <h2 className="text-3xl font-black text-slate-900 leading-tight">
                 Start winning more<br />contracts today.
               </h2>

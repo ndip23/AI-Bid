@@ -13,14 +13,9 @@ export default function PricingPage() {
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       <PublicNav />
 
-      <main className="flex-1 max-w-7xl mx-auto px-6 md:px-12 pt-28 pb-16 space-y-12 w-full">
+      <main className="flex-1 max-w-7xl mx-auto px-6 md:px-12 pt-20 pb-12 space-y-10 w-full">
         {/* Title */}
-        <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold shadow-sm">
-            <Sparkles className="w-4 h-4 text-emerald-600" />
-            <span>Simple, Predictable Enterprise Pricing</span>
-          </div>
-
+        <div className="text-center space-y-3 max-w-2xl mx-auto">
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">Choose the Plan Built for Your Team</h1>
           <p className="text-sm text-slate-600 font-medium">
             Scale your tender discovery, match scoring, and RFP analysis with zero hidden fees.

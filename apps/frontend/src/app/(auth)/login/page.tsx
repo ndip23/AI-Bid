@@ -59,12 +59,7 @@ export default function LoginPage() {
       <main className="flex-1 flex flex-col lg:flex-row pt-20">
         {/* ─── LEFT PANEL (hidden on mobile) ─── */}
         <div className="hidden lg:flex lg:w-[45%] hero-mesh flex-col justify-between p-12 border-r border-slate-200">
-          <div className="space-y-6">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-              <Sparkles className="w-4 h-4 text-emerald-600" />
-              <span>Enterprise Procurement AI</span>
-            </div>
-
+          <div className="space-y-4">
             <h2 className="text-3xl font-black text-slate-900 leading-tight">
               Evaluate RFPs in seconds with AI.
             </h2>

@@ -195,19 +195,14 @@ export default function HomePage() {
       <PublicNav />
 
       {/* ─── HERO ─── */}
-      <section className="hero-mesh relative pt-28 pb-20 px-6 md:px-10 overflow-hidden">
+      <section className="hero-mesh relative pt-16 pb-12 px-6 md:px-10 overflow-hidden">
         {/* Decorative blobs */}
         <div className="absolute top-20 right-10 w-72 h-72 rounded-full bg-emerald-100/60 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-10 w-56 h-56 rounded-full bg-cyan-100/50 blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
           {/* Left */}
-          <div className="lg:col-span-7 space-y-7 animate-fade-in-up">
-            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-              <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-              <span>AI Procurement Intelligence · Now with Gemini 1.5 Flash</span>
-            </div>
-
+          <div className="lg:col-span-7 space-y-6 animate-fade-in-up">
             <h1 className="text-5xl md:text-6xl lg:text-[64px] font-black text-slate-900 tracking-tight leading-[1.05]">
               Win More Bids.<br />
               <span className="gradient-text">Waste Zero Time.</span>
@@ -371,13 +366,9 @@ export default function HomePage() {
       </section>
 
       {/* ─── FEATURES GRID ─── */}
-      <section className="bg-slate-50 py-20 px-6 md:px-10 border-t border-slate-200">
-        <div className="max-w-7xl mx-auto space-y-14">
-          <div className="text-center space-y-4 max-w-2xl mx-auto">
-            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Everything Your Bid Desk Needs</span>
-            </div>
+      <section className="bg-slate-50 py-16 px-6 md:px-10 border-t border-slate-200">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
               Built for high-stakes procurement, not spreadsheets
             </h2>
