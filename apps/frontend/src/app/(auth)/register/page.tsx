@@ -352,15 +352,20 @@ export default function RegisterPage() {
                   <label className="flex items-start space-x-3 cursor-pointer">
                     <input
                       type="checkbox"
+                      required
                       checked={agreed}
                       onChange={(e) => setAgreed(e.target.checked)}
-                      className="mt-1 w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-blue-600"
+                      className="mt-1 w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-600"
                     />
                     <span className="text-xs text-slate-600 font-medium leading-relaxed">
                       I agree to Bidora&apos;s{' '}
-                      <a href="#" className="text-emerald-600 font-bold hover:underline">Terms of Service</a>{' '}
+                      <Link href="/terms" target="_blank" className="text-emerald-600 font-bold hover:underline">
+                        Terms of Service
+                      </Link>{' '}
                       and{' '}
-                      <a href="#" className="text-emerald-600 font-bold hover:underline">Privacy Policy</a>.
+                      <Link href="/privacy" target="_blank" className="text-emerald-600 font-bold hover:underline">
+                        Privacy Policy
+                      </Link>.
                       I understand my data is encrypted and never shared.
                     </span>
                   </label>
