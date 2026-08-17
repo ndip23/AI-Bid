@@ -18,10 +18,6 @@ export const Footer: React.FC = () => {
         <div className="flex items-center space-x-4 text-slate-600 font-semibold">
           <a href="/privacy" className="hover:text-emerald-600 transition-colors">Privacy</a>
           <a href="/terms" className="hover:text-emerald-600 transition-colors">Terms</a>
-          <a href="/security" className="hover:text-emerald-600 transition-colors flex items-center gap-1">
-            <Shield className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Security</span>
-          </a>
           <a href="/docs" className="hover:text-emerald-600 transition-colors flex items-center gap-1">
             <Cpu className="w-3.5 h-3.5 text-emerald-600" />
             <span>API Docs</span>
