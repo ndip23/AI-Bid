@@ -7,13 +7,25 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TenderService {
+  private cache = new Map<string, { data: any; expiresAt: number }>();
+
   constructor(
     private prisma: PrismaService,
     private aiService: AiService,
     private matchService: MatchService,
   ) {}
 
+  public clearCache() {
+    this.cache.clear();
+  }
+
   async findAll(query: QueryTendersDto, companyId?: string) {
+    const cacheKey = JSON.stringify({ query, companyId });
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() < cached.expiresAt) {
+      return cached.data;
+    }
+
     const where: Prisma.TenderWhereInput = {};
 
     if (query.search) {
@@ -104,11 +116,12 @@ export class TenderService {
       };
     });
 
-    if (query.minScore && userCompany) {
-      return enriched.filter((t) => (t.matchScore || 0) >= query.minScore);
-    }
+    const result = (query.minScore && userCompany)
+      ? enriched.filter((t) => (t.matchScore || 0) >= query.minScore)
+      : enriched;
 
-    return enriched;
+    this.cache.set(cacheKey, { data: result, expiresAt: Date.now() + 15000 });
+    return result;
   }
 
   async findOne(id: string, companyId?: string) {

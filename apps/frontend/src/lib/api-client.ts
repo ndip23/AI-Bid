@@ -91,7 +91,15 @@ export class ApiClient {
     return await res.json();
   }
 
+  private static tendersCache: { key: string; data: Tender[]; timestamp: number } | null = null;
+
   static async getTenders(params?: { search?: string; industry?: string; country?: string; minScore?: number }): Promise<Tender[]> {
+    const key = JSON.stringify(params || {});
+    const now = Date.now();
+    if (this.tendersCache && this.tendersCache.key === key && (now - this.tendersCache.timestamp) < 10000) {
+      return this.tendersCache.data;
+    }
+
     try {
       const queryParams = new URLSearchParams();
       if (params?.search) queryParams.append('search', params.search);
@@ -100,7 +108,11 @@ export class ApiClient {
       if (params?.minScore) queryParams.append('minScore', String(params.minScore));
 
       const res = await fetch(`${API_BASE_URL}/tenders?${queryParams.toString()}`, { headers: this.getHeaders() });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        this.tendersCache = { key, data, timestamp: now };
+        return data;
+      }
     } catch (e) {
       console.error('Failed to fetch tenders', e);
     }

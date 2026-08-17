@@ -259,6 +259,11 @@ model Tender {
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 
+  @@index([status])
+  @@index([industry])
+  @@index([buyerCountry])
+  @@index([deadline])
+  @@index([createdAt])
   @@map("tenders")
 }
 
