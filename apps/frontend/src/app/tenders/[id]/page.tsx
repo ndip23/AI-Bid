@@ -7,9 +7,15 @@ import { Sidebar } from '../../../components/layout/Sidebar';
 import { MatchScoreWidget } from '../../../components/tenders/MatchScoreWidget';
 import { AISummaryView } from '../../../components/tenders/AISummaryView';
 import { EligibilityChecklist } from '../../../components/tenders/EligibilityChecklist';
+import { TenderSpecificationView } from '../../../components/tenders/TenderSpecificationView';
+import { TenderDocumentsView } from '../../../components/tenders/TenderDocumentsView';
 import { ApiClient } from '../../../lib/api-client';
+import { formatCurrency } from '../../../lib/formatters';
 import { Tender, SavedStatus } from '../../../types';
 import { useToast } from '../../../lib/toast-context';
+import { useAuth } from '../../../lib/auth-context';
+import { checkProfileCompleteness } from '../../../lib/profile-utils';
+import { IncompleteProfileModal } from '../../../components/ui';
 import {
   ArrowLeft,
   Bookmark,
@@ -26,6 +32,9 @@ import {
   FileCheck2,
   CheckCircle2,
   Clock,
+  Layers,
+  Eye,
+  FolderArchive,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -41,13 +50,15 @@ export default function TenderDetailPage() {
   const params = useParams();
   const id = params?.id as string;
   const { toast } = useToast();
+  const { company } = useAuth();
 
   const [tender, setTender] = useState<Tender | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'summary' | 'match' | 'checklist' | 'workspace' | 'raw'>('summary');
+  const [activeTab, setActiveTab] = useState<'summary' | 'specs' | 'docs' | 'match' | 'checklist' | 'workspace'>('summary');
   const [isSaved, setIsSaved] = useState(false);
   const [savedStatus, setSavedStatus] = useState<SavedStatus>('BOOKMARKED');
   const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const [showIncompleteModal, setShowIncompleteModal] = useState(false);
 
   // Collaborative Bid Workspace Tasks ("Jira for Bids")
   const [tasks, setTasks] = useState<BidTask[]>([
@@ -80,6 +91,20 @@ export default function TenderDetailPage() {
 
   const handleSave = async (status: SavedStatus) => {
     if (!tender) return;
+
+    if (status === 'BIDDING') {
+      const completeness = checkProfileCompleteness(company);
+      if (!completeness.isComplete) {
+        setShowStatusMenu(false);
+        setShowIncompleteModal(true);
+        toast.error(
+          'Capability Profile Incomplete',
+          'You must fill and submit your company capability profile before entering the Bidding stage.'
+        );
+        return;
+      }
+    }
+
     await ApiClient.saveTender(tender.id, status);
     setIsSaved(true);
     setSavedStatus(status);
@@ -116,7 +141,16 @@ export default function TenderDetailPage() {
   };
 
   const handlePullFromVault = () => {
-    toast.success('Company Knowledge Vault Linked!', 'Auto-filled team CVs, ISO 27001 certificate, and 3 past African project references.');
+    const completeness = checkProfileCompleteness(company);
+    if (!completeness.isComplete) {
+      setShowIncompleteModal(true);
+      toast.error(
+        'Capability Profile Incomplete',
+        'Fill your company credentials to auto-reuse documents from your vault.'
+      );
+      return;
+    }
+    toast.success('Company Knowledge Vault Linked!', `Auto-filled verified credentials for ${company?.name || 'Company'}.`);
   };
 
   if (loading || !tender) {
@@ -177,18 +211,26 @@ export default function TenderDetailPage() {
               </div>
 
               {/* Action Bar & Score Pill */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 shrink-0">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 shrink-0 w-full sm:w-auto">
                 {tender.matchScore !== undefined && (
-                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center shadow-sm">
-                    <div className="text-2xl font-black text-slate-900">{tender.matchScore}%</div>
+                  <div className="p-3 sm:p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center shadow-sm shrink-0">
+                    <div className="text-xl sm:text-2xl font-black text-slate-900">{tender.matchScore}%</div>
                     <div className="text-[10px] uppercase font-extrabold text-emerald-600">Match Score</div>
                   </div>
                 )}
 
-                <div className="relative">
+                <button
+                  onClick={() => setActiveTab('docs')}
+                  className="px-4 py-3 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-800 font-extrabold text-xs border border-sky-200 shadow-xs flex items-center justify-center space-x-2 transition-colors w-full sm:w-auto"
+                >
+                  <FolderArchive className="w-4 h-4 text-sky-600" />
+                  <span>Documents & Dossier (12)</span>
+                </button>
+
+                <div className="relative w-full sm:w-auto">
                   <button
                     onClick={() => setShowStatusMenu(!showStatusMenu)}
-                    className="px-5 py-3 rounded-2xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 flex items-center space-x-2 hover:opacity-95 transition-opacity"
+                    className="w-full sm:w-auto px-5 py-3 rounded-2xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center space-x-2 hover:opacity-95 transition-opacity"
                   >
                     <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-white' : ''}`} />
                     <span>{isSaved ? savedStatus.replace('_', ' ') : 'Save Tender'}</span>
@@ -217,7 +259,7 @@ export default function TenderDetailPage() {
               <div>
                 <span className="text-[10px] uppercase font-bold text-slate-400 block">Est. Value</span>
                 <span className="text-sm font-extrabold text-slate-900">
-                  ${tender.estimatedValue.toLocaleString()} {tender.currency}
+                  {formatCurrency(tender.estimatedValue, tender.currency)}
                 </span>
               </div>
               <div>
@@ -251,7 +293,7 @@ export default function TenderDetailPage() {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex border-b border-slate-200 space-x-2 md:space-x-4 overflow-x-auto">
+          <div className="flex border-b border-slate-200 space-x-2 md:space-x-4 overflow-x-auto scrollbar-none touch-pan-x -mx-1 px-1">
             <button
               onClick={() => setActiveTab('summary')}
               className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
@@ -263,6 +305,34 @@ export default function TenderDetailPage() {
               <Sparkles className="w-4 h-4" />
               AI Executive Summary
             </button>
+
+            <button
+              onClick={() => setActiveTab('docs')}
+              className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
+                activeTab === 'docs'
+                  ? 'border-emerald-600 text-emerald-600 font-extrabold'
+                  : 'border-transparent text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <FileText className="w-4 h-4 text-sky-600" />
+              <span>Project Documents & Submission Dossier</span>
+              <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 text-[10px] font-extrabold border border-sky-200">
+                12 Docs
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('specs')}
+              className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
+                activeTab === 'specs'
+                  ? 'border-emerald-600 text-emerald-600 font-extrabold'
+                  : 'border-transparent text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <Layers className="w-4 h-4 text-emerald-600" />
+              <span>Full Specifications & Blueprint</span>
+            </button>
+
             <button
               onClick={() => setActiveTab('match')}
               className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
@@ -274,6 +344,7 @@ export default function TenderDetailPage() {
               <Award className="w-4 h-4" />
               Company Match Score
             </button>
+
             <button
               onClick={() => setActiveTab('checklist')}
               className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
@@ -285,6 +356,7 @@ export default function TenderDetailPage() {
               <ShieldCheck className="w-4 h-4" />
               Eligibility Checklist
             </button>
+
             <button
               onClick={() => setActiveTab('workspace')}
               className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
@@ -299,22 +371,13 @@ export default function TenderDetailPage() {
                 Team
               </span>
             </button>
-            <button
-              onClick={() => setActiveTab('raw')}
-              className={`pb-3 text-xs font-bold flex items-center gap-2 border-b-2 shrink-0 transition-colors ${
-                activeTab === 'raw'
-                  ? 'border-emerald-600 text-emerald-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              <FileText className="w-4 h-4" />
-              Raw Specs
-            </button>
           </div>
 
           {/* Tab Content */}
           <div>
             {activeTab === 'summary' && <AISummaryView summary={tender.aiSummary} />}
+            {activeTab === 'docs' && <TenderDocumentsView tender={tender} />}
+            {activeTab === 'specs' && <TenderSpecificationView tender={tender} />}
             {activeTab === 'match' && (
               <MatchScoreWidget matchDetails={tender.matchDetails} overallScore={tender.matchScore} />
             )}
@@ -469,18 +532,17 @@ export default function TenderDetailPage() {
                 </div>
               </div>
             )}
-
-            {activeTab === 'raw' && (
-              <div className="glass-panel rounded-2xl p-6 space-y-4 bg-white border border-slate-200 shadow-sm">
-                <h3 className="text-sm font-extrabold text-slate-900">Full Tender Specification Content</h3>
-                <pre className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-mono whitespace-pre-wrap leading-relaxed">
-                  {tender.rawContent}
-                </pre>
-              </div>
-            )}
           </div>
         </main>
       </div>
+
+      {/* Warning Modal if Capability Profile is Incomplete */}
+      <IncompleteProfileModal
+        isOpen={showIncompleteModal}
+        onClose={() => setShowIncompleteModal(false)}
+        missingFields={checkProfileCompleteness(company).missingFields}
+        companyName={company?.name || 'your company'}
+      />
     </div>
   );
 }

@@ -43,3 +43,15 @@ export class ResetPasswordDto {
   @IsOptional()
   newPassword?: string;
 }
+
+export class UpdateProfileDto {
+  @IsString()
+  @IsOptional()
+  @MinLength(2)
+  username?: string;
+
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+}
+

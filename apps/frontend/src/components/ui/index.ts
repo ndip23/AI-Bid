@@ -9,3 +9,5 @@ export * from './Tooltip';
 export * from './Progress';
 export * from './LoadingSpinner';
 export * from './Skeleton';
+export * from './IncompleteProfileModal';
+

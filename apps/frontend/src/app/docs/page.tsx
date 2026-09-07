@@ -4,19 +4,26 @@ import React from 'react';
 import Link from 'next/link';
 import { PublicNav } from '../../components/layout/PublicNav';
 import { PublicFooter } from '../../components/layout/PublicFooter';
+import { useLanguage } from '../../lib/language-context';
 import { Sparkles, FileText, Code, ShieldCheck, Terminal, ExternalLink, ArrowRight } from 'lucide-react';
 
 export default function DocsPage() {
+  const { isFrench } = useLanguage();
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       <PublicNav />
 
-      <main className="flex-1 max-w-7xl mx-auto px-6 md:px-12 pt-20 pb-12 space-y-10 w-full">
+      <main className="flex-1 max-w-7xl mx-auto px-6 md:px-12 pt-28 pb-16 space-y-10 w-full">
         {/* Title */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight">Bidora API Reference</h1>
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+            {isFrench ? 'Référence de l\'API Bidora' : 'Bidora API Reference'}
+          </h1>
           <p className="text-sm text-slate-600 font-medium">
-            Learn how to integrate our AI match engine and tender ingestion API into your enterprise apps.
+            {isFrench
+              ? 'Découvrez comment interconnecter notre moteur d\'adéquation par IA et l\'ingestion d\'appels d\'offres à vos progiciels d\'entreprise.'
+              : 'Learn how to integrate our AI match engine and tender ingestion API into your enterprise apps.'}
           </p>
         </div>
 
@@ -29,12 +36,16 @@ export default function DocsPage() {
                 <Code className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-extrabold text-slate-900">REST API Specification</h3>
+                <h3 className="text-base font-extrabold text-slate-900">
+                  {isFrench ? 'Spécification de l\'API REST' : 'REST API Specification'}
+                </h3>
                 <p className="text-xs text-slate-500 font-medium">OpenAPI v3 Swagger Docs</p>
               </div>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed font-medium">
-              Explore interactive endpoints for user authentication, company capability profiles, tender ingestion, and saved bid pipeline updates.
+              {isFrench
+                ? 'Explorez les points de terminaison interactifs pour l\'authentification, les matrices de compétences, l\'ingestion de DAO et la gestion du pipeline d\'offres.'
+                : 'Explore interactive endpoints for user authentication, company capability profiles, tender ingestion, and saved bid pipeline updates.'}
             </p>
             <a
               href="http://localhost:4000/api/docs"
@@ -42,7 +53,8 @@ export default function DocsPage() {
               rel="noreferrer"
               className="inline-flex items-center text-xs font-extrabold text-emerald-600 hover:text-emerald-700 gap-1"
             >
-              Open Swagger API Console <ExternalLink className="w-3.5 h-3.5" />
+              <span>{isFrench ? 'Ouvrir la Console Swagger' : 'Open Swagger API Console'}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
 
@@ -53,47 +65,23 @@ export default function DocsPage() {
                 <Terminal className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-extrabold text-slate-900">Quickstart Authentication</h3>
+                <h3 className="text-base font-extrabold text-slate-900">
+                  {isFrench ? 'Authentification Rapide' : 'Quickstart Authentication'}
+                </h3>
                 <p className="text-xs text-slate-500 font-medium">JWT Bearer Auth</p>
               </div>
             </div>
             <div className="p-3 rounded-xl bg-slate-900 text-slate-200 font-mono text-[11px] space-y-1">
-              <div className="text-emerald-400"># Authenticate & retrieve JWT Token</div>
-              <div>curl -X POST http://localhost:4000/api/v1/auth/login \</div>
-              <div>  -H "Content-Type: application/json" \</div>
-              <div>  -d '&#123;"email":"user@apextech.com","password":"..."&#125;'</div>
+              <div className="text-slate-500">{isFrench ? '# Authentification' : '# Authenticate'}</div>
+              <div>curl -X POST /api/auth/login \</div>
+              <div className="pl-4">-H &quot;Content-Type: application/json&quot; \</div>
+              <div className="pl-4">-d &apos;{JSON.stringify({ email: "team@company.com", password: "••••••" })}&apos;</div>
             </div>
-          </div>
-        </div>
-
-        {/* User Guide Card */}
-        <div className="glass-panel rounded-3xl p-8 bg-white border border-slate-200 shadow-sm space-y-6">
-          <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-emerald-600" />
-            Platform Architecture & AI Workflow Guide
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-medium text-slate-600">
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="font-extrabold text-slate-900 text-sm">1. Tender Ingestion</div>
-              <p className="leading-relaxed">
-                Tenders from SAM.gov, TED Europe, or manual PDFs are parsed by Gemini 1.5 Flash into executive summaries, deliverables, cutoffs, and compliance constraints.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="font-extrabold text-slate-900 text-sm">2. Match Engine</div>
-              <p className="leading-relaxed">
-                The NestJS backend runs `MatchService` to score 4 capability vectors: industry sector, operating geography, ISO/SOC certifications, and past experience.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="font-extrabold text-slate-900 text-sm">3. Pipeline Tracking</div>
-              <p className="leading-relaxed">
-                Bids are saved to your company pipeline under Bookmarked, Under Review, Bidding, or Passed stages with automated deadline warning notifications.
-              </p>
-            </div>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              {isFrench
+                ? 'Passez le token JWT renvoyé dans l\'en-tête Authorization Bearer pour toutes les requêtes ultérieures.'
+                : 'Pass the returned JWT bearer token in the Authorization header for all subsequent API requests.'}
+            </p>
           </div>
         </div>
       </main>

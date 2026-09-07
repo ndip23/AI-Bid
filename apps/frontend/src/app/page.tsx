@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { PublicNav } from '../components/layout/PublicNav';
 import { PublicFooter } from '../components/layout/PublicFooter';
 import { ApiClient } from '../lib/api-client';
+import { useLanguage } from '../lib/language-context';
 import {
   Sparkles,
   ArrowRight,
@@ -41,60 +42,6 @@ function useCounter(end: number, duration: number = 1800, start: boolean = false
   return count;
 }
 
-/* ─── Stats Section ─── */
-const stats = [
-  { value: 500, suffix: '+', label: 'Enterprise Teams', icon: BarChart3 },
-  { value: 94, suffix: '%', label: 'Average Match Accuracy', icon: Award },
-  { value: 12, suffix: 'x', label: 'Faster RFP Evaluation', icon: Zap },
-  { value: 48, suffix: 'B+', label: 'Pipeline Value Tracked', icon: TrendingUp, prefix: '$' },
-];
-
-/* ─── Feature cards ─── */
-const features = [
-  {
-    icon: Cpu,
-    color: 'blue',
-    title: 'AI Executive Summarizer',
-    desc: 'Gemini 1.5 Flash and GPT-4o parse 100+ page RFPs into crisp executive summaries with key deliverables, deadlines and compliance risks extracted in seconds.',
-    bullets: ['Dual AI model pipeline (Gemini + GPT-4o)', 'Structured SOW & deliverable extraction', 'Penalty clause and risk flagging'],
-  },
-  {
-    icon: Award,
-    color: 'emerald',
-    title: '4-Vector Match Engine',
-    desc: 'Stop guessing. Our weighted algorithm scores every tender against your company profile across industry, geography, certifications, and capabilities.',
-    bullets: ['ISO / SOC / FedRAMP certification matching', 'Operational country & region scoring', 'Real-time score recalibration on profile update'],
-  },
-  {
-    icon: ShieldCheck,
-    color: 'sky',
-    title: 'Eligibility Checklist',
-    desc: 'Instantly know if you qualify. Side-by-side verification of mandatory requirements vs your company credentials before spending a single hour on a proposal.',
-    bullets: ['Green / amber / red requirement breakdown', 'Missing certification gap analysis', 'Exportable compliance report'],
-  },
-  {
-    icon: Globe,
-    color: 'violet',
-    title: 'Global Tender Discovery',
-    desc: 'SAM.gov, Find-a-Tender UK, TED Europe, UN Global Marketplace and more — unified into one intelligent, searchable feed with filters that actually work.',
-    bullets: ['50,000+ live procurement notices', 'Advanced filters: sector, value, deadline', 'Automated new match alerts'],
-  },
-  {
-    icon: FileText,
-    color: 'amber',
-    title: 'Bid Pipeline Tracker',
-    desc: 'Kanban-style pipeline moves opportunities from discovery to submitted bid. Never miss a deadline with automated 30-day, 7-day and 1-day alerts.',
-    bullets: ['Bookmarked → Reviewing → Bidding → Passed', 'Deadline countdown notifications', 'Team comment threads per opportunity'],
-  },
-  {
-    icon: BarChart3,
-    color: 'rose',
-    title: 'Win Rate Analytics',
-    desc: "Track your team's bid success over time. Understand which sectors and geographies deliver the highest ROI and where to focus capacity next quarter.",
-    bullets: ['Win/loss rate by sector and geography', 'Effort vs value heatmaps', 'Export to CSV and PowerPoint'],
-  },
-];
-
 const colorMap: Record<string, string> = {
   blue:   'bg-emerald-50 border-emerald-200 text-emerald-700',
   emerald:'bg-emerald-50 border-emerald-200 text-emerald-700',
@@ -104,56 +51,11 @@ const colorMap: Record<string, string> = {
   rose:   'bg-rose-50 border-rose-200 text-rose-700',
 };
 
-/* ─── Testimonials ─── */
-const testimonials = [
-  {
-    quote: 'Bidora cut our RFP evaluation time from three days to under an hour. We went from reviewing 10 tenders a month to 60.',
-    name: 'Sarah Chen',
-    role: 'VP of Business Development, Nexus Federal Solutions',
-    rating: 5,
-  },
-  {
-    quote: 'The 4-vector match score is genuinely accurate. It predicted our win probability within 4% of actual results across 12 bids.',
-    name: 'Marcus Obi',
-    role: 'Director of Capture Management, TechArc UK',
-    rating: 5,
-  },
-  {
-    quote: 'We used to miss tenders because we simply couldn\'t read them fast enough. Now our pipeline has tripled without adding headcount.',
-    name: 'Priya Nair',
-    role: 'Head of Procurement, InfraCloud GmbH',
-    rating: 5,
-  },
-];
-
-/* ─── FAQ ─── */
-const faqs = [
-  {
-    q: 'How does the AI match score actually work?',
-    a: 'Our engine evaluates four weighted dimensions: Industry Alignment (35%), Operational Geography (25%), Mandatory Certification Coverage — ISO 27001, SOC 2, FedRAMP etc. (25%), and Past Capability Overlap (15%). The score is recalculated live whenever you update your company capability profile.',
-  },
-  {
-    q: 'Is my company data used to train public AI models?',
-    a: 'Absolutely not. All capability data and RFP documents are encrypted at rest (AES-256) and in transit (TLS 1.3). We enforce strict enterprise tenant isolation and a zero-data-sharing policy. We are SOC 2 Type II compliant.',
-  },
-  {
-    q: 'Which procurement databases do you connect to?',
-    a: 'We currently pull from SAM.gov (US), Find-a-Tender (UK), TED Europe, UN Global Marketplace, and AusTender (Australia). Direct API integrations with Salesforce and HubSpot CRM are available on the Professional tier.',
-  },
-  {
-    q: 'How long does onboarding take?',
-    a: 'Most teams are live in under 30 minutes. You fill in your company capability profile, upload your existing certifications, and the match engine is immediately active against our full tender database.',
-  },
-  {
-    q: 'Can I try it before paying?',
-    a: 'Yes — every plan starts with a fully functional 14-day free trial, no credit card required. You get access to all Professional tier features during the trial period.',
-  },
-];
-
 /* ════════════════════════════════════════════
    MAIN COMPONENT
    ════════════════════════════════════════════ */
 export default function HomePage() {
+  const { isFrench } = useLanguage();
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [statsVisible, setStatsVisible] = useState(false);
   const [liveStats, setLiveStats] = useState<any>(null);
@@ -168,11 +70,35 @@ export default function HomePage() {
   const totalTendersVal = liveStats?.totalTenders || 160;
   const totalCompaniesVal = liveStats?.totalCompanies || 50;
 
-  const dynamicStats: Array<{ value: number; suffix: string; label: string; icon: any; prefix?: string }> = [
-    { value: totalTendersVal, suffix: '+', label: 'Ingested Procurement Notices', icon: BarChart3, prefix: '' },
-    { value: 94, suffix: '%', label: 'Average Match Accuracy', icon: Award, prefix: '' },
-    { value: 12, suffix: 'x', label: 'Faster RFP Evaluation', icon: Zap, prefix: '' },
-    { value: totalCompaniesVal, suffix: '+', label: 'Enterprise Teams', icon: TrendingUp, prefix: '' },
+  const dynamicStats = [
+    {
+      value: totalTendersVal,
+      suffix: '+',
+      label: isFrench ? 'Avis de Marchés Collectés' : 'Ingested Procurement Notices',
+      icon: BarChart3,
+      prefix: '',
+    },
+    {
+      value: 94,
+      suffix: '%',
+      label: isFrench ? 'Précision Moyenne d\'Adéquation' : 'Average Match Accuracy',
+      icon: Award,
+      prefix: '',
+    },
+    {
+      value: 12,
+      suffix: 'x',
+      label: isFrench ? 'Évaluation des Dossiers plus Rapide' : 'Faster RFP Evaluation',
+      icon: Zap,
+      prefix: '',
+    },
+    {
+      value: totalCompaniesVal,
+      suffix: '+',
+      label: isFrench ? 'Équipes & Entreprises Actives' : 'Enterprise Teams',
+      icon: TrendingUp,
+      prefix: '',
+    },
   ];
 
   const c1 = useCounter(dynamicStats[0].value, 1600, statsVisible);
@@ -190,6 +116,178 @@ export default function HomePage() {
     return () => observer.disconnect();
   }, []);
 
+  const features = isFrench ? [
+    {
+      icon: Cpu,
+      color: 'blue',
+      title: 'Synthèse Exécutive par IA de Pointe',
+      desc: 'Notre pipeline double IA (Gemini 1.5 Pro et GPT-4o) extrait en quelques secondes des DAO de plus de 100 pages : livrables clés, délais impératifs et clauses de pénalités.',
+      bullets: ['Pipeline double modèle IA (Gemini + GPT-4o)', 'Extraction structurée du CCTP & livrables', 'Détection des clauses à risque et pénalités'],
+    },
+    {
+      icon: Award,
+      color: 'emerald',
+      title: 'Moteur d\'Adéquation à 4 Vecteurs',
+      desc: 'Fini les approximations. Notre algorithme pondéré note chaque appel d\'offres par rapport au profil de votre entreprise : secteur, zone géographique, agréments et capacités techniques.',
+      bullets: ['Scoring des agréments et certifications (ISO, ARMP, etc.)', 'Pondération par pays et régions d\'intervention', 'Recalibration instantanée lors de la mise à jour du profil'],
+    },
+    {
+      icon: ShieldCheck,
+      color: 'sky',
+      title: 'Contrôle d\'Éligibilité & Pièces Éliminatoires',
+      desc: 'Sachez immédiatement si votre entreprise est qualifiée. Vérification côte à côte des critères obligatoires du maître d\'ouvrage avant d\'investir des ressources dans la réponse.',
+      bullets: ['Analyse visuelle des critères (vert / orange / rouge)', 'Détection des pièces administratives manquantes', 'Rapport de conformité réglementaire exportable'],
+    },
+    {
+      icon: Globe,
+      color: 'violet',
+      title: 'Veille Centralisée des Marchés Publics',
+      desc: 'ARMP, COLEPS, TED Europe, Nations Unies, Banques de Développement (BAD, Banque Mondiale) — unifiés dans un flux intelligent avec filtres sectoriels et régionaux.',
+      bullets: ['Plus de 50 000 avis d\'appels d\'offres en direct', 'Filtres précis : secteur, budget, date limite', 'Notifications d\'opportunités hautement compatibles'],
+    },
+    {
+      icon: FileText,
+      color: 'amber',
+      title: 'Suivi du Pipeline d\'Offres (Kanban)',
+      desc: 'Pilotez vos dossiers de la découverte jusqu\'au dépôt du pli fermé. Ne manquez aucune échéance grâce aux comptes à rebours et alertes à 30 jours, 7 jours et 24 heures.',
+      bullets: ['Favoris → En Examen → En Soumission → Retenu', 'Alertes d\'échéance automatisées', 'Espace de travail collaboratif par opportunité'],
+    },
+    {
+      icon: BarChart3,
+      color: 'rose',
+      title: 'Analytique du Taux de Succès',
+      desc: 'Mesurez le taux de réussite de vos soumissions dans le temps. Identifiez les secteurs et régions qui offrent le meilleur retour sur investissement.',
+      bullets: ['Taux d\'adjudication par secteur et géographie', 'Cartographie effort engagé vs valeur du marché', 'Export de rapports en CSV et fiches de synthèse'],
+    },
+  ] : [
+    {
+      icon: Cpu,
+      color: 'blue',
+      title: 'AI Executive Summarizer',
+      desc: 'Gemini 1.5 Pro and GPT-4o parse 100+ page RFPs into crisp executive summaries with key deliverables, deadlines and compliance risks extracted in seconds.',
+      bullets: ['Dual AI model pipeline (Gemini + GPT-4o)', 'Structured SOW & deliverable extraction', 'Penalty clause and risk flagging'],
+    },
+    {
+      icon: Award,
+      color: 'emerald',
+      title: '4-Vector Match Engine',
+      desc: 'Stop guessing. Our weighted algorithm scores every tender against your company profile across industry, geography, certifications, and capabilities.',
+      bullets: ['ISO / SOC / FedRAMP certification matching', 'Operational country & region scoring', 'Real-time score recalibration on profile update'],
+    },
+    {
+      icon: ShieldCheck,
+      color: 'sky',
+      title: 'Eligibility Checklist',
+      desc: 'Instantly know if you qualify. Side-by-side verification of mandatory requirements vs your company credentials before spending a single hour on a proposal.',
+      bullets: ['Green / amber / red requirement breakdown', 'Missing certification gap analysis', 'Exportable compliance report'],
+    },
+    {
+      icon: Globe,
+      color: 'violet',
+      title: 'Global Tender Discovery',
+      desc: 'SAM.gov, Find-a-Tender UK, TED Europe, UN Global Marketplace and more — unified into one intelligent, searchable feed with filters that actually work.',
+      bullets: ['50,000+ live procurement notices', 'Advanced filters: sector, value, deadline', 'Automated new match alerts'],
+    },
+    {
+      icon: FileText,
+      color: 'amber',
+      title: 'Bid Pipeline Tracker',
+      desc: 'Kanban-style pipeline moves opportunities from discovery to submitted bid. Never miss a deadline with automated 30-day, 7-day and 1-day alerts.',
+      bullets: ['Bookmarked → Reviewing → Bidding → Passed', 'Deadline countdown notifications', 'Team comment threads per opportunity'],
+    },
+    {
+      icon: BarChart3,
+      color: 'rose',
+      title: 'Win Rate Analytics',
+      desc: "Track your team's bid success over time. Understand which sectors and geographies deliver the highest ROI and where to focus capacity next quarter.",
+      bullets: ['Win/loss rate by sector and geography', 'Effort vs value heatmaps', 'Export to CSV and PowerPoint'],
+    },
+  ];
+
+  const testimonials = isFrench ? [
+    {
+      quote: 'Bidora a divisé par dix notre temps d\'analyse des dossiers d\'appels d\'offres. Nous sommes passés de 10 dossiers étudiés par mois à plus de 50 sans recruter.',
+      name: 'Sarah Chen',
+      role: 'Directrice du Développement, Nexus Federal Solutions',
+      rating: 5,
+    },
+    {
+      quote: 'Le score d\'adéquation à 4 dimensions est d\'une précision chirurgicale. Il a prédit avec exactitude nos chances de succès sur 12 marchés publics consécutifs.',
+      name: 'Marcus Obi',
+      role: 'Directeur des Réponses aux Marchés, TechArc International',
+      rating: 5,
+    },
+    {
+      quote: 'Auparavant, nous manquions des appels d\'offres majeurs faute de pouvoir tout lire à temps. Désormais, notre pipeline a triplé avec une qualité de dossier irréprochable.',
+      name: 'Priya Nair',
+      role: 'Responsable Marchés Publics, InfraCloud',
+      rating: 5,
+    },
+  ] : [
+    {
+      quote: 'Bidora cut our RFP evaluation time from three days to under an hour. We went from reviewing 10 tenders a month to 60.',
+      name: 'Sarah Chen',
+      role: 'VP of Business Development, Nexus Federal Solutions',
+      rating: 5,
+    },
+    {
+      quote: 'The 4-vector match score is genuinely accurate. It predicted our win probability within 4% of actual results across 12 bids.',
+      name: 'Marcus Obi',
+      role: 'Director of Capture Management, TechArc UK',
+      rating: 5,
+    },
+    {
+      quote: 'We used to miss tenders because we simply couldn\'t read them fast enough. Now our pipeline has tripled without adding headcount.',
+      name: 'Priya Nair',
+      role: 'Head of Procurement, InfraCloud GmbH',
+      rating: 5,
+    },
+  ];
+
+  const faqs = isFrench ? [
+    {
+      q: 'Comment fonctionne concrètement le score d\'adéquation IA ?',
+      a: 'Notre moteur analyse quatre dimensions pondérées : l\'alignement sectoriel (35%), la zone géographique d\'intervention (25%), les agréments et certifications obligatoires (25%) et l\'historique des prestations similaires (15%). Le score est recalculé en temps réel dès que vous modifiez le profil de votre entreprise.',
+    },
+    {
+      q: 'Les données de mon entreprise sont-elles utilisées pour entraîner des modèles IA publics ?',
+      a: 'Absolument pas. Toutes vos informations d\'entreprise et pièces de candidature sont chiffrées au repos (AES-256) et en transit (TLS 1.3). Nous appliquons un cloisonnement strict par entreprise et une politique de non-partage de données.',
+    },
+    {
+      q: 'À quelles plateformes de marchés publics êtes-vous connectés ?',
+      a: 'Nous agrégeons les avis de l\'ARMP/COLEPS, TED Europe, United Nations Global Marketplace, SAM.gov, Find-a-Tender UK ainsi que les avis directs des banques de développement (Banque Mondiale, BAD).',
+    },
+    {
+      q: 'Combien de temps prend la mise en place de la plateforme ?',
+      a: 'La majorité des équipes sont opérationnelles en moins de 30 minutes. Renseignez votre profil d\'entreprise, enregistrez vos agréments et le moteur note immédiatement toute la base d\'appels d\'offres.',
+    },
+    {
+      q: 'Puis-je tester la plateforme avant de souscrire un abonnement ?',
+      a: 'Oui — chaque inscription bénéficie d\'un essai gratuit de 14 jours, sans carte bancaire requise. Vous disposez d\'un accès complet aux fonctionnalités professionnelles pendant cette période.',
+    },
+  ] : [
+    {
+      q: 'How does the AI match score actually work?',
+      a: 'Our engine evaluates four weighted dimensions: Industry Alignment (35%), Operational Geography (25%), Mandatory Certification Coverage — ISO 27001, SOC 2, FedRAMP etc. (25%), and Past Capability Overlap (15%). The score is recalculated live whenever you update your company capability profile.',
+    },
+    {
+      q: 'Is my company data used to train public AI models?',
+      a: 'Absolutely not. All capability data and RFP documents are encrypted at rest (AES-256) and in transit (TLS 1.3). We enforce strict enterprise tenant isolation and a zero-data-sharing policy. We are SOC 2 Type II compliant.',
+    },
+    {
+      q: 'Which procurement databases do you connect to?',
+      a: 'We currently pull from SAM.gov (US), Find-a-Tender (UK), TED Europe, UN Global Marketplace, and African public procurement portals (ARMP, COLEPS, BPP). Direct API integrations are available on the Professional tier.',
+    },
+    {
+      q: 'How long does onboarding take?',
+      a: 'Most teams are live in under 30 minutes. You fill in your company capability profile, upload your existing certifications, and the match engine is immediately active against our full tender database.',
+    },
+    {
+      q: 'Can I try it before paying?',
+      a: 'Yes — every plan starts with a fully functional 14-day free trial, no credit card required. You get access to all Professional tier features during the trial period.',
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden">
       <PublicNav />
@@ -204,12 +302,23 @@ export default function HomePage() {
           {/* Left */}
           <div className="lg:col-span-7 space-y-6 animate-fade-in-up">
             <h1 className="text-5xl md:text-6xl lg:text-[64px] font-black text-slate-900 tracking-tight leading-[1.05]">
-              Win More Bids.<br />
-              <span className="gradient-text">Waste Zero Time.</span>
+              {isFrench ? (
+                <>
+                  Gagnez Plus d'Offres.<br />
+                  <span className="gradient-text">Zéro Temps Perdu.</span>
+                </>
+              ) : (
+                <>
+                  Win More Bids.<br />
+                  <span className="gradient-text">Waste Zero Time.</span>
+                </>
+              )}
             </h1>
 
             <p className="text-lg text-slate-600 leading-relaxed font-medium max-w-xl">
-              Bidora automatically reads, scores and tracks government & enterprise procurement opportunities — so your bid team focuses on winning, not reading.
+              {isFrench
+                ? "Bidora analyse, note et suit automatiquement les marchés publics et appels d'offres internationaux — pour que votre équipe se concentre sur la victoire, pas sur la lecture."
+                : "Bidora automatically reads, scores and tracks government & enterprise procurement opportunities — so your bid team focuses on winning, not reading."}
             </p>
 
             <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -217,14 +326,14 @@ export default function HomePage() {
                 href="/register"
                 className="group flex items-center space-x-2 px-8 py-4 rounded-2xl gradient-bg text-white font-extrabold text-base gradient-glow hover:scale-[1.02] transition-all"
               >
-                <span>Start Free Trial</span>
+                <span>{isFrench ? "Démarrer l'Essai Gratuit" : "Start Free Trial"}</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
                 href="/features"
                 className="flex items-center space-x-2 px-8 py-4 rounded-2xl bg-white border border-slate-200 text-slate-800 hover:text-emerald-600 hover:border-emerald-300 font-bold text-base shadow-sm transition-all"
               >
-                <span>See How It Works</span>
+                <span>{isFrench ? "Voir le Fonctionnement" : "See How It Works"}</span>
                 <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
@@ -236,12 +345,16 @@ export default function HomePage() {
                   <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                 ))}
                 <span className="text-sm font-extrabold text-slate-800 ml-1">4.9</span>
-                <span className="text-xs text-slate-500 font-medium">/ 5 on G2</span>
+                <span className="text-xs text-slate-500 font-medium">/ 5 sur G2</span>
               </div>
               <span className="w-px h-4 bg-slate-300" />
-              <span className="text-xs text-slate-500 font-semibold">No credit card required</span>
+              <span className="text-xs text-slate-500 font-semibold">
+                {isFrench ? "Sans carte bancaire requise" : "No credit card required"}
+              </span>
               <span className="w-px h-4 bg-slate-300" />
-              <span className="text-xs text-slate-500 font-semibold">14-day free trial</span>
+              <span className="text-xs text-slate-500 font-semibold">
+                {isFrench ? "Essai gratuit de 14 jours" : "14-day free trial"}
+              </span>
             </div>
           </div>
 
@@ -257,10 +370,12 @@ export default function HomePage() {
                       <div className="w-3 h-3 rounded-full bg-amber-400" />
                       <div className="w-3 h-3 rounded-full bg-emerald-400" />
                     </div>
-                    <span className="text-xs font-bold text-slate-500 ml-1">Live Match Preview</span>
+                    <span className="text-xs font-bold text-slate-500 ml-1">
+                      {isFrench ? "Aperçu du Ciblage en Direct" : "Live Match Preview"}
+                    </span>
                   </div>
                   <span className="px-2.5 py-1 rounded-lg bg-emerald-500 text-white text-[11px] font-extrabold">
-                    94% MATCH
+                    {isFrench ? "94% ADÉQUATION" : "94% MATCH"}
                   </span>
                 </div>
 
@@ -268,24 +383,28 @@ export default function HomePage() {
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <span className="px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-extrabold">
-                      US FEDERAL · $18.4M
+                      {isFrench ? "MARCHÉ PUBLIC · 18,4 M$" : "GOV PROCUREMENT · $18.4M"}
                     </span>
                   </div>
                   <h3 className="text-base font-extrabold text-slate-900 leading-snug">
-                    VA Cloud Migration & Zero-Trust Architecture
+                    {isFrench
+                      ? "Modernisation Cloud & Architecture Zéro-Trust"
+                      : "Enterprise Cloud Migration & Zero-Trust Architecture"}
                   </h3>
                   <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">
-                    FedRAMP High. Hybrid cloud migration across 12 VA medical centers. SOC 2 Type II mandatory. Deadline: 45 days.
+                    {isFrench
+                      ? "Norme Haute Sécurité. Déploiement cloud hybride pour 12 centres régionaux. Agrément technique obligatoire. Clôture : 45 jours."
+                      : "High Security Standard. Hybrid cloud migration across 12 regional data centers. Mandatory certifications. Deadline: 45 days."}
                   </p>
                 </div>
 
                 {/* Match Breakdown */}
                 <div className="space-y-2.5">
                   {[
-                    { label: 'Industry Alignment', pct: 100, color: 'bg-blue-500' },
-                    { label: 'Geographic Presence', pct: 100, color: 'bg-sky-500' },
-                    { label: 'Certifications Met', pct: 100, color: 'bg-emerald-500' },
-                    { label: 'Capability Overlap', pct: 76, color: 'bg-amber-400' },
+                    { label: isFrench ? 'Alignement Sectoriel' : 'Industry Alignment', pct: 100, color: 'bg-blue-500' },
+                    { label: isFrench ? 'Présence Géographique' : 'Geographic Presence', pct: 100, color: 'bg-sky-500' },
+                    { label: isFrench ? 'Agréments & Certifications' : 'Certifications Met', pct: 100, color: 'bg-emerald-500' },
+                    { label: isFrench ? 'Recouvrement Compétences' : 'Capability Overlap', pct: 76, color: 'bg-amber-400' },
                   ].map((bar) => (
                     <div key={bar.label} className="space-y-1">
                       <div className="flex justify-between text-[11px] font-bold text-slate-600">
@@ -305,10 +424,10 @@ export default function HomePage() {
                 {/* Eligibility */}
                 <div className="grid grid-cols-2 gap-2 pt-1">
                   {[
-                    { label: 'ISO 27001', ok: true },
-                    { label: 'SOC 2 Type II', ok: true },
-                    { label: 'FedRAMP High', ok: false },
-                    { label: 'US Operations', ok: true },
+                    { label: 'ISO 9001 / 27001', ok: true },
+                    { label: isFrench ? 'Agrément Ministériel' : 'National Accreditation', ok: true },
+                    { label: isFrench ? 'Caution Provisoire 2%' : 'Bid Bond 2%', ok: true },
+                    { label: isFrench ? 'Présence Locale' : 'Local Operations', ok: true },
                   ].map((item) => (
                     <div
                       key={item.label}
@@ -333,10 +452,10 @@ export default function HomePage() {
       <section className="bg-slate-50 border-y border-slate-200 py-8 px-6">
         <div className="max-w-5xl mx-auto text-center space-y-4">
           <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-            Trusted by procurement teams at
+            {isFrench ? "Approuvé par les directions d'appels d'offres et d'entreprises" : "Trusted by procurement and bidding teams at"}
           </p>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-            {['Nexus Federal', 'TechArc UK', 'InfraCloud GmbH', 'Apex Defense', 'StratoSystems'].map((name) => (
+            {['Nexus Federal', 'TechArc Systems', 'InfraCloud Group', 'Apex Engineering', 'StratoSolutions'].map((name) => (
               <span key={name} className="text-slate-400 font-extrabold text-sm tracking-tight">
                 {name}
               </span>
@@ -370,10 +489,12 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
-              Built for high-stakes procurement, not spreadsheets
+              {isFrench ? "Conçu pour les marchés stratégiques, pas pour les tableurs" : "Built for high-stakes procurement, not spreadsheets"}
             </h2>
             <p className="text-slate-600 text-sm font-medium leading-relaxed">
-              Every feature is designed around one goal: help enterprise bid teams evaluate faster, qualify smarter, and submit fewer losing bids.
+              {isFrench
+                ? "Chaque fonctionnalité est pensée dans un seul but : permettre à votre équipe d'évaluer plus vite, de cibler avec certitude et de remporter plus de contrats."
+                : "Every feature is designed around one goal: help enterprise bid teams evaluate faster, qualify smarter, and submit fewer losing bids."}
             </p>
           </div>
 
@@ -408,7 +529,7 @@ export default function HomePage() {
               href="/features"
               className="inline-flex items-center space-x-2 text-sm font-extrabold text-emerald-600 hover:text-emerald-700 transition-colors"
             >
-              <span>See full feature list</span>
+              <span>{isFrench ? "Découvrir toutes les fonctionnalités" : "See full feature list"}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -420,16 +541,37 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto space-y-14">
           <div className="text-center space-y-3">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
-              From discovery to dashboard in 3 steps
+              {isFrench ? "De la découverte au tableau de bord en 3 étapes" : "From discovery to dashboard in 3 steps"}
             </h2>
-            <p className="text-slate-500 text-sm font-medium">No complex setup. No consultants. Live in under 30 minutes.</p>
+            <p className="text-slate-500 text-sm font-medium">
+              {isFrench ? "Aucune configuration complexe. Aucun consultant. Opérationnel en moins de 30 minutes." : "No complex setup. No consultants. Live in under 30 minutes."}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
             {/* Connector line */}
             <div className="hidden md:block absolute top-10 left-1/4 right-1/4 h-0.5 bg-slate-200" />
 
-            {[
+            {(isFrench ? [
+              {
+                step: '01',
+                icon: Building2Icon,
+                title: 'Complétez votre Profil de Compétences',
+                desc: 'Renseignez vos agréments, certifications (ISO, ordres professionnels), domaines de prestations et pays d\'intervention une seule fois. Le moteur IA est instantanément calibré.',
+              },
+              {
+                step: '02',
+                icon: SearchIcon,
+                title: 'Découvrez & Notez les Appels d\'Offres',
+                desc: 'Parcourez des dizaines de milliers d\'avis de marchés publics en direct. Chaque opportunité affiche un score d\'adéquation précis calculé sur mesure pour vous.',
+              },
+              {
+                step: '03',
+                icon: CheckIcon,
+                title: 'Pilotez vos Dossiers & Soumissionnez',
+                desc: 'Suivez vos opportunités dans votre pipeline Kanban. Ne manquez aucune clôture avec les alertes d\'échéance à 30 jours, 7 jours et 24 heures.',
+              },
+            ] : [
               {
                 step: '01',
                 icon: Building2Icon,
@@ -448,7 +590,7 @@ export default function HomePage() {
                 title: 'Track Bids & Win',
                 desc: 'Move qualified opportunities through your Kanban pipeline. Never miss a deadline with built-in 30/7/1 day countdown alerts.',
               },
-            ].map((s, i) => {
+            ]).map((s) => {
               const Icon = s.icon;
               return (
                 <div key={s.step} className="flex flex-col items-center text-center space-y-4 relative">
@@ -470,7 +612,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="text-center space-y-3">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
-              What bid teams are saying
+              {isFrench ? "Ce que disent les directeurs d'appels d'offres" : "What bid teams are saying"}
             </h2>
           </div>
 
@@ -499,11 +641,13 @@ export default function HomePage() {
       <section className="bg-white py-20 px-6 md:px-10 border-t border-slate-200">
         <div className="max-w-3xl mx-auto space-y-10">
           <div className="text-center space-y-3">
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Frequently asked questions</h2>
+            <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+              {isFrench ? "Questions fréquemment posées" : "Frequently asked questions"}
+            </h2>
             <p className="text-sm text-slate-500 font-medium">
-              Have another question?{' '}
+              {isFrench ? "Vous avez une autre question ? " : "Have another question? "}
               <Link href="/contact" className="text-emerald-600 font-bold hover:underline">
-                Contact our team
+                {isFrench ? "Contacter notre équipe" : "Contact our team"}
               </Link>
             </p>
           </div>

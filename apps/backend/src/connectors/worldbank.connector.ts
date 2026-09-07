@@ -143,7 +143,22 @@ export class WorldBankConnector implements IPublisherConnector {
       }
     }
 
-    const estimatedBudget = Number(rawItem.curr_total_commitment || rawItem.totalamt || rawItem.totalcommamt || 0);
+    let estimatedBudget = 0;
+    if (rawItem.totalamt) {
+      const clean = Number(String(rawItem.totalamt).replace(/,/g, ''));
+      if (!isNaN(clean) && clean > 0) estimatedBudget = clean;
+    }
+    if (!estimatedBudget && rawItem.curr_total_commitment) {
+      const clean = Number(String(rawItem.curr_total_commitment).replace(/,/g, ''));
+      if (!isNaN(clean) && clean > 0) {
+        // World Bank commitment is expressed in Millions of USD if < 10000
+        estimatedBudget = clean < 10000 ? clean * 1000000 : clean;
+      }
+    }
+    if (!estimatedBudget && rawItem.totalcommamt) {
+      const clean = Number(String(rawItem.totalcommamt).replace(/,/g, ''));
+      if (!isNaN(clean) && clean > 0) estimatedBudget = clean;
+    }
 
     return {
       externalId: id,

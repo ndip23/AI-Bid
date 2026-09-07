@@ -7,8 +7,10 @@ export type TenderStatus = 'OPEN' | 'CLOSED' | 'CANCELLED';
 export interface User {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  username?: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
   role: UserRole;
   companyId?: string | null;
   company?: Company | null;

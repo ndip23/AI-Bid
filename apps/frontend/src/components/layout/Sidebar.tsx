@@ -4,6 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../lib/auth-context';
+import { useLanguage } from '../../lib/language-context';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import {
   LayoutDashboard,
   Search,
@@ -24,16 +26,17 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile, isMobileOnly = false }) => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { t, lang } = useLanguage();
 
   const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/tenders', label: 'Tender Discovery', icon: Search },
-    { href: '/saved', label: 'Saved Pipeline', icon: BookmarkCheck },
-    { href: '/company', label: 'Capability Profile', icon: Building2 },
+    { href: '/dashboard', label: t('nav.dashboard', 'Dashboard'), icon: LayoutDashboard },
+    { href: '/tenders', label: t('nav.tenders', 'Tender Discovery'), icon: Search },
+    { href: '/saved', label: t('nav.saved', 'Saved Pipeline'), icon: BookmarkCheck },
+    { href: '/company', label: t('nav.company', 'Capability Profile'), icon: Building2 },
   ];
 
   if (user?.role === 'SUPER_ADMIN') {
-    navItems.push({ href: '/admin', label: 'Admin Portal', icon: ShieldAlert });
+    navItems.push({ href: '/admin', label: lang === 'fr' ? 'Portail Admin' : 'Admin Portal', icon: ShieldAlert });
   }
 
   const content = (
@@ -42,7 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile, isM
         {/* Navigation Section Header */}
         <div className="px-3 pt-2 flex items-center justify-between">
           <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-            Main Navigation
+            {lang === 'fr' ? 'Navigation Principale' : 'Main Navigation'}
           </span>
           {onCloseMobile && (
             <button onClick={onCloseMobile} className="md:hidden text-slate-400 hover:text-slate-700">
@@ -75,16 +78,33 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile, isM
         </nav>
       </div>
 
-      {/* Footer Banner & Logout */}
+      {/* Footer Banner, Language Switcher & Logout */}
       <div className="space-y-3">
+        {/* Sidebar Language Switcher */}
+        <LanguageSwitcher variant="sidebar" />
+
         <div className="p-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100">
           <div className="flex items-center space-x-2 text-emerald-800 font-bold text-xs mb-1">
             <Sparkles className="w-4 h-4 text-emerald-600" />
-            <span>AI Match Engine active</span>
+            <span>{lang === 'fr' ? 'Moteur IA Actif' : 'AI Match Engine active'}</span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
-            Real-time scoring based on ISO certs & operating geography.
+            {lang === 'fr'
+              ? 'Calcul dynamique basé sur vos agréments ISO et zones d\'intervention.'
+              : 'Real-time scoring based on ISO certs & operating geography.'}
           </p>
+        </div>
+
+        <div className="flex items-center justify-between text-[10px] text-slate-400 px-1 font-semibold">
+          <Link href="/terms" target="_blank" className="hover:text-emerald-700 hover:underline">
+            {t('nav.terms', 'Terms & Disclaimers')}
+          </Link>
+          <span>•</span>
+          <Link href="/privacy" target="_blank" className="hover:text-emerald-700 hover:underline">
+            Privacy
+          </Link>
+          <span>•</span>
+          <span className="text-slate-400">v2.5</span>
         </div>
 
         <button
@@ -92,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile, isM
           className="w-full flex items-center justify-center space-x-2 px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 text-xs font-bold transition-all"
         >
           <LogOut className="w-4 h-4" />
-          <span>Sign Out</span>
+          <span>{t('nav.logout', 'Sign Out')}</span>
         </button>
       </div>
     </div>
