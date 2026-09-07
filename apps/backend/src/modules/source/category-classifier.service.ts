@@ -3,84 +3,80 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class CategoryClassifierService {
   private readonly keywordMap: Record<string, string[]> = {
-    'Construction': [
-      'construction', 'building', 'civil works', 'travaux', 'bâtiment', 'routier', 'road', 'infrastructure',
-      'highway', 'bridge', 'pont', 'rehabilitation', 'engineering', 'génie civil', 'architectural', 'drilling', 'forage'
+    'Cloud & IT Infrastructure': [
+      'software', 'it', 'telecom', 'telecommunication', 'network', 'fiber', 'fibre',
+      'cloud', 'cyber', 'cybersecurity', 'digital', 'informatique', 'data', 'database', 'system',
+      'platform', 'plateforme', 'licence', 'license', 'server', 'application', 'logiciel',
+      'hardware', 'smart city', 'automation', 'portal', 'erp', 'crm', 'ai', 'internet',
+      'digitization', 'numérique', 'numerique', 'computer', 'e-procurement', 'technologie'
     ],
-    'IT & Telecom': [
-      'software', 'hardware', 'it', 'telecom', 'network', 'fiber', 'fibre', 'cloud', 'cybersecurity', 'digital',
-      'informatique', 'data', 'database', 'system', 'licence', 'server', 'application', 'logiciel', 'telecommunication'
+    'Healthcare & Medical Systems': [
+      'health', 'medical', 'hospital', 'pharmaceutical', 'sante', 'santé', 'médical',
+      'hopital', 'medicine', 'vaccine', 'laboratory', 'laboratoire', 'clinical',
+      'biomedical', 'covid', 'disease', 'patient', 'clinic', 'malaria', 'sanitary',
+      'nutrition', 'epidemic', 'sanitation project', 'hygiene'
     ],
-    'Healthcare': [
-      'health', 'medical', 'hospital', 'pharmaceutical', 'sante', 'médical', 'hopital', 'medicine', 'vaccine',
-      'laboratory', 'laboratoire', 'clinical', 'biomedical', 'equipment medical'
+    'Renewable Energy & Solar Power': [
+      'energy', 'power', 'solar', 'electricity', 'solaire', 'electricite', 'électricité',
+      'grid', 'microgrid', 'hydroelectric', 'renewable', 'transformer', 'substation',
+      'lighting', 'photovoltaic', 'electrification', 'battery', 'generator', 'clean energy'
     ],
-    'Agriculture': [
-      'agriculture', 'farming', 'crop', 'livestock', 'irrigation', 'fertilizer', 'engrais', 'agricole',
-      'elevage', 'seed', 'semence', 'pesticide', 'rural development'
+    'Education & Training': [
+      'education', 'school', 'university', 'training', 'formation', 'ecole', 'école',
+      'enseignant', 'e-learning', 'academic', 'curriculum', 'classroom', 'student',
+      'scholarship', 'pedagogique', 'learning'
     ],
-    'Consulting': [
-      'consulting', 'consultant', 'advisory', 'study', 'étude', 'audit', 'strategy', 'technical assistance',
-      'assistance technique', 'evaluation', 'expert', 'expertise'
-    ],
-    'Education': [
-      'education', 'school', 'university', 'training', 'formation', 'ecole', 'enseignant', 'e-learning',
-      'academic', 'pedagogique', 'student'
+    'Consulting & Governance': [
+      'consulting', 'consultant', 'advisory', 'audit', 'strategy', 'technical assistance',
+      'assistance technique', 'governance', 'fiscal', 'tax reform', 'capacity building',
+      'evaluation', 'study', 'étude', 'etude', 'feasibility', 'faisabilité', 'economic',
+      'public sector effectiveness', 'policy', 'institutional'
     ],
     'Transport & Logistics': [
-      'transport', 'logistics', 'vehicle', 'fleet', 'véhicule', 'shipping', 'freight', 'cargo',
-      'transit', 'supply chain', 'aviation', 'maritime'
+      'transport', 'logistics', 'vehicle', 'fleet', 'véhicule', 'shipping', 'freight',
+      'cargo', 'transit', 'port', 'maritime', 'aviation', 'airport', 'railway', 'ferroviaire'
     ],
-    'Energy': [
-      'energy', 'power', 'solar', 'electricity', 'solaire', 'electricite', 'grid', 'microgrid', 'hydroelectric',
-      'renewable', 'fossil', 'generator', 'groupe electrogene', 'transformer'
+    'Agriculture & Water Resources': [
+      'agriculture', 'farming', 'crop', 'livestock', 'irrigation', 'fertilizer', 'agricole',
+      'elevage', 'seed', 'water supply', 'eau potable', 'forest', 'forêt', 'fisheries', 'pêche'
     ],
-    'Security': [
-      'security', 'surveillance', 'guarding', 'gardiennage', 'sécurité', 'cctv', 'defense', 'access control',
-      'fire safety', 'sécurité incendie'
-    ],
-    'Office Supplies': [
-      'office supplies', 'stationery', 'paper', 'furniture', 'fournitures de bureau', 'papeterie',
-      'mobilier de bureau', 'printer paper', 'consumables'
-    ],
-    'Equipment': [
-      'equipment', 'machinery', 'tools', 'outillage', 'équipement', 'heavy machinery', 'spare parts',
-      'pièces de rechange', 'maintenance equipment'
-    ],
-    'Professional Services': [
-      'legal', 'accounting', 'comptabilité', 'audit financier', 'cleaning', 'nettoyage', 'catering',
-      'restauration', 'translation', 'traduction', 'public relations', 'marketing'
-    ],
-    'Environmental Services': [
-      'environment', 'waste', 'recycling', 'dechets', 'assainissement', 'sanitation', 'water supply',
-      'eau potable', 'conservation', 'climate change', 'changement climatique'
+    'Civil Infrastructure & Construction': [
+      'construction', 'building', 'civil works', 'travaux', 'bâtiment', 'routier',
+      'road', 'highway', 'bridge', 'pont', 'rehabilitation', 'paving', 'génie civil',
+      'housing', 'drainage', 'forage', 'drilling', 'concrete', 'asphalt'
     ],
   };
 
   /**
-   * Classifies tender title, description, and sector text into one or more niche categories.
+   * Classifies tender title, description, and sector text into weighted categories.
    */
   classify(title: string, description?: string, sector?: string): { primaryCategory: string; allCategories: string[] } {
     const textToScan = `${title} ${description || ''} ${sector || ''}`.toLowerCase();
-    const matchedCategories = new Set<string>();
+    let bestCategory = 'Civil Infrastructure & Construction';
+    let highestScore = 0;
+    const allMatches: string[] = [];
 
     for (const [category, keywords] of Object.entries(this.keywordMap)) {
+      let score = 0;
       for (const kw of keywords) {
-        if (textToScan.includes(kw)) {
-          matchedCategories.add(category);
-          break;
-        }
+        if (title.toLowerCase().includes(kw)) score += 5;
+        if (sector && sector.toLowerCase().includes(kw)) score += 4;
+        if (textToScan.includes(kw)) score += 1;
+      }
+
+      if (score > 0) {
+        allMatches.push(category);
+      }
+
+      if (score > highestScore) {
+        highestScore = score;
+        bestCategory = category;
       }
     }
 
-    const categoriesArray = Array.from(matchedCategories);
-    if (categoriesArray.length === 0) {
-      return { primaryCategory: 'Other', allCategories: ['Other'] };
-    }
-
     return {
-      primaryCategory: categoriesArray[0],
-      allCategories: categoriesArray,
+      primaryCategory: bestCategory,
+      allCategories: allMatches.length > 0 ? allMatches : [bestCategory],
     };
   }
 

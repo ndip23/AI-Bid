@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { User, Company, UserRole } from '../types';
 import { ApiClient } from './api-client';
 
@@ -14,6 +15,7 @@ interface AuthContextType {
   logout: () => void;
   switchRole: (role: UserRole) => void;
   refreshCompany: () => Promise<void>;
+  updateUser: (data: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,6 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [company, setCompany] = useState<Company | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   useEffect(() => {
     // Check saved session
@@ -109,6 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('company');
+    router.push('/login');
   };
 
   const switchRole = (role: UserRole) => {
@@ -116,6 +120,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const updatedUser = { ...user, role };
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
+  const updateUser = (data: Partial<User>) => {
+    if (!user) return;
+    const merged = { ...user, ...data };
+    setUser(merged);
+    localStorage.setItem('user', JSON.stringify(merged));
   };
 
   return (
@@ -130,6 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         switchRole,
         refreshCompany,
+        updateUser,
       }}
     >
       {children}

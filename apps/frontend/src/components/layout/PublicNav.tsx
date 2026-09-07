@@ -5,16 +5,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sparkles, Menu, X, ArrowRight } from 'lucide-react';
 import { BidoraLogo } from '../ui/BidoraLogo';
-
-const navLinks = [
-  { href: '/features', label: 'Features' },
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
-];
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
+import { useLanguage } from '../../lib/language-context';
 
 export const PublicNav: React.FC = () => {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -23,6 +19,13 @@ export const PublicNav: React.FC = () => {
     window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
   }, []);
+
+  const navLinks = [
+    { href: '/features', label: t('nav.features', 'Features') },
+    { href: '/pricing', label: t('nav.pricing', 'Pricing') },
+    { href: '/about', label: t('nav.about', 'About') },
+    { href: '/contact', label: t('nav.contact', 'Contact') },
+  ];
 
   return (
     <header
@@ -58,31 +61,36 @@ export const PublicNav: React.FC = () => {
           })}
         </nav>
 
-        {/* Desktop CTA */}
+        {/* Desktop CTA & Language Switcher */}
         <div className="hidden md:flex items-center space-x-3">
+          <LanguageSwitcher />
+
           <Link
             href="/login"
             className="px-4 py-2 rounded-lg text-sm font-bold text-slate-700 hover:text-emerald-700 transition-colors"
           >
-            Sign In
+            {t('nav.signIn', 'Sign In')}
           </Link>
           <Link
             href="/register"
             className="px-5 py-2.5 rounded-xl gradient-bg text-white font-bold text-sm gradient-glow hover:opacity-95 hover:scale-[1.02] transition-all flex items-center space-x-1.5"
           >
-            <span>Get Started Free</span>
+            <span>{t('nav.getStarted', 'Get Started Free')}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
         {/* Mobile toggle */}
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 transition-colors"
-          aria-label="Toggle mobile menu"
-        >
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+        <div className="flex md:hidden items-center gap-2">
+          <LanguageSwitcher variant="compact" />
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 transition-colors"
+            aria-label="Toggle mobile menu"
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -98,20 +106,20 @@ export const PublicNav: React.FC = () => {
               {link.label}
             </Link>
           ))}
-          <div className="pt-2 border-t border-slate-100 flex flex-col space-y-2">
+          <div className="pt-3 border-t border-slate-100 space-y-2">
             <Link
               href="/login"
               onClick={() => setMobileOpen(false)}
-              className="px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 text-center"
+              className="block w-full py-2.5 text-center text-sm font-bold text-slate-700 hover:text-emerald-700"
             >
-              Sign In
+              {t('nav.signIn', 'Sign In')}
             </Link>
             <Link
               href="/register"
               onClick={() => setMobileOpen(false)}
-              className="px-4 py-3 rounded-xl gradient-bg text-white font-bold text-sm text-center"
+              className="block w-full py-2.5 text-center rounded-xl gradient-bg text-white font-bold text-sm shadow-md"
             >
-              Get Started Free
+              {t('nav.getStarted', 'Get Started Free')}
             </Link>
           </div>
         </div>

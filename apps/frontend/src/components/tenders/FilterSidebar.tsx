@@ -17,21 +17,27 @@ interface FilterSidebarProps {
 }
 
 const INDUSTRY_OPTIONS = [
-  { value: '', label: 'All Industries' },
-  { value: 'Cloud & Managed IT Services', label: 'Cloud & Managed IT Services' },
-  { value: 'Healthcare Technology', label: 'Healthcare Technology' },
-  { value: 'Smart City Infrastructure', label: 'Smart City Infrastructure' },
-  { value: 'Cybersecurity', label: 'Cybersecurity' },
-  { value: 'Software Engineering', label: 'Software Engineering' },
+  { value: '', label: 'All Industries & Sectors' },
+  { value: 'Cloud & IT Infrastructure', label: 'Cloud & IT Infrastructure' },
+  { value: 'Civil Infrastructure & Construction', label: 'Civil Infrastructure & Construction' },
+  { value: 'Renewable Energy & Solar Power', label: 'Renewable Energy & Solar Power' },
+  { value: 'Consulting & Governance', label: 'Consulting & Governance' },
+  { value: 'Healthcare & Medical Systems', label: 'Healthcare & Medical Systems' },
+  { value: 'Education & Training', label: 'Education & Training' },
+  { value: 'Transport & Logistics', label: 'Transport & Logistics' },
+  { value: 'Agriculture & Water Resources', label: 'Agriculture & Water Resources' },
 ];
 
 const COUNTRY_OPTIONS = [
-  { value: '', label: 'All Countries' },
-  { value: 'United States', label: 'United States' },
-  { value: 'United Kingdom', label: 'United Kingdom' },
-  { value: 'Germany', label: 'Germany' },
-  { value: 'Canada', label: 'Canada' },
-  { value: 'Australia', label: 'Australia' },
+  { value: '', label: 'All Countries & Markets' },
+  { value: 'Cameroon', label: 'Cameroon' },
+  { value: 'Nigeria', label: 'Nigeria' },
+  { value: 'Benin', label: 'Benin' },
+  { value: "Cote d'Ivoire", label: "Côte d'Ivoire" },
+  { value: 'Kenya', label: 'Kenya' },
+  { value: 'Rwanda', label: 'Rwanda' },
+  { value: 'Togo', label: 'Togo' },
+  { value: 'Ukraine', label: 'Ukraine' },
 ];
 
 export const FilterSidebar: React.FC<FilterSidebarProps> = ({

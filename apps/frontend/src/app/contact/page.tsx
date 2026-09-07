@@ -3,19 +3,14 @@
 import React, { useState } from 'react';
 import { PublicNav } from '../../components/layout/PublicNav';
 import { PublicFooter } from '../../components/layout/PublicFooter';
+import { useLanguage } from '../../lib/language-context';
 import {
   Sparkles, Mail, Phone, MapPin, MessageCircle,
-  Clock, CheckCircle2, Send, ArrowRight,
+  Clock, CheckCircle2, Send,
 } from 'lucide-react';
 
-const contactTypes = [
-  { id: 'sales', label: 'Sales Enquiry', desc: 'Pricing, plans and enterprise options' },
-  { id: 'support', label: 'Technical Support', desc: 'Platform issues or integration help' },
-  { id: 'partnership', label: 'Partnership', desc: 'Data feeds, integrations and resellers' },
-  { id: 'other', label: 'Other', desc: 'General questions and feedback' },
-];
-
 export default function ContactPage() {
+  const { isFrench } = useLanguage();
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     name: '',
@@ -26,10 +21,21 @@ export default function ContactPage() {
   });
   const [loading, setLoading] = useState(false);
 
+  const contactTypes = isFrench ? [
+    { id: 'sales', label: 'Demande Commerciale', desc: 'Tarifs, forfaits et options entreprises' },
+    { id: 'support', label: 'Support Technique', desc: 'Assistance plateforme ou intégration' },
+    { id: 'partnership', label: 'Partenariat', desc: 'Flux de données et intégrateurs' },
+    { id: 'other', label: 'Autre', desc: 'Questions générales et retours' },
+  ] : [
+    { id: 'sales', label: 'Sales Enquiry', desc: 'Pricing, plans and enterprise options' },
+    { id: 'support', label: 'Technical Support', desc: 'Platform issues or integration help' },
+    { id: 'partnership', label: 'Partnership', desc: 'Data feeds, integrations and resellers' },
+    { id: 'other', label: 'Other', desc: 'General questions and feedback' },
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate network call
     await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);
     setSubmitted(true);
@@ -46,10 +52,12 @@ export default function ContactPage() {
       <section className="hero-mesh pt-20 pb-10 px-6 md:px-10 text-center">
         <div className="max-w-2xl mx-auto space-y-4 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
-            We'd love to hear from you
+            {isFrench ? 'Nous sommes à votre écoute' : 'We\'d love to hear from you'}
           </h1>
           <p className="text-base text-slate-600 font-medium leading-relaxed">
-            Whether you're evaluating Bidora for your team, need support, or want to explore a partnership — our team typically responds within 2 business hours.
+            {isFrench
+              ? 'Que vous souhaitiez évaluer Bidora pour vos équipes, ayez besoin d\'assistance ou désiriez explorer un partenariat — nous répondons sous 2 heures ouvrées.'
+              : 'Whether you\'re evaluating Bidora for your team, need support, or want to explore a partnership — our team typically responds within 2 business hours.'}
           </p>
         </div>
       </section>
@@ -61,7 +69,9 @@ export default function ContactPage() {
           {/* Left: Contact Info */}
           <div className="space-y-8">
             <div className="space-y-5">
-              <h2 className="text-xl font-extrabold text-slate-900">Contact information</h2>
+              <h2 className="text-xl font-extrabold text-slate-900">
+                {isFrench ? 'Coordonnées de contact' : 'Contact information'}
+              </h2>
 
               <div className="space-y-4">
                 {[
@@ -69,25 +79,25 @@ export default function ContactPage() {
                     icon: Mail,
                     label: 'Email',
                     value: 'hello@aibidcopilot.com',
-                    sub: 'General & sales enquiries',
+                    sub: isFrench ? 'Renseignements généraux & ventes' : 'General & sales enquiries',
                   },
                   {
                     icon: Phone,
-                    label: 'Phone (UK)',
+                    label: isFrench ? 'Téléphone (Afrique / CEMAC)' : 'Phone (UK)',
+                    value: '+237 681 10 84 39',
+                    sub: isFrench ? 'Lun–Ven, 8h–18h GMT+1' : 'Mon–Fri, 9am–6pm GMT',
+                  },
+                  {
+                    icon: Phone,
+                    label: isFrench ? 'Téléphone (International)' : 'Phone (US)',
                     value: '+44 20 7946 0852',
-                    sub: 'Mon–Fri, 9am–6pm GMT',
-                  },
-                  {
-                    icon: Phone,
-                    label: 'Phone (US)',
-                    value: '+1 (202) 555-0178',
-                    sub: 'Mon–Fri, 9am–6pm ET',
+                    sub: isFrench ? 'Support bilingue FR / EN' : 'Mon–Fri, 9am–6pm ET',
                   },
                   {
                     icon: MapPin,
-                    label: 'Headquarters',
-                    value: '22 Bishopsgate, London EC2N 4BQ',
-                    sub: 'United Kingdom',
+                    label: isFrench ? 'Siège & Hub Régional' : 'Headquarters',
+                    value: 'Douala / London',
+                    sub: isFrench ? 'Présence Panafricaine & Europe' : 'United Kingdom',
                   },
                 ].map((item) => {
                   const Icon = item.icon;
@@ -111,13 +121,17 @@ export default function ContactPage() {
             <div className="glass-panel rounded-2xl p-5 space-y-3 bg-white">
               <div className="flex items-center space-x-2 text-sm font-extrabold text-slate-900">
                 <Clock className="w-4 h-4 text-emerald-600" />
-                <span>Response Times</span>
+                <span>{isFrench ? 'Engagements de Réactivité' : 'Response Times'}</span>
               </div>
-              {[
+              {(isFrench ? [
+                { type: 'Demandes commerciales', sla: '< 2 heures ouvrées' },
+                { type: 'Support technique', sla: '< 4 heures ouvrées' },
+                { type: 'Intégration sur mesure', sla: 'Le jour même' },
+              ] : [
                 { type: 'Sales enquiries', sla: '< 2 business hours' },
                 { type: 'Technical support', sla: '< 4 business hours' },
                 { type: 'Enterprise onboarding', sla: 'Same business day' },
-              ].map((r) => (
+              ]).map((r) => (
                 <div key={r.type} className="flex items-center justify-between text-xs">
                   <span className="text-slate-600 font-medium">{r.type}</span>
                   <span className="font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">{r.sla}</span>
@@ -132,10 +146,14 @@ export default function ContactPage() {
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-extrabold text-slate-900">Live Chat Available</span>
+                  <span className="text-sm font-extrabold text-slate-900">
+                    {isFrench ? 'Assistance Directe Active' : 'Live Chat Available'}
+                  </span>
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 </div>
-                <p className="text-xs text-slate-500 font-medium">Available Mon–Fri 9am–6pm GMT</p>
+                <p className="text-xs text-slate-500 font-medium">
+                  {isFrench ? 'Du lundi au vendredi 8h–18h GMT+1' : 'Available Mon–Fri 9am–6pm GMT'}
+                </p>
               </div>
             </div>
           </div>
@@ -147,27 +165,40 @@ export default function ContactPage() {
                 <div className="w-16 h-16 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-8 h-8 text-emerald-600" />
                 </div>
-                <h3 className="text-2xl font-black text-slate-900">Message received!</h3>
+                <h3 className="text-2xl font-black text-slate-900">
+                  {isFrench ? 'Message bien reçu !' : 'Message received!'}
+                </h3>
                 <p className="text-sm text-slate-600 font-medium leading-relaxed max-w-sm mx-auto">
-                  Thank you, <strong>{form.name.split(' ')[0]}</strong>. Our team will get back to you at{' '}
-                  <strong>{form.email}</strong> within 2 business hours.
+                  {isFrench ? (
+                    <>
+                      Merci <strong>{form.name.split(' ')[0]}</strong>. Notre équipe vous répondra à l&apos;adresse{' '}
+                      <strong>{form.email}</strong> sous 2 heures ouvrées.
+                    </>
+                  ) : (
+                    <>
+                      Thank you, <strong>{form.name.split(' ')[0]}</strong>. Our team will get back to you at{' '}
+                      <strong>{form.email}</strong> within 2 business hours.
+                    </>
+                  )}
                 </p>
                 <button
                   onClick={() => { setSubmitted(false); setForm({ name: '', email: '', company: '', type: 'sales', message: '' }); }}
                   className="text-sm font-bold text-emerald-600 hover:underline"
                 >
-                  Send another message
+                  {isFrench ? 'Envoyer un autre message' : 'Send another message'}
                 </button>
               </div>
             ) : (
               <div className="glass-panel rounded-3xl p-8 bg-white space-y-6">
-                <h2 className="text-xl font-extrabold text-slate-900">Send us a message</h2>
+                <h2 className="text-xl font-extrabold text-slate-900">
+                  {isFrench ? 'Envoyez-nous un message' : 'Send us a message'}
+                </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Contact type */}
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                      How can we help?
+                      {isFrench ? 'Comment pouvons-nous vous aider ?' : 'How can we help?'}
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       {contactTypes.map((ct) => (
@@ -193,24 +224,28 @@ export default function ContactPage() {
                   {/* Name + Email */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Full Name *</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                        {isFrench ? 'Nom complet *' : 'Full Name *'}
+                      </label>
                       <input
                         required
                         type="text"
                         value={form.name}
                         onChange={set('name')}
-                        placeholder="Jane Smith"
+                        placeholder={isFrench ? 'Jean Dupont' : 'Jane Smith'}
                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition-colors font-medium"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Work Email *</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                        {isFrench ? 'Email professionnel *' : 'Work Email *'}
+                      </label>
                       <input
                         required
                         type="email"
                         value={form.email}
                         onChange={set('email')}
-                        placeholder="jane@company.com"
+                        placeholder="contact@company.com"
                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition-colors font-medium"
                       />
                     </div>
@@ -218,25 +253,29 @@ export default function ContactPage() {
 
                   {/* Company */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Company Name</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                      {isFrench ? 'Nom de l\'Entreprise' : 'Company Name'}
+                    </label>
                     <input
                       type="text"
                       value={form.company}
                       onChange={set('company')}
-                      placeholder="Acme Defense Ltd"
+                      placeholder={isFrench ? 'Ex. Spektralsoft S.A.R.L' : 'e.g. Spektralsoft Ltd'}
                       className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition-colors font-medium"
                     />
                   </div>
 
                   {/* Message */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Message *</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                      {isFrench ? 'Votre Message *' : 'Message *'}
+                    </label>
                     <textarea
                       required
                       rows={5}
                       value={form.message}
                       onChange={set('message')}
-                      placeholder="Tell us about your team, how many tenders you evaluate per month, and what you're looking to achieve..."
+                      placeholder={isFrench ? 'Présentez votre entreprise, votre volume d\'appels d\'offres mensuel et vos objectifs...' : 'Tell us about your team, how many tenders you evaluate per month, and what you\'re looking to achieve...'}
                       className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 transition-colors font-medium resize-none"
                     />
                   </div>
@@ -250,20 +289,30 @@ export default function ContactPage() {
                     {loading ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Sending...</span>
+                        <span>{isFrench ? 'Envoi en cours...' : 'Sending...'}</span>
                       </>
                     ) : (
                       <>
                         <Send className="w-4 h-4" />
-                        <span>Send Message</span>
+                        <span>{isFrench ? 'Envoyer le Message' : 'Send Message'}</span>
                       </>
                     )}
                   </button>
 
                   <p className="text-center text-[11px] text-slate-400 font-medium">
-                    By submitting, you agree to our{' '}
-                    <a href="#" className="text-emerald-600 hover:underline font-bold">Privacy Policy</a>.
-                    We'll never share your data.
+                    {isFrench ? (
+                      <>
+                        En soumettant ce formulaire, vous acceptez notre{' '}
+                        <a href="/privacy" className="text-emerald-600 hover:underline font-bold">Politique de Confidentialité</a>.
+                        Vos coordonnées ne seront jamais cédées.
+                      </>
+                    ) : (
+                      <>
+                        By submitting, you agree to our{' '}
+                        <a href="/privacy" className="text-emerald-600 hover:underline font-bold">Privacy Policy</a>.
+                        We&apos;ll never share your data.
+                      </>
+                    )}
                   </p>
                 </form>
               </div>

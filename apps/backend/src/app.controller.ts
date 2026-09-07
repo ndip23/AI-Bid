@@ -13,7 +13,7 @@ export class AppController {
       frontendApp: 'http://localhost:3000',
       endpoints: {
         tenders: '/api/v1/tenders',
-        procurementSources: '/api/v1/sources',
+        publishers: '/api/v1/publishers',
         adminStats: '/api/v1/admin/stats',
       },
     };

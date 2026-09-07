@@ -72,6 +72,19 @@ export class ApiClient {
     return await res.json();
   }
 
+  static async updateProfile(data: { username?: string; email?: string }): Promise<User> {
+    const res = await fetch(`${API_BASE_URL}/auth/profile`, {
+      method: 'PUT',
+      headers: this.getHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(sanitizeErrorMessage(err, 'Failed to update personal details.'));
+    }
+    return await res.json();
+  }
+
   static async getCompanyProfile(): Promise<Company | null> {
     try {
       const res = await fetch(`${API_BASE_URL}/company/profile`, { headers: this.getHeaders() });
@@ -91,10 +104,15 @@ export class ApiClient {
     if (!res.ok) {
       throw new Error('Failed to update company profile');
     }
+    this.tendersCache = null;
     return await res.json();
   }
 
   private static tendersCache: { key: string; data: Tender[]; timestamp: number } | null = null;
+
+  static clearTendersCache() {
+    this.tendersCache = null;
+  }
 
   static async getTenders(params?: { search?: string; industry?: string; country?: string; minScore?: number }): Promise<Tender[]> {
     const key = JSON.stringify(params || {});
@@ -165,6 +183,30 @@ export class ApiClient {
       console.error('Failed to fetch notifications', e);
     }
     return [];
+  }
+
+  static async markNotificationAsRead(id: string) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error('Failed to mark notification as read', e);
+    }
+  }
+
+  static async markAllNotificationsAsRead() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/notifications/read-all`, {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error('Failed to mark all notifications as read', e);
+    }
   }
 
   static async getProcurementSources(): Promise<ProcurementSourceItem[]> {

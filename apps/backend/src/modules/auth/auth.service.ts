@@ -31,19 +31,19 @@ export class AuthService {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(dto.password, salt);
 
-    // Create company if name provided, or assign default company profile
+    // Create company if name provided, unpopulated so user fills their own capability profile
     let company = null;
     if (dto.companyName) {
       company = await this.prisma.company.create({
         data: {
           name: dto.companyName,
           industry: dto.industry || 'Cloud & IT Infrastructure',
-          countries: ['Cameroon', 'Nigeria', 'Kenya', 'South Africa', 'Ghana', 'Rwanda'],
-          certifications: ['ISO 27001', 'ARMP Registered', 'NITDA IT Clearance'],
-          services: ['Cloud Infrastructure', 'Custom Software Engineering', 'Cybersecurity', 'IoT Telemetry'],
-          teamSize: 25,
-          annualRevenue: '$2M - $10M',
-          description: `${dto.companyName} provides high-quality software engineering, cloud infrastructure, and technical consulting across African markets.`,
+          countries: [],
+          certifications: [],
+          services: [],
+          teamSize: 1,
+          taxId: null,
+          description: null,
         },
       });
     }
@@ -125,6 +125,39 @@ export class AuthService {
     }
 
     const { passwordHash: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
+
+  async updateProfile(userId: string, dto: { username?: string; email?: string }) {
+    const data: any = {};
+    if (dto.username) data.username = dto.username.trim();
+    if (dto.email) data.email = dto.email.trim().toLowerCase();
+
+    if (dto.username) {
+      const existing = await this.prisma.user.findFirst({
+        where: { username: dto.username.trim(), NOT: { id: userId } },
+      });
+      if (existing) {
+        throw new BadRequestException('Username is already taken');
+      }
+    }
+
+    if (dto.email) {
+      const existing = await this.prisma.user.findFirst({
+        where: { email: dto.email.trim().toLowerCase(), NOT: { id: userId } },
+      });
+      if (existing) {
+        throw new BadRequestException('Email is already registered by another account');
+      }
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data,
+      include: { company: true },
+    });
+
+    const { passwordHash: _, ...userWithoutPassword } = updated;
     return userWithoutPassword;
   }
 

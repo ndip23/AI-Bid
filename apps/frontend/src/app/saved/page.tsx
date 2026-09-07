@@ -5,14 +5,19 @@ import { Header } from '../../components/layout/Header';
 import { Sidebar } from '../../components/layout/Sidebar';
 import { ApiClient } from '../../lib/api-client';
 import { useToast } from '../../lib/toast-context';
+import { useLanguage } from '../../lib/language-context';
+import { formatCurrency } from '../../lib/formatters';
 import { SavedTender, SavedStatus } from '../../types';
 import { BookmarkCheck, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function SavedPipelinePage() {
   const [savedItems, setSavedItems] = useState<SavedTender[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { isFrench } = useLanguage();
+  const router = useRouter();
 
   const loadSaved = async () => {
     setLoading(true);
@@ -31,10 +36,26 @@ export default function SavedPipelinePage() {
   }, []);
 
   const columns: { status: SavedStatus; label: string; color: string }[] = [
-    { status: 'BOOKMARKED', label: 'Bookmarked', color: 'border-emerald-300 text-emerald-700' },
-    { status: 'UNDER_REVIEW', label: 'Under Review', color: 'border-sky-300 text-sky-700' },
-    { status: 'BIDDING', label: 'Bidding / In Progress', color: 'border-emerald-300 text-emerald-700' },
-    { status: 'PASSED', label: 'Passed / Declined', color: 'border-rose-300 text-rose-700' },
+    {
+      status: 'BOOKMARKED',
+      label: isFrench ? 'Favoris / Repérés' : 'Bookmarked',
+      color: 'border-emerald-300 text-emerald-700',
+    },
+    {
+      status: 'UNDER_REVIEW',
+      label: isFrench ? 'À l\'Étude / Analyse' : 'Under Review',
+      color: 'border-sky-300 text-sky-700',
+    },
+    {
+      status: 'BIDDING',
+      label: isFrench ? 'En Soumission / En Cours' : 'Bidding / In Progress',
+      color: 'border-emerald-300 text-emerald-700',
+    },
+    {
+      status: 'PASSED',
+      label: isFrench ? 'Décliné / Archivé' : 'Passed / Declined',
+      color: 'border-rose-300 text-rose-700',
+    },
   ];
 
   return (
@@ -48,10 +69,12 @@ export default function SavedPipelinePage() {
           <div>
             <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
               <BookmarkCheck className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
-              Saved Tenders Pipeline
+              <span>{isFrench ? 'Pipeline des Appels d\'Offres Enregistrés' : 'Saved Tenders Pipeline'}</span>
             </h1>
             <p className="text-xs text-slate-500 font-medium">
-              Track procurement opportunities through evaluation, review, and bid submission
+              {isFrench
+                ? 'Suivez vos opportunités de marchés à travers les phases d\'évaluation, de revue technique et de soumission'
+                : 'Track procurement opportunities through evaluation, review, and bid submission'}
             </p>
           </div>
 
@@ -82,25 +105,27 @@ export default function SavedPipelinePage() {
                     <div className="space-y-3">
                       {itemsInCol.length === 0 ? (
                         <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-400 font-medium">
-                          No tenders in this stage
+                          {isFrench ? 'Aucune offre à cette étape' : 'No tenders in this stage'}
                         </div>
                       ) : (
                         itemsInCol.map((item) => (
                           <div
                             key={item.id}
-                            className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 hover:border-emerald-300 transition-all text-xs"
+                            onClick={() => router.push(`/tenders/${item.tender.id}`)}
+                            className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 hover:border-emerald-300 transition-all text-xs cursor-pointer"
                           >
                             <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-bold">
                               <span>{item.tender.refNumber}</span>
                               {item.matchDetails?.overallScore && (
                                 <span className="font-extrabold text-emerald-600">
-                                  {item.matchDetails.overallScore}% Match
+                                  {item.matchDetails.overallScore}% {isFrench ? 'Adéquation' : 'Match'}
                                 </span>
                               )}
                             </div>
 
                             <Link
                               href={`/tenders/${item.tender.id}`}
+                              onClick={(e) => e.stopPropagation()}
                               className="font-bold text-slate-900 hover:text-emerald-600 transition-colors block line-clamp-2"
                             >
                               {item.tender.title}
@@ -112,28 +137,36 @@ export default function SavedPipelinePage() {
 
                             <div className="pt-2 border-t border-slate-200/80 flex items-center justify-between text-[11px]">
                               <span className="text-emerald-700 font-extrabold">
-                                ${item.tender.estimatedValue.toLocaleString()}
+                                {formatCurrency(item.tender.estimatedValue, item.tender.currency)}
                               </span>
-                              <div className="flex items-center space-x-2">
+                              <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
                                 <button
-                                  onClick={async () => {
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
                                     try {
                                       await ApiClient.unsaveTender(item.tender.id);
                                       setSavedItems(savedItems.filter(i => i.id !== item.id));
-                                      toast.info('Tender Removed', 'Opportunity removed from pipeline.');
+                                      toast.info(
+                                        isFrench ? 'Offre Retirée' : 'Tender Removed',
+                                        isFrench ? 'L\'opportunité a été retirée du pipeline.' : 'Opportunity removed from pipeline.'
+                                      );
                                     } catch (e) {
-                                      toast.error('Failed to Remove', 'Could not update pipeline.');
+                                      toast.error(
+                                        isFrench ? 'Échec' : 'Failed to Remove',
+                                        isFrench ? 'Impossible de mettre à jour le pipeline.' : 'Could not update pipeline.'
+                                      );
                                     }
                                   }}
                                   className="text-[10px] text-rose-500 hover:underline font-bold"
                                 >
-                                  Remove
+                                  {isFrench ? 'Retirer' : 'Remove'}
                                 </button>
                                 <Link
                                   href={`/tenders/${item.tender.id}`}
+                                  onClick={(e) => e.stopPropagation()}
                                   className="text-emerald-600 hover:text-emerald-700 font-bold flex items-center gap-0.5"
                                 >
-                                  View <ChevronRight className="w-3.5 h-3.5" />
+                                  {isFrench ? 'Voir' : 'View'} <ChevronRight className="w-3.5 h-3.5" />
                                 </Link>
                               </div>
                             </div>
