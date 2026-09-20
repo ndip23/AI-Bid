@@ -53,6 +53,8 @@ export const SubmitBidModal: React.FC<Props> = ({
   const [submitting, setSubmitting] = useState(false);
 
   const [conciergeRequested, setConciergeRequested] = useState(false);
+  const [submissionMethod, setSubmissionMethod] = useState<'SELF' | 'CONCIERGE'>('SELF');
+  const [contactPhone, setContactPhone] = useState('');
 
   if (!isOpen) return null;
 
@@ -199,11 +201,21 @@ SUBMISSION INSTRUCTIONS:
 
     setSubmitting(true);
     try {
-      const submissionNotes = `Submitted Amount: ${submittedAmount} ${tender.currency}. Receipt: ${receiptNumber || 'N/A'}.${conciergeRequested ? ' [Concierge Runner Deposit Requested]' : ' [Direct Corporate Deposit]'}`;
+      const submissionNotes = `Submitted Amount: ${submittedAmount} ${tender.currency}. ${
+        submissionMethod === 'CONCIERGE'
+          ? `[Bidora Concierge Runner Requested - Contact: ${contactPhone || 'N/A'}]`
+          : `Receipt: ${receiptNumber || 'N/A'}. [Direct Corporate Deposit]`
+      }`;
       await ApiClient.saveTender(tender.id, 'BIDDING', submissionNotes);
       toast.success(
         isFrench ? 'Dépôt Enregistré avec Succès !' : 'Submission Successfully Recorded!',
-        isFrench ? `Marché ${tender.refNumber} marqué comme En Soumission.` : `Opportunity ${tender.refNumber} moved to Bidding stage.`
+        submissionMethod === 'CONCIERGE'
+          ? (isFrench
+              ? `Demande de coursier confirmée ! Un agent vous contactera sur ${contactPhone || 'votre numéro'}.`
+              : `Concierge runner confirmed! An agent will contact you on ${contactPhone || 'your phone'}.`)
+          : (isFrench
+              ? `Marché ${tender.refNumber} marqué comme En Soumission.`
+              : `Opportunity ${tender.refNumber} moved to Bidding stage.`)
       );
       onSubmissionComplete?.();
       onClose();
@@ -413,10 +425,27 @@ SUBMISSION INSTRUCTIONS:
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Channel A: Direct Corporate Submission with Bidora Dossier */}
-                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-all flex flex-col justify-between space-y-4">
+                <div 
+                  onClick={() => {
+                    setSubmissionMethod('SELF');
+                    setConciergeRequested(false);
+                  }}
+                  className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-4 ${
+                    submissionMethod === 'SELF'
+                      ? 'border-emerald-500 bg-emerald-50/20 ring-2 ring-emerald-500/20 shadow-xs'
+                      : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                  }`}
+                >
                   <div className="space-y-2">
-                    <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">
-                      <span>{isFrench ? 'Option A : Dépôt Direct en Entreprise' : 'Option A: Direct Corporate Deposit'}</span>
+                    <div className="flex items-center justify-between">
+                      <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">
+                        <span>{isFrench ? 'Option A : Dépôt Direct par l\'Entreprise' : 'Option A: Direct Corporate Deposit'}</span>
+                      </div>
+                      {submissionMethod === 'SELF' && (
+                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                          {isFrench ? 'Sélectionné ✓' : 'Selected ✓'}
+                        </span>
+                      )}
                     </div>
                     <h4 className="text-xs font-black text-slate-900">
                       {isFrench ? 'Dépôt Physique Sous Pli Scellé' : 'Physical Sealed Envelope Deposit'}
@@ -428,23 +457,66 @@ SUBMISSION INSTRUCTIONS:
                     </p>
                   </div>
 
-                  <button
-                    onClick={handlePrintLabels}
-                    className="w-full py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
-                  >
-                    <Printer className="w-3.5 h-3.5 text-slate-600" />
-                    <span>{isFrench ? 'Imprimer les Étiquettes des Plis' : 'Print Envelope Labels'}</span>
-                  </button>
+                  <div className="space-y-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePrintLabels();
+                      }}
+                      className="w-full py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
+                    >
+                      <Printer className="w-3.5 h-3.5 text-slate-600" />
+                      <span>{isFrench ? 'Imprimer les Étiquettes des Plis' : 'Print Envelope Labels'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSubmissionMethod('SELF');
+                        setConciergeRequested(false);
+                      }}
+                      className={`w-full py-2 rounded-xl font-bold text-xs transition-colors ${
+                        submissionMethod === 'SELF'
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                      }`}
+                    >
+                      {submissionMethod === 'SELF'
+                        ? (isFrench ? 'Mode Sélectionné ✓' : 'Mode Selected ✓')
+                        : (isFrench ? 'Choisir Dépôt Direct' : 'Choose Direct Deposit')}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Channel B: Concierge Runner Service */}
-                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition-all flex flex-col justify-between space-y-4">
+                <div 
+                  onClick={() => {
+                    setSubmissionMethod('CONCIERGE');
+                    setConciergeRequested(true);
+                  }}
+                  className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-4 ${
+                    submissionMethod === 'CONCIERGE'
+                      ? 'border-indigo-500 bg-indigo-50/20 ring-2 ring-indigo-500/20 shadow-xs'
+                      : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                  }`}
+                >
                   <div className="space-y-2">
-                    <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-[10px] font-extrabold">
-                      <span>{isFrench ? 'Option B : Coursier & Dépôt Assisté Bidora' : 'Option B: Bidora Concierge Runner'}</span>
+                    <div className="flex items-center justify-between">
+                      <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-[10px] font-extrabold">
+                        <span>{isFrench ? 'Option B : Coursier & Dépôt Assisté' : 'Option B: Concierge Runner Desk'}</span>
+                      </div>
+                      {submissionMethod === 'CONCIERGE' ? (
+                        <span className="text-[10px] font-black text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">
+                          {isFrench ? 'Sélectionné ✓' : 'Selected ✓'}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-md">
+                          {isFrench ? 'Recommandé hors-ville' : 'Out-of-Town Pick'}
+                        </span>
+                      )}
                     </div>
                     <h4 className="text-xs font-black text-slate-900">
-                      {isFrench ? 'Déléguer le Dépôt à nos Agents de Liaison' : 'Delegate Drop-off to Bidora Liaison Team'}
+                      {isFrench ? 'Déléguer le Dépôt à nos Agents de Liaison' : 'Delegate Drop-off to Bidora Field Team'}
                     </h4>
                     <p className="text-xs text-slate-600 leading-relaxed font-medium">
                       {isFrench
@@ -453,33 +525,34 @@ SUBMISSION INSTRUCTIONS:
                     </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const next = !conciergeRequested;
-                      setConciergeRequested(next);
-                      if (next) {
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSubmissionMethod('CONCIERGE');
+                        setConciergeRequested(true);
                         toast.success(
-                          isFrench ? 'Demande de Dépôt Assisté Enregistrée' : 'Concierge Filing Requested',
+                          isFrench ? 'Demande de Dépôt Assisté Sélectionnée' : 'Concierge Filing Selected',
                           isFrench
                             ? 'Un agent de liaison Bidora coordonnera la remise de votre pli avant l\'heure limite.'
                             : 'A Bidora liaison officer will coordinate your physical submission before deadline.'
                         );
-                      }
-                    }}
-                    className={`w-full py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs ${
-                      conciergeRequested
-                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                        : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                    }`}
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>
-                      {conciergeRequested
-                        ? (isFrench ? 'Dépôt Assisté Demandé ✓' : 'Concierge Runner Active ✓')
-                        : (isFrench ? 'Demander le Dépôt Assisté' : 'Request Concierge Runner')}
-                    </span>
-                  </button>
+                      }}
+                      className={`w-full py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs ${
+                        submissionMethod === 'CONCIERGE'
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                      }`}
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>
+                        {submissionMethod === 'CONCIERGE'
+                          ? (isFrench ? 'Coursier Sélectionné ✓' : 'Concierge Runner Selected ✓')
+                          : (isFrench ? 'Choisir Coursier Assisté' : 'Choose Concierge Runner')}
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -538,10 +611,29 @@ SUBMISSION INSTRUCTIONS:
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed font-medium">
                   {isFrench
-                    ? 'Une fois le dossier téléversé ou déposé physiquement, renseignez les informations ci-dessous pour suivre la séance d\'ouverture des plis :'
-                    : 'Once your team has uploaded to the portal or deposited the physical envelope, record the submission details below to track your bid opening session:'}
+                    ? (submissionMethod === 'CONCIERGE'
+                        ? 'Indiquez votre numéro pour que notre agent de liaison confirme la remise physique de votre dossier :'
+                        : 'Renseignez les détails du dépôt pour suivre l\'ouverture des plis dans votre tableau de bord :')
+                    : (submissionMethod === 'CONCIERGE'
+                        ? 'Provide your contact details so our liaison officer can confirm physical delivery of your sealed bid:'
+                        : 'Record your bid details to track the public opening session inside your pipeline dashboard:')}
                 </p>
               </div>
+
+              {/* Active Mode Notice */}
+              {submissionMethod === 'CONCIERGE' && (
+                <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-950 space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-indigo-900">
+                    <CheckCircle2 className="w-4 h-4 text-indigo-600" />
+                    <span>{isFrench ? 'Dépôt Assisté par Agent de Liaison Bidora' : 'Bidora Field Liaison Drop-off Active'}</span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-indigo-800 font-medium">
+                    {isFrench
+                      ? `Notre agent accrédité imprimera l'archive, scellera les 3 plis et déposera le dossier directement au siège de ${tender.buyerName} avant l'heure limite.`
+                      : `Our verified field officer will print the archive, seal the 3 envelopes, and physically deposit your bid at ${tender.buyerName} headquarters before the deadline.`}
+                  </p>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div className="space-y-1">
@@ -563,18 +655,34 @@ SUBMISSION INSTRUCTIONS:
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="font-extrabold text-slate-700">
-                    {isFrench ? 'Numéro de Récépissé / Décharge de Dépôt' : 'Submission Receipt / Tracking ID'}
-                  </label>
-                  <input
-                    type="text"
-                    value={receiptNumber}
-                    onChange={(e) => setReceiptNumber(e.target.value)}
-                    placeholder={isFrench ? 'Ex. ARMP-REC-2026-9810 ou Décharge N°402' : 'e.g. WB-REC-2026-9810 or Slip #402'}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 font-medium text-slate-900 focus:outline-none focus:border-emerald-600 shadow-sm"
-                  />
-                </div>
+                {submissionMethod === 'CONCIERGE' ? (
+                  <div className="space-y-1">
+                    <label className="font-extrabold text-slate-700">
+                      {isFrench ? 'WhatsApp / Tél. pour Coordination du Dépôt' : 'WhatsApp / Phone for Courier Coordination'}
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={contactPhone}
+                      onChange={(e) => setContactPhone(e.target.value)}
+                      placeholder={isFrench ? '+237 6XX XX XX XX' : '+237 6XX XX XX XX'}
+                      className="w-full bg-white border border-indigo-200 rounded-xl px-3.5 py-2.5 font-bold text-slate-900 focus:outline-none focus:border-indigo-600 shadow-sm"
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <label className="font-extrabold text-slate-700">
+                      {isFrench ? 'Numéro de Récépissé / Décharge de Dépôt' : 'Submission Receipt / Tracking ID'}
+                    </label>
+                    <input
+                      type="text"
+                      value={receiptNumber}
+                      onChange={(e) => setReceiptNumber(e.target.value)}
+                      placeholder={isFrench ? 'Ex. ARMP-REC-2026-9810 ou Décharge N°402' : 'e.g. WB-REC-2026-9810 or Slip #402'}
+                      className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 font-medium text-slate-900 focus:outline-none focus:border-emerald-600 shadow-sm"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Certification Checkbox */}
