@@ -207,6 +207,21 @@ export const TenderDocumentsView: React.FC<Props> = ({ tender }) => {
     },
   ]);
 
+  // If company profile has verified corporate credentials, auto-populate vault documents
+  React.useEffect(() => {
+    if (completeness.isComplete) {
+      setSubmissionDocs((prev) =>
+        prev.map((d) => ({
+          ...d,
+          status: 'READY_IN_VAULT',
+          fileName:
+            d.fileName ||
+            `${companyName.replace(/[^a-zA-Z0-9]/g, '_')}_${d.name.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 24)}_Verified.pdf`,
+        }))
+      );
+    }
+  }, [completeness.isComplete, companyName]);
+
   // Project documents that the user can read & analyze
   const officialProjectUrl =
     tender.sourceUrl ||

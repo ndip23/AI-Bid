@@ -16,6 +16,9 @@ import { useToast } from '../../../lib/toast-context';
 import { useAuth } from '../../../lib/auth-context';
 import { checkProfileCompleteness } from '../../../lib/profile-utils';
 import { IncompleteProfileModal } from '../../../components/ui';
+import { QuickBiddingGuide } from '../../../components/tenders/QuickBiddingGuide';
+import { SubmitBidModal } from '../../../components/tenders/SubmitBidModal';
+import { useLanguage } from '../../../lib/language-context';
 import {
   ArrowLeft,
   Bookmark,
@@ -35,6 +38,7 @@ import {
   Layers,
   Eye,
   FolderArchive,
+  Send,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -51,6 +55,7 @@ export default function TenderDetailPage() {
   const id = params?.id as string;
   const { toast } = useToast();
   const { company } = useAuth();
+  const { isFrench } = useLanguage();
 
   const [tender, setTender] = useState<Tender | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,6 +64,7 @@ export default function TenderDetailPage() {
   const [savedStatus, setSavedStatus] = useState<SavedStatus>('BOOKMARKED');
   const [showStatusMenu, setShowStatusMenu] = useState(false);
   const [showIncompleteModal, setShowIncompleteModal] = useState(false);
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   // Collaborative Bid Workspace Tasks ("Jira for Bids")
   const [tasks, setTasks] = useState<BidTask[]>([
@@ -202,6 +208,35 @@ export default function TenderDetailPage() {
                   <span className="text-xs font-mono text-slate-500 px-3 py-1 rounded-lg bg-slate-50 border border-slate-200 font-bold">
                     {tender.refNumber}
                   </span>
+
+                  {/* Opportunity Type Badges */}
+                  {tender.opportunityType === 'PRIVATE_TENDER' && (
+                    <span className="text-xs font-extrabold px-3 py-1 rounded-lg bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-purple-600 animate-pulse"></span>
+                      {isFrench ? 'Marché Privé Corporate' : 'Private Corporate RFP'}
+                    </span>
+                  )}
+                  {tender.opportunityType === 'SUBCONTRACTING' && (
+                    <span className="text-xs font-extrabold px-3 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-600"></span>
+                      {isFrench ? 'Sous-Traitance Industrielle (BSTP-CMR)' : 'Industrial Subcontracting (BSTP-CMR)'}
+                    </span>
+                  )}
+                  {tender.opportunityType === 'REQUEST_FOR_PROPOSAL' && (
+                    <span className="text-xs font-extrabold px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200">
+                      {isFrench ? 'Appel d\'Offres Privé / RFP' : 'Corporate RFP'}
+                    </span>
+                  )}
+                  {tender.opportunityType === 'REQUEST_FOR_QUOTATION' && (
+                    <span className="text-xs font-extrabold px-3 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-200">
+                      {isFrench ? 'Demande de Cotation / RFQ' : 'Request for Quotation (RFQ)'}
+                    </span>
+                  )}
+                  {tender.sourceCategory === 'STATE_OWNED_ENTERPRISE' && (
+                    <span className="text-xs font-bold px-3 py-1 rounded-lg bg-cyan-50 text-cyan-800 border border-cyan-200">
+                      {isFrench ? 'Entreprise Publique (SOE)' : 'State-Owned Enterprise (SOE)'}
+                    </span>
+                  )}
                 </div>
 
                 <h1 className="text-xl md:text-3xl font-extrabold text-slate-900 leading-snug">
@@ -218,6 +253,21 @@ export default function TenderDetailPage() {
                     <div className="text-[10px] uppercase font-extrabold text-emerald-600">Match Score</div>
                   </div>
                 )}
+
+                <button
+                  onClick={() => {
+                    const currentCompleteness = checkProfileCompleteness(company);
+                    if (!currentCompleteness.isComplete) {
+                      setShowIncompleteModal(true);
+                      return;
+                    }
+                    setShowSubmitModal(true);
+                  }}
+                  className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md shadow-emerald-600/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.02]"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>{isFrench ? '🚀 Soumissionner / Déposer' : '🚀 Apply / Submit Bid'}</span>
+                </button>
 
                 <button
                   onClick={() => setActiveTab('docs')}
@@ -291,6 +341,21 @@ export default function TenderDetailPage() {
               </div>
             </div>
           </div>
+
+          {/* Autonomous Self-Service Guided Bidding Stepper */}
+          <QuickBiddingGuide
+            tender={tender}
+            activeTab={activeTab}
+            onSelectTab={(tab) => setActiveTab(tab)}
+            onOpenSubmitModal={() => {
+              const currentCompleteness = checkProfileCompleteness(company);
+              if (!currentCompleteness.isComplete) {
+                setShowIncompleteModal(true);
+                return;
+              }
+              setShowSubmitModal(true);
+            }}
+          />
 
           {/* Navigation Tabs */}
           <div className="flex border-b border-slate-200 space-x-2 md:space-x-4 overflow-x-auto scrollbar-none touch-pan-x -mx-1 px-1">
@@ -542,6 +607,20 @@ export default function TenderDetailPage() {
         onClose={() => setShowIncompleteModal(false)}
         missingFields={checkProfileCompleteness(company).missingFields}
         companyName={company?.name || 'your company'}
+      />
+
+      {/* Primary Self-Service Submission Modal */}
+      <SubmitBidModal
+        isOpen={showSubmitModal}
+        onClose={() => setShowSubmitModal(false)}
+        tender={tender}
+        companyName={company?.name || (isFrench ? 'Votre Entreprise' : 'Your Company')}
+        readyCount={10}
+        totalDocs={12}
+        onSubmissionComplete={() => {
+          handleSave('BIDDING');
+          fetchDetails();
+        }}
       />
     </div>
   );

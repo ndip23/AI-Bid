@@ -255,4 +255,61 @@ export class ApiClient {
     if (!res.ok) throw new Error('Failed to create tender');
     return await res.json();
   }
+
+  // Multi-Channel Alerts & Notification Preferences
+  static async getNotificationPreferences() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/notifications/preferences`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error('Failed to get notification preferences', e);
+    }
+    return null;
+  }
+
+  static async updateNotificationPreferences(data: any) {
+    const res = await fetch(`${API_BASE_URL}/notifications/preferences`, {
+      method: 'PUT',
+      headers: this.getHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to update alert preferences');
+    }
+    return await res.json();
+  }
+
+  static async testDispatchAlert(data: {
+    channel: 'WHATSAPP' | 'EMAIL' | 'SMS';
+    targetPhone?: string;
+    targetEmail?: string;
+    tenderId?: string;
+  }) {
+    const res = await fetch(`${API_BASE_URL}/notifications/test-dispatch`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to dispatch test alert');
+    }
+    return await res.json();
+  }
+
+  static async getAlertLogs() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/notifications/alert-logs`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error('Failed to fetch alert logs', e);
+    }
+    return [];
+  }
 }
+

@@ -127,9 +127,18 @@ export class MatchService {
 
     // 2. Country / Geography Match
     let countryScore = 0;
-    const isCountryMatch = company.countries.some(
-      (c) => c.toLowerCase() === tender.buyerCountry.toLowerCase() || c.toLowerCase() === 'global',
-    );
+    const normalizeCountry = (c: string) => {
+      const lower = c.trim().toLowerCase();
+      if (/cote d'?ivoire|côte d'?ivoire|ivory coast/i.test(lower)) return "cote d'ivoire";
+      if (/cameroon|cameroun/i.test(lower)) return 'cameroon';
+      if (/nigeria/i.test(lower)) return 'nigeria';
+      return lower;
+    };
+    const tenderCountryNorm = normalizeCountry(tender.buyerCountry);
+    const isCountryMatch = company.countries.some((c) => {
+      const cNorm = normalizeCountry(c);
+      return cNorm === tenderCountryNorm || cNorm === 'global' || tenderCountryNorm === 'global';
+    });
 
     if (isCountryMatch) {
       countryScore = 100;

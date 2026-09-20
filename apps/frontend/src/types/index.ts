@@ -82,6 +82,11 @@ export interface Tender {
   status: TenderStatus;
   sourceUrl?: string;
   attachments?: string[];
+  opportunityType?: string;
+  sourceCategory?: string;
+  buyerType?: string;
+  buyerIntent?: string;
+  organization?: string;
   aiSummary?: AiSummary | null;
   matchScore?: number | null;
   matchDetails?: MatchCalculation | null;

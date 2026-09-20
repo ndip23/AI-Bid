@@ -9,17 +9,30 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS
+  // Basic HTTP Security Headers
+  app.use((req: any, res: any, next: any) => {
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+  });
+
+  // Enable CORS (configurable via CORS_ORIGIN for production security)
+  const corsOrigin = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
+    : true;
+
   app.enableCors({
-    origin: true, // Accepts frontend origin
+    origin: corsOrigin,
     credentials: true,
   });
 
   // Global exception filter
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  // Global prefix with root route exclusion for health status
-  app.setGlobalPrefix('api/v1', { exclude: ['/'] });
+  // Global prefix with root and health route exclusions
+  app.setGlobalPrefix('api/v1', { exclude: ['/', 'health', 'health/ready'] });
 
   // Validation pipe
   app.useGlobalPipes(

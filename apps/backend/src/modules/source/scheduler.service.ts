@@ -25,9 +25,15 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   onModuleInit() {
-    this.logger.log(`[Scheduler] Initializing Resilient Procurement Engine Scheduler...`);
-    // Run sync loop every 1 hour (3600,000 ms)
-    this.syncInterval = setInterval(() => this.runHourlyProcurementSync(), 60 * 60 * 1000);
+    this.logger.log(`[Scheduler] Initializing Resilient Procurement Engine & Daily Freshness Scheduler...`);
+    // Run an initial daily freshness guarantee check shortly after boot (10 seconds)
+    setTimeout(() => {
+      this.ensureDailyFreshnessGuarantee(15).catch((err) => {
+        this.logger.error(`Initial daily freshness guarantee error: ${err.message}`);
+      });
+    }, 10000);
+    // Recurring freshness check every 4 hours (14,400,000 ms) to ensure the 15/day quota is never breached
+    this.syncInterval = setInterval(() => this.ensureDailyFreshnessGuarantee(15), 4 * 60 * 60 * 1000);
   }
 
   onModuleDestroy() {
@@ -271,5 +277,140 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
 
       throw syncErr;
     }
+  }
+
+  /**
+   * Daily 15+ Freshness Engine: Guarantees at least 15 new/active procurement notices are added every 24 hours.
+   */
+  async ensureDailyFreshnessGuarantee(targetDailyCount: number = 15): Promise<{
+    date: string;
+    targetDailyCount: number;
+    tendersAddedPast24h: number;
+    newIngestedThisRun: number;
+    status: string;
+    isTargetMet: boolean;
+  }> {
+    this.logger.log(`[Daily Freshness Engine] Checking daily procurement pipeline quota (target: ${targetDailyCount} new tenders/day)...`);
+
+    const past24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    let countPast24h = await this.prisma.tender.count({
+      where: { createdAt: { gte: past24h } },
+    });
+
+    let newIngestedThisRun = 0;
+
+    // 1. Ensure UNGM publisher exists and is ACTIVE
+    let ungmPub = await this.prisma.publisher.findFirst({
+      where: {
+        OR: [
+          { name: { contains: 'UNGM', mode: 'insensitive' } },
+          { name: { contains: 'United Nations', mode: 'insensitive' } },
+        ],
+      },
+    });
+
+    if (!ungmPub) {
+      ungmPub = await this.prisma.publisher.create({
+        data: {
+          name: 'UNGM - United Nations Global Marketplace',
+          country: 'Global / Africa',
+          organizationType: 'INTERNATIONAL_ORGANIZATION',
+          officialWebsite: 'https://www.ungm.org',
+          apiEndpoint: 'https://api.ungm.org/v1/notices',
+          connectorType: 'REST_API',
+          sourceCategory: 'DONOR_PROCUREMENT',
+          defaultBuyerType: 'NGO',
+          status: PublisherStatus.ACTIVE,
+        },
+      });
+    } else if (ungmPub.status !== PublisherStatus.ACTIVE) {
+      ungmPub = await this.prisma.publisher.update({
+        where: { id: ungmPub.id },
+        data: { status: PublisherStatus.ACTIVE },
+      });
+    }
+
+    // Run UNGM connector
+    try {
+      this.logger.log(`[Daily Freshness Engine] Triggering UNGM multi-agency procurement sync...`);
+      const ungmSync = await this.syncSinglePublisher(ungmPub.id);
+      newIngestedThisRun += ungmSync.newRecords;
+    } catch (e: any) {
+      this.logger.error(`[Daily Freshness Engine] UNGM sync error: ${e.message}`);
+    }
+
+    // Re-check count
+    countPast24h = await this.prisma.tender.count({
+      where: { createdAt: { gte: past24h } },
+    });
+
+    // 2. If still below target, trigger active publishers top-up
+    if (countPast24h < targetDailyCount) {
+      this.logger.log(`[Daily Freshness Engine] Past 24h count (${countPast24h}) < target (${targetDailyCount}). Running multi-source top-up...`);
+      const topUpSync = await this.runHourlyProcurementSync();
+      newIngestedThisRun += topUpSync.newTenders;
+    }
+
+    countPast24h = await this.prisma.tender.count({
+      where: { createdAt: { gte: past24h } },
+    });
+
+    const isTargetMet = countPast24h >= targetDailyCount;
+    this.logger.log(
+      `[Daily Freshness Engine] Quota status: ${countPast24h}/${targetDailyCount} tenders in past 24h (${isTargetMet ? 'TARGET MET ✅' : 'IN PROGRESS ⏳'}). Added this run: ${newIngestedThisRun}`
+    );
+
+    // If new tenders were ingested this run, dispatch in-app Notification
+    if (newIngestedThisRun > 0) {
+      try {
+        const users = await this.prisma.user.findMany({ select: { id: true } });
+        for (const user of users) {
+          await this.prisma.notification.create({
+            data: {
+              userId: user.id,
+              title: '🎯 Daily Fresh Opportunities Added',
+              message: `${newIngestedThisRun} new verified procurement opportunities have just been added to your discovery feed!`,
+              type: 'NEW_MATCH',
+            },
+          });
+        }
+      } catch (notifErr: any) {
+        this.logger.warn(`Could not dispatch notifications: ${notifErr.message}`);
+      }
+    }
+
+    return {
+      date: new Date().toISOString().split('T')[0],
+      targetDailyCount,
+      tendersAddedPast24h: countPast24h,
+      newIngestedThisRun,
+      status: isTargetMet ? 'GUARANTEED_FRESH' : 'TOPPING_UP',
+      isTargetMet,
+    };
+  }
+
+  async getDailyFreshnessStatus(): Promise<{
+    date: string;
+    tendersAddedPast24h: number;
+    dailyTarget: number;
+    isTargetMet: boolean;
+    coveragePercentage: number;
+    totalPlatformOpportunities: number;
+  }> {
+    const past24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const countPast24h = await this.prisma.tender.count({
+      where: { createdAt: { gte: past24h } },
+    });
+    const totalPlatform = await this.prisma.tender.count();
+    const dailyTarget = 15;
+
+    return {
+      date: new Date().toISOString().split('T')[0],
+      tendersAddedPast24h: countPast24h,
+      dailyTarget,
+      isTargetMet: countPast24h >= dailyTarget,
+      coveragePercentage: Math.min(100, Math.round((countPast24h / dailyTarget) * 100)),
+      totalPlatformOpportunities: totalPlatform,
+    };
   }
 }

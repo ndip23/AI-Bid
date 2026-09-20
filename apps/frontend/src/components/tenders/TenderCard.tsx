@@ -99,6 +99,35 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
               <Globe className="w-3.5 h-3.5 text-emerald-600" />
               {tender.buyerCountry}
             </span>
+
+            {/* Opportunity Type Badges (Private RFP, Subcontracting, SOE) */}
+            {tender.opportunityType === 'PRIVATE_TENDER' && (
+              <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200 tracking-wide flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse"></span>
+                {lang === 'fr' ? 'Marché Privé' : 'Private RFP'}
+              </span>
+            )}
+            {tender.opportunityType === 'SUBCONTRACTING' && (
+              <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 tracking-wide flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+                {lang === 'fr' ? 'Sous-Traitance' : 'Subcontracting'}
+              </span>
+            )}
+            {tender.opportunityType === 'REQUEST_FOR_PROPOSAL' && (
+              <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200 tracking-wide">
+                RFP
+              </span>
+            )}
+            {tender.opportunityType === 'REQUEST_FOR_QUOTATION' && (
+              <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200 tracking-wide">
+                RFQ
+              </span>
+            )}
+            {tender.sourceCategory === 'STATE_OWNED_ENTERPRISE' && (
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-cyan-50 text-cyan-800 border border-cyan-200 tracking-wide">
+                {lang === 'fr' ? 'Entreprise Publique' : 'State Enterprise'}
+              </span>
+            )}
           </div>
 
           {/* Match Score Badge */}
@@ -180,9 +209,10 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
           <Link
             href={`/tenders/${tender.id}`}
             onClick={(e) => e.stopPropagation()}
-            className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+            className="px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white font-extrabold text-xs flex items-center gap-1 hover:bg-emerald-700 hover:shadow-md transition-all shadow-sm shadow-emerald-600/20"
           >
-            <ChevronRight className="w-4 h-4" />
+            <span>{lang === 'fr' ? 'Postuler' : 'Bid Now'}</span>
+            <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </div>

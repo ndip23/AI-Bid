@@ -135,6 +135,8 @@ model User {
   companyId    String?
   company      Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
   notifications Notification[]
+  notificationPreference NotificationPreference?
+  alertLogs              AlertLog[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
@@ -368,3 +370,42 @@ model SubcontractorProfile {
 
   @@map("subcontractor_profiles")
 }
+
+model NotificationPreference {
+  id                    String   @id @default(uuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  whatsappNumber        String?  @default("+237 681 10 84 39")
+  notifyWhatsApp        Boolean  @default(true)
+  notifyEmail           Boolean  @default(true)
+  notifySms             Boolean  @default(false)
+  minMatchScoreForAlert Int      @default(75)
+  minBudgetForAlert     Float    @default(0)
+  alertFrequency        String   @default("INSTANT") // INSTANT, DAILY_DIGEST, WEEKLY
+  targetCountries       String[] @default(["Cameroon", "Nigeria", "Cote d'Ivoire"])
+  targetIndustries      String[] @default(["Cloud & IT Infrastructure", "Civil Infrastructure & Construction"])
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("notification_preferences")
+}
+
+model AlertLog {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenderId   String?
+  channel    String   // "WHATSAPP", "EMAIL", "SMS"
+  recipient  String   // phone or email
+  title      String
+  body       String   @db.Text
+  status     String   @default("DELIVERED") // "SENT", "DELIVERED", "SIMULATED", "FAILED"
+  matchScore Int?
+  metadata   Json?
+  sentAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([channel])
+  @@map("alert_logs")
+}
+

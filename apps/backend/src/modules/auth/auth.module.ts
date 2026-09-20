@@ -11,12 +11,19 @@ import { JwtStrategy } from './jwt.strategy';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET', 'bidora-jwt-super-secret-key-2026'),
-        signOptions: {
-          expiresIn: '7d',
-        },
-      }),
+      useFactory: (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET');
+        if (!secret && configService.get<string>('NODE_ENV') === 'production') {
+          // eslint-disable-next-line no-console
+          console.warn('⚠️ WARNING: JWT_SECRET is not configured in production environment!');
+        }
+        return {
+          secret: secret || 'bidora-jwt-super-secret-key-2026',
+          signOptions: {
+            expiresIn: configService.get<string>('JWT_EXPIRES_IN', '7d'),
+          },
+        };
+      },
       inject: [ConfigService],
     }),
   ],

@@ -20,6 +20,16 @@ export class SourceController {
     return this.sourceService.getDailyIngestionSummary();
   }
 
+  @Get('daily-freshness/status')
+  async getDailyFreshnessStatus() {
+    return this.schedulerService.getDailyFreshnessStatus();
+  }
+
+  @Post('daily-freshness')
+  async triggerDailyFreshness(@Body('targetCount') targetCount?: number) {
+    return this.schedulerService.ensureDailyFreshnessGuarantee(targetCount || 15);
+  }
+
   @Get('sync-logs')
   async getSyncLogs(@Query('limit') limit?: string) {
     return this.sourceService.getSyncLogs(limit ? parseInt(limit, 10) : 50);

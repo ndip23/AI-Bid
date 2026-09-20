@@ -6,12 +6,23 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   private readonly logger = new Logger(PrismaService.name);
 
   constructor() {
-    let dbUrl = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_if7xDJ4EnXjQ@ep-shiny-union-ay635har-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require';
+    let dbUrl =
+      process.env.DATABASE_URL ||
+      'postgresql://postgres:postgrespassword2026@localhost:5432/bidora_db?schema=public';
+
     // Strip channel_binding if present as it causes Prisma connection issues with Neon
     dbUrl = dbUrl.replace(/([?&])channel_binding=[^&]*(&|$)/g, '$1').replace(/&$/, '').replace(/\?$/, '');
-    if (dbUrl.includes('neon.tech') && !dbUrl.includes('-pooler')) {
-      dbUrl = dbUrl.replace('ep-shiny-union-ay635har', 'ep-shiny-union-ay635har-pooler');
+
+    if (!dbUrl.includes('connect_timeout=')) {
+      dbUrl += (dbUrl.includes('?') ? '&' : '?') + 'connect_timeout=30';
     }
+    if (!dbUrl.includes('pool_timeout=')) {
+      dbUrl += (dbUrl.includes('?') ? '&' : '?') + 'pool_timeout=60';
+    }
+    if (!dbUrl.includes('connection_limit=')) {
+      dbUrl += (dbUrl.includes('?') ? '&' : '?') + 'connection_limit=20';
+    }
+
     super({
       datasources: {
         db: { url: dbUrl },

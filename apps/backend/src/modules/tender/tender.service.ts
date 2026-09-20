@@ -43,7 +43,15 @@ export class TenderService {
 
     if (query.country) {
       const c = query.country.toLowerCase();
-      if (c.includes('cameroon') || c.includes('cameroun') || c.includes('cmr')) {
+      if (/cote d'?ivoire|côte d'?ivoire|ivory coast/i.test(c)) {
+        where.OR = [
+          ...(where.OR || []),
+          { buyerCountry: { contains: "Cote d'Ivoire", mode: 'insensitive' } },
+          { buyerCountry: { contains: "Côte d'Ivoire", mode: 'insensitive' } },
+          { buyerCountry: { contains: "Ivory Coast", mode: 'insensitive' } },
+          { buyerCountry: { contains: "CIV", mode: 'insensitive' } },
+        ];
+      } else if (c.includes('cameroon') || c.includes('cameroun') || c.includes('cmr')) {
         where.OR = [
           ...(where.OR || []),
           { buyerCountry: { contains: 'Cameroon', mode: 'insensitive' } },
@@ -57,6 +65,12 @@ export class TenderService {
           { title: { contains: 'MINSANTE', mode: 'insensitive' } },
           { title: { contains: 'MINMAP', mode: 'insensitive' } },
           { publisher: { country: { contains: 'Cameroon', mode: 'insensitive' } } },
+        ];
+      } else if (c.includes('nigeria') || c.includes('nga')) {
+        where.OR = [
+          ...(where.OR || []),
+          { buyerCountry: { contains: 'Nigeria', mode: 'insensitive' } },
+          { buyerCountry: { contains: 'NGA', mode: 'insensitive' } },
         ];
       } else {
         where.buyerCountry = { contains: query.country, mode: 'insensitive' };

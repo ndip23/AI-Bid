@@ -7,7 +7,24 @@ import { useAuth } from '../../lib/auth-context';
 import { useToast } from '../../lib/toast-context';
 import { useLanguage } from '../../lib/language-context';
 import { ApiClient } from '../../lib/api-client';
-import { User, Lock, Mail, CheckCircle2, ShieldCheck, Building2, KeyRound, MessageSquare, Phone, Smartphone } from 'lucide-react';
+import {
+  User,
+  Lock,
+  Mail,
+  CheckCircle2,
+  ShieldCheck,
+  Building2,
+  KeyRound,
+  MessageSquare,
+  Phone,
+  Smartphone,
+  Send,
+  CheckCheck,
+  Eye,
+  X,
+  Loader2,
+  Sparkles,
+} from 'lucide-react';
 
 export default function UserProfilePage() {
   const { user, company, updateUser } = useAuth();
@@ -28,10 +45,40 @@ export default function UserProfilePage() {
   const [passMsg, setPassMsg] = useState('');
   const [passError, setPassError] = useState('');
 
+  // Multi-Channel Alert State
+  const [whatsappNumber, setWhatsappNumber] = useState('+237 681 10 84 39');
+  const [notifyWhatsApp, setNotifyWhatsApp] = useState(true);
+  const [notifyEmail, setNotifyEmail] = useState(true);
+  const [notifySms, setNotifySms] = useState(false);
+  const [minMatchScore, setMinMatchScore] = useState(75);
+  const [minBudget, setMinBudget] = useState(100000);
+  const [targetScope, setTargetScope] = useState('all');
+  const [savingAlerts, setSavingAlerts] = useState(false);
+  const [testingChannel, setTestingChannel] = useState<string | null>(null);
+  const [testModalData, setTestModalData] = useState<any | null>(null);
+  const [recentLogs, setRecentLogs] = useState<any[]>([]);
+
   useEffect(() => {
     if (user) {
       setUsername(user.username || user.firstName || (user.email ? user.email.split('@')[0] : ''));
       setEmail(user.email || '');
+
+      // Load saved notification preferences
+      ApiClient.getNotificationPreferences().then((pref) => {
+        if (pref) {
+          if (pref.whatsappNumber) setWhatsappNumber(pref.whatsappNumber);
+          if (pref.notifyWhatsApp !== undefined) setNotifyWhatsApp(pref.notifyWhatsApp);
+          if (pref.notifyEmail !== undefined) setNotifyEmail(pref.notifyEmail);
+          if (pref.notifySms !== undefined) setNotifySms(pref.notifySms);
+          if (pref.minMatchScoreForAlert !== undefined) setMinMatchScore(pref.minMatchScoreForAlert);
+          if (pref.minBudgetForAlert !== undefined) setMinBudget(pref.minBudgetForAlert);
+        }
+      });
+
+      // Load alert logs
+      ApiClient.getAlertLogs().then((logs) => {
+        if (Array.isArray(logs)) setRecentLogs(logs);
+      });
     }
   }, [user]);
 
@@ -323,13 +370,14 @@ export default function UserProfilePage() {
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 flex items-center justify-between">
                       <span>{isFrench ? 'Numéro WhatsApp / Mobile (avec indicatif pays)' : 'WhatsApp / Mobile Phone Number (with Country Code)'}</span>
-                      <span className="text-[10px] font-bold text-emerald-600">e.g. +237 681 10 84 39</span>
+                      <span className="text-[10px] font-bold text-emerald-600">e.g. +237 681 10 84 39, +234 803..., +225 07...</span>
                     </label>
                     <div className="relative">
                       <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                       <input
                         type="text"
-                        defaultValue="+237 681 10 84 39"
+                        value={whatsappNumber}
+                        onChange={(e) => setWhatsappNumber(e.target.value)}
                         placeholder="+237 6... or +234..."
                         className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 font-bold focus:outline-none focus:border-emerald-600 shadow-sm font-mono"
                       />
@@ -341,7 +389,8 @@ export default function UserProfilePage() {
                     <label className="p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-start space-x-2.5 cursor-pointer hover:border-emerald-300 transition-colors">
                       <input
                         type="checkbox"
-                        defaultChecked
+                        checked={notifyWhatsApp}
+                        onChange={(e) => setNotifyWhatsApp(e.target.checked)}
                         className="mt-0.5 w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-600"
                       />
                       <div className="space-y-0.5">
@@ -349,7 +398,7 @@ export default function UserProfilePage() {
                           {isFrench ? 'Alertes WhatsApp' : 'WhatsApp Alerts'}
                         </span>
                         <span className="text-[11px] text-slate-500 font-medium block">
-                          {isFrench ? 'Notification dès que le score ≥ 80%' : 'Instant notification when match score ≥ 80%'}
+                          {isFrench ? `Notification instantanée dès que le score ≥ ${minMatchScore}%` : `Instant notification when match score ≥ ${minMatchScore}%`}
                         </span>
                       </div>
                     </label>
@@ -357,7 +406,8 @@ export default function UserProfilePage() {
                     <label className="p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-start space-x-2.5 cursor-pointer hover:border-emerald-300 transition-colors">
                       <input
                         type="checkbox"
-                        defaultChecked
+                        checked={notifySms}
+                        onChange={(e) => setNotifySms(e.target.checked)}
                         className="mt-0.5 w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-600"
                       />
                       <div className="space-y-0.5">
@@ -373,7 +423,8 @@ export default function UserProfilePage() {
                     <label className="p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-start space-x-2.5 cursor-pointer hover:border-emerald-300 transition-colors">
                       <input
                         type="checkbox"
-                        defaultChecked
+                        checked={notifyEmail}
+                        onChange={(e) => setNotifyEmail(e.target.checked)}
                         className="mt-0.5 w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-600"
                       />
                       <div className="space-y-0.5">
@@ -381,7 +432,7 @@ export default function UserProfilePage() {
                           {isFrench ? 'Dossier Récapitulatif Email' : 'Email Executive Dossier'}
                         </span>
                         <span className="text-[11px] text-slate-500 font-medium block">
-                          {isFrench ? 'Synthèse hebdomadaire des marchés' : 'Weekly curated market tender report'}
+                          {isFrench ? 'Synthèse détaillée avec analyse IA' : 'Detailed summary with AI requirement checklist'}
                         </span>
                       </div>
                     </label>
@@ -391,10 +442,27 @@ export default function UserProfilePage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                     <div className="space-y-1.5">
                       <label className="font-bold uppercase tracking-wider text-slate-500">
+                        {isFrench ? 'Seuil Minimum de Score IA' : 'Minimum AI Match Score'}
+                      </label>
+                      <select
+                        value={minMatchScore}
+                        onChange={(e) => setMinMatchScore(Number(e.target.value))}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 font-bold focus:outline-none focus:border-emerald-600 shadow-sm"
+                      >
+                        <option value="60">≥ 60% {isFrench ? '(Tous les Marchés Pertinents)' : '(All Relevant Tenders)'}</option>
+                        <option value="75">≥ 75% {isFrench ? '(Forte Adéquation Recommandée)' : '(High Match Recommended)'}</option>
+                        <option value="85">≥ 85% {isFrench ? '(Adéquation Critique Uniquement)' : '(Critical Matches Only)'}</option>
+                        <option value="90">≥ 90% {isFrench ? '(Excellence / Priorité Absolue)' : '(Top Tier / 90%+ Only)'}</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="font-bold uppercase tracking-wider text-slate-500">
                         {isFrench ? 'Seuil Minimum de Budget pour Déclencher l\'Alerte' : 'Minimum Contract Budget to Trigger Alerts'}
                       </label>
                       <select
-                        defaultValue="100000"
+                        value={minBudget}
+                        onChange={(e) => setMinBudget(Number(e.target.value))}
                         className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 font-bold focus:outline-none focus:border-emerald-600 shadow-sm"
                       >
                         <option value="0">{isFrench ? 'Tous les Marchés (Sans seuil minimum)' : 'All Tenders (No minimum threshold)'}</option>
@@ -404,38 +472,208 @@ export default function UserProfilePage() {
                         <option value="1000000">{isFrench ? '1 000 000$+ (Grands Travaux Uniquement)' : '$1,000,000+ Major Works Only'}</option>
                       </select>
                     </div>
+                  </div>
 
-                    <div className="space-y-1.5">
-                      <label className="font-bold uppercase tracking-wider text-slate-500">
-                        {isFrench ? 'Périmètre Géographique Ciblé' : 'Target Regional Scope'}
-                      </label>
-                      <select
-                        defaultValue="all"
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 font-bold focus:outline-none focus:border-emerald-600 shadow-sm"
+                  {/* Actions & Dispatch Testing */}
+                  <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100">
+                    <button
+                      type="button"
+                      disabled={savingAlerts}
+                      onClick={async () => {
+                        setSavingAlerts(true);
+                        try {
+                          await ApiClient.updateNotificationPreferences({
+                            whatsappNumber,
+                            notifyWhatsApp,
+                            notifyEmail,
+                            notifySms,
+                            minMatchScoreForAlert: minMatchScore,
+                            minBudgetForAlert: minBudget,
+                          });
+                          toast.success(
+                            isFrench ? 'Préférences Enregistrées !' : 'Alert Settings Saved!',
+                            isFrench
+                              ? `Vos alertes WhatsApp (${whatsappNumber}) et Email ont été synchronisées.`
+                              : `Your WhatsApp (${whatsappNumber}) and Email alert preferences are now active.`
+                          );
+                        } catch (err: any) {
+                          toast.error(
+                            isFrench ? 'Erreur d\'enregistrement' : 'Save Error',
+                            err.message || 'Failed to update alert preferences'
+                          );
+                        } finally {
+                          setSavingAlerts(false);
+                        }
+                      }}
+                      className="px-5 py-2.5 rounded-xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 hover:opacity-95 transition-all flex items-center gap-2"
+                    >
+                      {savingAlerts ? <Loader2 className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4" />}
+                      <span>{savingAlerts ? (isFrench ? 'Enregistrement...' : 'Saving...') : (isFrench ? 'Enregistrer les Préférences' : 'Save Alert Preferences')}</span>
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={!!testingChannel}
+                        onClick={async () => {
+                          setTestingChannel('WHATSAPP');
+                          try {
+                            const res = await ApiClient.testDispatchAlert({
+                              channel: 'WHATSAPP',
+                              targetPhone: whatsappNumber,
+                            });
+                            setTestModalData(res);
+                            const updatedLogs = await ApiClient.getAlertLogs();
+                            if (Array.isArray(updatedLogs)) setRecentLogs(updatedLogs);
+                            toast.success(
+                              isFrench ? 'Alerte WhatsApp Envoyée !' : 'WhatsApp Alert Dispatched!',
+                              isFrench ? `Message simulé envoyé avec succès au ${whatsappNumber}` : `Simulated alert delivered to ${whatsappNumber}`
+                            );
+                          } catch (err: any) {
+                            toast.error('WhatsApp Test Failed', err.message || 'Could not dispatch test');
+                          } finally {
+                            setTestingChannel(null);
+                          }
+                        }}
+                        className="px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 hover:bg-emerald-100 font-extrabold text-xs flex items-center gap-1.5 transition-all"
                       >
-                        <option value="all">{isFrench ? 'National & Multilatéral (Cameroun, Nigeria, BAD)' : 'National & Multilateral (Cameroon, Nigeria, AfDB)'}</option>
-                        <option value="cameroon">{isFrench ? 'Cameroun Uniquement (ARMP, MINMAP, Douala, Yaoundé)' : 'Cameroon Only (MINMAP, Douala, Yaoundé, FEICOM)'}</option>
-                        <option value="cemac">{isFrench ? 'Zone CEMAC (Cameroun, Tchad, Gabon, Congo)' : 'CEMAC Region (Cameroon, Chad, Gabon, Congo)'}</option>
-                        <option value="international">{isFrench ? 'Bailleurs Internationaux Uniquement (Banque Mondiale, etc.)' : 'World Bank & Multilateral Development Banks Only'}</option>
-                      </select>
+                        {testingChannel === 'WHATSAPP' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5 text-emerald-600" />}
+                        <span>{isFrench ? 'Tester Alerte WhatsApp 📲' : 'Test WhatsApp Alert 📲'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={!!testingChannel}
+                        onClick={async () => {
+                          setTestingChannel('EMAIL');
+                          try {
+                            const res = await ApiClient.testDispatchAlert({
+                              channel: 'EMAIL',
+                              targetEmail: email,
+                            });
+                            setTestModalData(res);
+                            const updatedLogs = await ApiClient.getAlertLogs();
+                            if (Array.isArray(updatedLogs)) setRecentLogs(updatedLogs);
+                            toast.success(
+                              isFrench ? 'Dossier Email Envoyé !' : 'Email Alert Dispatched!',
+                              isFrench ? `Dossier expédié à ${email}` : `Dossier sent to ${email}`
+                            );
+                          } catch (err: any) {
+                            toast.error('Email Test Failed', err.message || 'Could not dispatch test');
+                          } finally {
+                            setTestingChannel(null);
+                          }
+                        }}
+                        className="px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 hover:bg-slate-200 font-extrabold text-xs flex items-center gap-1.5 transition-all"
+                      >
+                        {testingChannel === 'EMAIL' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Mail className="w-3.5 h-3.5 text-slate-600" />}
+                        <span>{isFrench ? 'Tester Alerte Email ✉️' : 'Test Email Alert ✉️'}</span>
+                      </button>
                     </div>
                   </div>
 
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      onClick={() => toast.success(
-                        isFrench ? 'Préférences Enregistrées !' : 'Alert Settings Saved!',
-                        isFrench ? 'Vos alertes mobiles WhatsApp & SMS ont été mises à jour.' : 'Your WhatsApp & SMS tender alert preferences have been updated.'
-                      )}
-                      className="px-5 py-2.5 rounded-xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 hover:opacity-95 transition-all flex items-center gap-2"
-                    >
-                      <Smartphone className="w-4 h-4" />
-                      <span>{isFrench ? 'Enregistrer les Préférences Mobiles' : 'Save Mobile Alert Preferences'}</span>
-                    </button>
-                  </div>
+                  {/* Recent Dispatched Alert Logs */}
+                  {recentLogs.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-slate-100">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                          {isFrench ? 'Historique des Alertes Récentes Expédiées' : 'Recent Dispatched Alert History'}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-semibold">{recentLogs.length} {isFrench ? 'alertes' : 'logged'}</span>
+                      </div>
+                      <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        {recentLogs.map((log) => (
+                          <div
+                            key={log.id}
+                            className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3 text-xs"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span
+                                className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold ${
+                                  log.channel === 'WHATSAPP'
+                                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                                    : 'bg-blue-100 text-blue-800 border border-blue-200'
+                                }`}
+                              >
+                                {log.channel}
+                              </span>
+                              <span className="font-bold text-slate-800 truncate">{log.title}</span>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="text-[10px] text-slate-500 font-mono">
+                                {new Date(log.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                              <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-black border border-emerald-200 flex items-center gap-0.5">
+                                <CheckCheck className="w-3 h-3 text-emerald-600" />
+                                {log.status}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
+
+              {/* Live Test Alert Modal */}
+              {testModalData && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
+                  <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+                          <CheckCircle2 className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-black text-slate-900">
+                            {isFrench ? 'Alerte Expédiée avec Succès' : 'Alert Dispatched Successfully'}
+                          </h3>
+                          <p className="text-[11px] text-slate-500 font-medium">
+                            {isFrench ? 'Format direct prêt pour la passerelle' : 'Payload formatted for live operator gateway'}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setTestModalData(null)}
+                        className="p-1 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <div className="space-y-2 text-xs">
+                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-semibold">
+                        <span className="text-slate-500">{isFrench ? 'Destinataire :' : 'Recipient:'}</span>
+                        <span className="font-mono font-bold text-slate-900">{testModalData.dispatchedTo}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-semibold">
+                        <span className="text-slate-500">{isFrench ? 'Appel d\'offres :' : 'Tender:'}</span>
+                        <span className="font-bold text-slate-900 truncate max-w-[240px]">{testModalData.tender?.title}</span>
+                      </div>
+
+                      <div className="space-y-1.5 pt-2">
+                        <label className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                          {isFrench ? 'Aperçu du Message Transmis :' : 'Live Message Content Preview:'}
+                        </label>
+                        <pre className="p-3.5 rounded-xl bg-slate-950 text-emerald-400 text-[11px] font-mono whitespace-pre-wrap leading-relaxed border border-slate-800 max-h-64 overflow-y-auto">
+                          {testModalData.results?.[0]?.body || JSON.stringify(testModalData.results, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 flex justify-end">
+                      <button
+                        onClick={() => setTestModalData(null)}
+                        className="px-5 py-2 rounded-xl bg-slate-900 text-white font-extrabold text-xs hover:bg-slate-800"
+                      >
+                        {isFrench ? 'Fermer la Prévisualisation' : 'Close Preview'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </main>

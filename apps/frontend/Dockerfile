@@ -1,7 +1,10 @@
-# Next.js 15 Frontend Dockerfile
+# Next.js Frontend Dockerfile
 FROM node:20-alpine AS builder
 
 WORKDIR /app
+
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:4000/api/v1}
 
 COPY package.json ./
 COPY apps/frontend/package.json ./apps/frontend/

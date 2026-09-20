@@ -34,28 +34,37 @@ export class WorldBankConnector implements IPublisherConnector {
       this.logger.log(`[WorldBank] Querying official World Bank Projects API (${this.defaultProjectsEndpoint})...`);
       
       const queries = [
-        { rows: 100, os: 0 }, // Global African Sub-Saharan Projects
-        { rows: 50, countryshortname: 'Cameroon' }, // Dedicated Cameroon Procurement Projects
+        { rows: 100, os: 0, countryshortname: 'Cameroon' },
+        { rows: 100, os: 100, countryshortname: 'Cameroon' },
+        { rows: 100, os: 0, countryshortname: 'Nigeria' },
+        { rows: 100, os: 100, countryshortname: 'Nigeria' },
+        { rows: 100, os: 0, countryshortname: "Cote d'Ivoire" },
+        { rows: 100, os: 100, countryshortname: "Cote d'Ivoire" },
+        { rows: 50, os: 0 }, // Global African Sub-Saharan Projects
       ];
 
       for (const qParams of queries) {
-        const response = await axios.get(this.defaultProjectsEndpoint, {
-          params: {
-            format: 'json',
-            ...qParams,
-          },
-          headers: { Accept: 'application/json', 'User-Agent': 'Mozilla/5.0' },
-          timeout: 20000,
-        });
+        try {
+          const response = await axios.get(this.defaultProjectsEndpoint, {
+            params: {
+              format: 'json',
+              ...qParams,
+            },
+            headers: { Accept: 'application/json', 'User-Agent': 'Mozilla/5.0' },
+            timeout: 30000,
+          });
 
-        if (response.data && response.data.projects) {
-          const rawProjects = Object.values(response.data.projects);
-          for (const item of rawProjects) {
-            const normalized = this.normalizeProject(item, publisher);
-            if (this.validate(normalized)) {
-              allNotices.push(normalized);
+          if (response.data && response.data.projects) {
+            const rawProjects = Object.values(response.data.projects);
+            for (const item of rawProjects) {
+              const normalized = this.normalizeProject(item, publisher);
+              if (this.validate(normalized)) {
+                allNotices.push(normalized);
+              }
             }
           }
+        } catch (queryErr: any) {
+          this.logger.warn(`[WorldBank Projects API] Chunk failed (${JSON.stringify(qParams)}): ${queryErr.message}`);
         }
       }
 
@@ -125,7 +134,11 @@ export class WorldBankConnector implements IPublisherConnector {
   private normalizeProject(rawItem: any, publisher: Publisher): StandardTenderModel {
     const id = String(rawItem.id || `WB-${Date.now()}`);
     const refNum = rawItem.id ? `WB-P${rawItem.id}` : `WB-REF-${id}`;
-    const country = rawItem.countryshortname || rawItem.countryname || publisher.country || 'Pan-African';
+    const rawCountryName = Array.isArray(rawItem.countryname) ? rawItem.countryname[0] : rawItem.countryname;
+    let country = rawItem.countryshortname || rawCountryName || publisher.country || 'Pan-African';
+    if (/cote d'?ivoire|côte d'?ivoire|ivory coast/i.test(country)) country = "Cote d'Ivoire";
+    else if (/cameroon|cameroun/i.test(country)) country = 'Cameroon';
+    else if (/nigeria/i.test(country)) country = 'Nigeria';
     const title = rawItem.project_name || 'World Bank Procurement Opportunity';
 
     let pubDate = new Date();
@@ -164,7 +177,7 @@ export class WorldBankConnector implements IPublisherConnector {
       externalId: id,
       country,
       publisher: publisher.name,
-      organization: rawItem.countryname ? `Government of ${rawItem.countryname} (World Bank Financed)` : 'World Bank Group',
+      organization: rawCountryName ? `Government of ${rawCountryName} (World Bank Financed)` : 'World Bank Group',
       title,
       referenceNumber: String(refNum),
       publicationDate: pubDate,

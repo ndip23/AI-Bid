@@ -17,6 +17,7 @@ async function main() {
     company1 = await prisma.company.create({
       data: {
         name: 'Apex Technology Solutions',
+        taxId: 'RC/DLA/2019/B/1420 • NIF: M051912789012A',
         industry: 'Cloud & IT Infrastructure',
         countries: ['Cameroon', 'Nigeria', 'Kenya', 'South Africa', 'Ghana', 'Rwanda'],
         certifications: ['ISO 27001', 'SOC 2 Type II', 'ISO 9001', 'ARMP Registered', 'NITDA IT Clearance', 'BPP IRR Certificate'],
