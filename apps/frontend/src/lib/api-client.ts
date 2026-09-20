@@ -122,15 +122,37 @@ export class ApiClient {
   }
 
   private static tendersCache: { key: string; data: Tender[]; timestamp: number } | null = null;
+  private static tenderDetailsCache = new Map<string, { data: Tender; timestamp: number }>();
 
   static clearTendersCache() {
     this.tendersCache = null;
+    this.tenderDetailsCache.clear();
   }
 
-  static async getTenders(params?: { search?: string; industry?: string; country?: string; minScore?: number }): Promise<Tender[]> {
+  static getCachedTender(id: string): Tender | null {
+    const cached = this.tenderDetailsCache.get(id);
+    if (cached && (Date.now() - cached.timestamp) < 5 * 60 * 1000) {
+      return cached.data;
+    }
+    // Also check if available from the list cache
+    if (this.tendersCache?.data) {
+      const found = this.tendersCache.data.find((t) => t.id === id);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  static async prefetchTenderDetails(id: string): Promise<void> {
+    if (!id) return;
+    const cached = this.tenderDetailsCache.get(id);
+    if (cached && (Date.now() - cached.timestamp) < 3 * 60 * 1000) return;
+    this.getTenderDetails(id).catch(() => {});
+  }
+
+  static async getTenders(params?: { search?: string; industry?: string; country?: string; minScore?: number; limit?: number; offset?: number }): Promise<Tender[]> {
     const key = JSON.stringify(params || {});
     const now = Date.now();
-    if (this.tendersCache && this.tendersCache.key === key && (now - this.tendersCache.timestamp) < 10000) {
+    if (this.tendersCache && this.tendersCache.key === key && (now - this.tendersCache.timestamp) < 180000) {
       return this.tendersCache.data;
     }
 
@@ -140,11 +162,21 @@ export class ApiClient {
       if (params?.industry) queryParams.append('industry', params.industry);
       if (params?.country) queryParams.append('country', params.country);
       if (params?.minScore) queryParams.append('minScore', String(params.minScore));
+      if (params?.limit) queryParams.append('limit', String(params.limit));
+      if (params?.offset) queryParams.append('offset', String(params.offset));
 
       const res = await fetch(`${API_BASE_URL}/tenders?${queryParams.toString()}`, { headers: this.getHeaders() });
       if (res.ok) {
         const data = await res.json();
         this.tendersCache = { key, data, timestamp: now };
+        // Seed tenderDetailsCache with basic items so clicking them is instantly fast
+        if (Array.isArray(data)) {
+          data.slice(0, 30).forEach((t) => {
+            if (t?.id && !this.tenderDetailsCache.has(t.id)) {
+              this.tenderDetailsCache.set(t.id, { data: t, timestamp: now });
+            }
+          });
+        }
         return data;
       }
     } catch (e) {
@@ -154,9 +186,21 @@ export class ApiClient {
   }
 
   static async getTenderDetails(id: string): Promise<Tender> {
+    const cached = this.tenderDetailsCache.get(id);
+    const now = Date.now();
+    // If full detail (with aiSummary) is already cached, return immediately
+    if (cached && (cached.data as any)?.aiSummary && (now - cached.timestamp) < 180000) {
+      return cached.data;
+    }
+
     const res = await fetch(`${API_BASE_URL}/tenders/${id}`, { headers: this.getHeaders() });
-    if (!res.ok) throw new Error('Tender not found');
-    return await res.json();
+    if (!res.ok) {
+      if (cached?.data) return cached.data;
+      throw new Error('Tender not found');
+    }
+    const data = await res.json();
+    this.tenderDetailsCache.set(id, { data, timestamp: now });
+    return data;
   }
 
   static async saveTender(tenderId: string, status: string, notes?: string) {

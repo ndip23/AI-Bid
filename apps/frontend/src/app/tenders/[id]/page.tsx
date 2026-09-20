@@ -57,11 +57,21 @@ export default function TenderDetailPage() {
   const { company } = useAuth();
   const { isFrench } = useLanguage();
 
-  const [tender, setTender] = useState<Tender | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [tender, setTender] = useState<Tender | null>(() => {
+    if (typeof window !== 'undefined' && id) {
+      return ApiClient.getCachedTender(id);
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined' && id) {
+      return !ApiClient.getCachedTender(id);
+    }
+    return true;
+  });
   const [activeTab, setActiveTab] = useState<'summary' | 'specs' | 'docs' | 'match' | 'checklist' | 'workspace'>('summary');
-  const [isSaved, setIsSaved] = useState(false);
-  const [savedStatus, setSavedStatus] = useState<SavedStatus>('BOOKMARKED');
+  const [isSaved, setIsSaved] = useState(() => tender?.isSaved || false);
+  const [savedStatus, setSavedStatus] = useState<SavedStatus>(() => tender?.savedStatus || 'BOOKMARKED');
   const [showStatusMenu, setShowStatusMenu] = useState(false);
   const [showIncompleteModal, setShowIncompleteModal] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -78,7 +88,10 @@ export default function TenderDetailPage() {
   const [newTaskAssignee, setNewTaskAssignee] = useState('Technical Lead');
 
   const fetchDetails = async () => {
-    setLoading(true);
+    // Only set loading to true if we do not already have data in memory
+    if (!tender && !ApiClient.getCachedTender(id)) {
+      setLoading(true);
+    }
     try {
       const data = await ApiClient.getTenderDetails(id);
       setTender(data);

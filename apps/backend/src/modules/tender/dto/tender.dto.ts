@@ -1,4 +1,5 @@
 import { IsArray, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export enum SavedStatus {
   BOOKMARKED = 'BOOKMARKED',
@@ -38,11 +39,24 @@ export class QueryTendersDto {
 
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   minScore?: number;
 
   @IsString()
   @IsOptional()
   sortBy?: 'deadline' | 'publishDate' | 'estimatedValue' | 'matchScore';
+
+  @IsNumber()
+  @IsOptional()
+  @Min(1)
+  @Type(() => Number)
+  limit?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  @Type(() => Number)
+  offset?: number;
 }
 
 export class CreateTenderDto {

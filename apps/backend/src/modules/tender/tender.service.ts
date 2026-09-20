@@ -8,6 +8,7 @@ import { Prisma } from '@prisma/client';
 @Injectable()
 export class TenderService {
   private cache = new Map<string, { data: any; expiresAt: number }>();
+  private tenderDetailsCache = new Map<string, { data: any; expiresAt: number }>();
 
   constructor(
     private prisma: PrismaService,
@@ -17,6 +18,7 @@ export class TenderService {
 
   public clearCache() {
     this.cache.clear();
+    this.tenderDetailsCache.clear();
   }
 
   async findAll(query: QueryTendersDto, companyId?: string) {
@@ -92,14 +94,59 @@ export class TenderService {
       orderBy = { estimatedValue: 'desc' };
     }
 
+    const limit = query.limit ? Math.min(Number(query.limit), 200) : 100;
+    const skip = query.offset ? Number(query.offset) : undefined;
+
+    // High-performance projection: omit rawContent (heavy scraped HTML) from list view
     const tenders = await this.prisma.tender.findMany({
       where,
       orderBy,
-      include: {
-        aiSummary: true,
+      take: limit,
+      skip,
+      select: {
+        id: true,
+        title: true,
+        refNumber: true,
+        buyerName: true,
+        buyerCountry: true,
+        industry: true,
+        estimatedValue: true,
+        currency: true,
+        publishDate: true,
+        deadline: true,
+        description: true,
+        status: true,
+        sourceUrl: true,
+        attachments: true,
+        organization: true,
+        sector: true,
+        subcategory: true,
+        procurementMethod: true,
+        opportunityType: true,
+        sourceCategory: true,
+        buyerType: true,
+        buyerIntent: true,
+        fundingOrganization: true,
+        projectName: true,
+        projectId: true,
+        implementingAgency: true,
+        region: true,
+        city: true,
+        sourceQualityScore: true,
+        originalSource: true,
+        createdAt: true,
+        aiSummary: {
+          select: {
+            id: true,
+            executiveSummary: true,
+            requirements: true,
+            deadlineSummary: true,
+          },
+        },
         savedTenders: companyId
           ? {
               where: { companyId },
+              select: { status: true },
             }
           : false,
       },
@@ -116,7 +163,7 @@ export class TenderService {
     const enriched = tenders.map((tender) => {
       let matchScoreData = null;
       if (userCompany) {
-        matchScoreData = this.matchService.calculateMatch(userCompany, tender, tender.aiSummary);
+        matchScoreData = this.matchService.calculateMatch(userCompany, tender as any, tender.aiSummary as any);
       }
 
       const savedInfo = tender.savedTenders?.[0] || null;
@@ -134,11 +181,18 @@ export class TenderService {
       ? enriched.filter((t) => (t.matchScore || 0) >= query.minScore)
       : enriched;
 
-    this.cache.set(cacheKey, { data: result, expiresAt: Date.now() + 15000 });
+    // Cache warm tenders query for 5 minutes (300,000 ms)
+    this.cache.set(cacheKey, { data: result, expiresAt: Date.now() + 300000 });
     return result;
   }
 
   async findOne(id: string, companyId?: string) {
+    const cacheKey = `${id}_${companyId || 'anon'}`;
+    const cached = this.tenderDetailsCache.get(cacheKey);
+    if (cached && Date.now() < cached.expiresAt) {
+      return cached.data;
+    }
+
     const tender = await this.prisma.tender.findUnique({
       where: { id },
       include: {
@@ -184,11 +238,7 @@ export class TenderService {
       if (company) {
         matchCalculation = this.matchService.calculateMatch(company, tender, aiSummary);
 
-        // Store or update cached match score in DB
-        const existingScore = await this.prisma.matchScore.findFirst({
-          where: { companyId, tenderId: id },
-        });
-
+        // Save or update cached match score asynchronously without blocking response
         const scoreData = {
           companyId,
           tenderId: id,
@@ -202,28 +252,37 @@ export class TenderService {
           missingRequirements: JSON.parse(JSON.stringify(matchCalculation.missingRequirements)),
         };
 
-        if (existingScore) {
-          await this.prisma.matchScore.update({
-            where: { id: existingScore.id },
-            data: scoreData,
-          });
-        } else {
-          await this.prisma.matchScore.create({
-            data: scoreData,
-          });
-        }
+        this.prisma.matchScore.findFirst({
+          where: { companyId, tenderId: id },
+        }).then((existingScore) => {
+          if (existingScore) {
+            return this.prisma.matchScore.update({
+              where: { id: existingScore.id },
+              data: scoreData,
+            });
+          } else {
+            return this.prisma.matchScore.create({
+              data: scoreData,
+            });
+          }
+        }).catch(() => {});
       }
     }
 
     const savedInfo = tender.savedTenders?.[0] || null;
 
-    return {
+    const result = {
       ...tender,
       aiSummary,
       matchDetails: matchCalculation,
       isSaved: !!savedInfo,
+      savedStatus: savedInfo?.status || null,
       savedInfo,
     };
+
+    // Cache single tender details for 5 minutes (300,000 ms)
+    this.tenderDetailsCache.set(cacheKey, { data: result, expiresAt: Date.now() + 300000 });
+    return result;
   }
 
   async saveTender(tenderId: string, companyId: string, dto: SaveTenderDto) {

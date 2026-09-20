@@ -6,10 +6,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import helmet from 'helmet';
 import * as express from 'express';
+const compression = require('compression');
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
+
+  // High-performance response compression (Gzip / Brotli)
+  app.use(compression());
 
   // Production-grade HTTP Security Headers via Helmet
   app.use(

@@ -86,6 +86,7 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
   return (
     <div
       onClick={handleCardClick}
+      onMouseEnter={() => ApiClient.prefetchTenderDetails(tender.id)}
       className="glass-panel glass-panel-hover rounded-2xl p-5 space-y-4 relative flex flex-col justify-between group bg-white border border-slate-200 shadow-sm cursor-pointer hover:shadow-md transition-all hover:border-emerald-300"
     >
       <div>
