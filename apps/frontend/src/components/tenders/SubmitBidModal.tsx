@@ -238,9 +238,9 @@ SUBMISSION INSTRUCTIONS:
       />
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 z-10 overflow-hidden animate-scale-in text-slate-900 my-auto">
+      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 z-10 overflow-hidden animate-scale-in text-slate-900 my-auto flex flex-col max-h-[90vh]">
         {/* Modal Header */}
-        <div className="p-6 border-b border-slate-100 bg-slate-50/70 flex items-start justify-between gap-4">
+        <div className="p-6 border-b border-slate-100 bg-slate-50/70 flex items-start justify-between gap-4 shrink-0">
           <div className="space-y-1">
             <div className="inline-flex items-center space-x-2 px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black border border-emerald-200">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
@@ -263,7 +263,7 @@ SUBMISSION INSTRUCTIONS:
         </div>
 
         {/* Step Tabs Navigation */}
-        <div className="flex border-b border-slate-200 text-xs font-bold bg-white">
+        <div className="flex border-b border-slate-200 text-xs font-bold bg-white shrink-0">
           <button
             onClick={() => setActiveStep(1)}
             className={`flex-1 py-3 px-4 text-center border-b-2 transition-colors flex items-center justify-center gap-1.5 ${
@@ -308,7 +308,7 @@ SUBMISSION INSTRUCTIONS:
         </div>
 
         {/* Step Content */}
-        <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+        <div className="p-6 space-y-6 overflow-y-auto flex-1">
           {/* STEP 1: AUDIT & EXPORT */}
           {activeStep === 1 && (
             <div className="space-y-6 animate-fade-in">
@@ -393,17 +393,6 @@ SUBMISSION INSTRUCTIONS:
                       ? (isFrench ? 'Télécharger à Nouveau' : 'Re-Download Dossier')
                       : (isFrench ? 'Télécharger le Dossier Complet' : 'Download Complete Dossier')}
                   </span>
-                </button>
-              </div>
-
-              {/* Next Step Button */}
-              <div className="flex justify-end pt-2">
-                <button
-                  onClick={() => setActiveStep(2)}
-                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center gap-2 transition-colors"
-                >
-                  <span>{isFrench ? 'Continuer vers les Modes de Dépôt' : 'Continue to Submission Channels'}</span>
-                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -582,29 +571,12 @@ SUBMISSION INSTRUCTIONS:
                   )}
                 </p>
               </div>
-
-              <div className="flex items-center justify-between pt-2">
-                <button
-                  onClick={() => setActiveStep(1)}
-                  className="text-xs font-bold text-slate-500 hover:text-slate-800"
-                >
-                  ← {isFrench ? 'Retour à l\'Audit' : 'Back to Audit'}
-                </button>
-
-                <button
-                  onClick={() => setActiveStep(3)}
-                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center gap-2 transition-colors"
-                >
-                  <span>{isFrench ? 'Étape 3 : Confirmer & Enregistrer' : 'Step 3: Confirm & Track Bid'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
             </div>
           )}
 
           {/* STEP 3: CONFIRMATION & PIPELINE TRACKING */}
           {activeStep === 3 && (
-            <form onSubmit={handleConfirmSubmission} className="space-y-6 animate-fade-in">
+            <form id="bid-submission-form" onSubmit={handleConfirmSubmission} className="space-y-6 animate-fade-in">
               <div className="space-y-1">
                 <h3 className="text-sm font-black text-slate-900">
                   {isFrench ? 'Enregistrer le Dépôt dans Votre Pipeline Bidora' : 'Record Submission in Your Bidora Pipeline'}
@@ -708,31 +680,60 @@ SUBMISSION INSTRUCTIONS:
                   )}
                 </span>
               </label>
-
-              {/* Submit Buttons */}
-              <div className="flex items-center justify-between pt-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveStep(2)}
-                  className="text-xs font-bold text-slate-500 hover:text-slate-800"
-                >
-                  ← {isFrench ? 'Retour aux Canaux' : 'Back to Channels'}
-                </button>
-
-                <button
-                  type="submit"
-                  disabled={submitting || !certified}
-                  className="px-6 py-3 rounded-2xl gradient-bg text-white font-black text-xs shadow-md shadow-emerald-600/20 hover:opacity-95 flex items-center gap-2 transition-all disabled:opacity-50"
-                >
-                  <Send className="w-4 h-4" />
-                  <span>
-                    {submitting
-                      ? (isFrench ? 'Enregistrement...' : 'Saving...')
-                      : (isFrench ? 'Marquer comme Déposé Officiellement' : 'Mark as Officially Submitted')}
-                  </span>
-                </button>
-              </div>
             </form>
+          )}
+        </div>
+
+        {/* Pinned Bottom Footer Navigation */}
+        <div className="p-4 px-6 border-t border-slate-200/80 bg-slate-50/95 backdrop-blur-xs flex items-center justify-between shrink-0">
+          {activeStep > 1 ? (
+            <button
+              type="button"
+              onClick={() => setActiveStep((prev) => (prev === 3 ? 2 : 1))}
+              className="text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 px-3.5 py-2 rounded-xl hover:bg-slate-200/60 transition-colors"
+            >
+              ← {isFrench ? 'Précédent' : 'Back'}
+            </button>
+          ) : (
+            <div />
+          )}
+
+          {activeStep === 1 && (
+            <button
+              type="button"
+              onClick={() => setActiveStep(2)}
+              className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center gap-2 transition-colors shadow-sm ml-auto"
+            >
+              <span>{isFrench ? 'Continuer vers les Modes de Dépôt' : 'Continue to Submission Channels'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
+
+          {activeStep === 2 && (
+            <button
+              type="button"
+              onClick={() => setActiveStep(3)}
+              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center gap-2 transition-all shadow-md shadow-emerald-600/25 hover:scale-[1.01] ml-auto"
+            >
+              <span>{isFrench ? 'Étape Suivante : Enregistrer le Dépôt' : 'Continue to Step 3: Track Bid'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
+
+          {activeStep === 3 && (
+            <button
+              type="submit"
+              form="bid-submission-form"
+              disabled={submitting || !certified}
+              className="px-6 py-2.5 rounded-xl gradient-bg text-white font-black text-xs shadow-md shadow-emerald-600/20 hover:opacity-95 flex items-center gap-2 transition-all disabled:opacity-50 ml-auto"
+            >
+              <Send className="w-4 h-4" />
+              <span>
+                {submitting
+                  ? (isFrench ? 'Enregistrement...' : 'Saving...')
+                  : (isFrench ? 'Marquer comme Déposé Officiellement' : 'Mark as Officially Submitted')}
+              </span>
+            </button>
           )}
         </div>
       </div>
