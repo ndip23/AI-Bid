@@ -52,11 +52,9 @@ export const SubmitBidModal: React.FC<Props> = ({
   const [certified, setCertified] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  if (!isOpen) return null;
+  const [conciergeRequested, setConciergeRequested] = useState(false);
 
-  const officialSubmissionUrl =
-    tender.sourceUrl ||
-    `https://projects.worldbank.org/en/projects-operations/project-detail/${tender.refNumber}`;
+  if (!isOpen) return null;
 
   const handleDownloadDossierZip = () => {
     const manifestContent = isFrench
@@ -94,9 +92,9 @@ PLI C : OFFRE FINANCIÈRE & BORDEREAU DE PRIX
 
 ========================================================================
 INSTRUCTIONS DE DÉPÔT RÉGLEMENTAIRE :
-- Dépôt en ligne : Téléversez cette archive sur ${officialSubmissionUrl}
 - Dépôt physique : Déposez 1 Original + 3 Copies sous double pli cacheté
   au siège de l'Autorité Contractante (${tender.buyerName}) avant l'heure limite.
+- Mention extérieure obligatoire : "APPEL D'OFFRES N° ${tender.refNumber} — À N'OUVRIR QU'EN SÉANCE DE DÉPOUILLEMENT."
 ========================================================================`
       : `========================================================================
 OFFICIAL BID SUBMISSION DOSSIER (DOSSIER DE SOUMISSION OFFICIEL)
@@ -132,9 +130,9 @@ ENVELOPE C: FINANCIAL PROPOSAL
 
 ========================================================================
 SUBMISSION INSTRUCTIONS:
-- For Electronic Portals: Upload this dossier to ${officialSubmissionUrl}
-- For Physical Submissions: Deposit 1 Original + 3 Copies in the sealed
-  tender box at ${tender.buyerName} headquarters before the deadline.
+- Deposit 1 Original + 3 Copies in the sealed tender box at
+  ${tender.buyerName} headquarters before the deadline.
+- Mandatory Outer Label: "TENDER REF: ${tender.refNumber} — TO BE OPENED ONLY BY THE BID EVALUATION COMMITTEE."
 ========================================================================`;
 
     const blob = new Blob([manifestContent], { type: 'text/plain;charset=utf-8' });
@@ -201,7 +199,8 @@ SUBMISSION INSTRUCTIONS:
 
     setSubmitting(true);
     try {
-      await ApiClient.saveTender(tender.id, 'BIDDING');
+      const submissionNotes = `Submitted Amount: ${submittedAmount} ${tender.currency}. Receipt: ${receiptNumber || 'N/A'}.${conciergeRequested ? ' [Concierge Runner Deposit Requested]' : ' [Direct Corporate Deposit]'}`;
+      await ApiClient.saveTender(tender.id, 'BIDDING', submissionNotes);
       toast.success(
         isFrench ? 'Dépôt Enregistré avec Succès !' : 'Submission Successfully Recorded!',
         isFrench ? `Marché ${tender.refNumber} marqué comme En Soumission.` : `Opportunity ${tender.refNumber} moved to Bidding stage.`
@@ -413,46 +412,19 @@ SUBMISSION INSTRUCTIONS:
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Channel A: Official Electronic Portal */}
-                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-sky-300 transition-all flex flex-col justify-between space-y-4">
-                  <div className="space-y-2">
-                    <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md bg-sky-100 text-sky-800 text-[10px] font-extrabold">
-                      <span>{isFrench ? 'Méthode A : Portail En Ligne (e-GP)' : 'Method A: Online e-GP Portal'}</span>
-                    </div>
-                    <h4 className="text-xs font-black text-slate-900">
-                      {isFrench ? 'Dépôt Dématérialisé sur le Portail Acheteur' : 'Submit on Official Buyer Procurement Portal'}
-                    </h4>
-                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                      {isFrench
-                        ? `Téléversez votre dossier Bidora directement sur la plateforme officielle de ${tender.buyerName}.`
-                        : `Upload your downloaded Bidora dossier directly to the official portal hosted by ${tender.buyerName}.`}
-                    </p>
-                  </div>
-
-                  <a
-                    href={officialSubmissionUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs"
-                  >
-                    <span>{isFrench ? 'Ouvrir le Portail Officiel' : 'Open Official Portal'}</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-
-                {/* Channel B: Physical Sealed Envelopes */}
+                {/* Channel A: Direct Corporate Submission with Bidora Dossier */}
                 <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-all flex flex-col justify-between space-y-4">
                   <div className="space-y-2">
                     <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">
-                      <span>{isFrench ? 'Méthode B : Dépôt Physique Sous Pli Scellé' : 'Method B: Physical Tender Box'}</span>
+                      <span>{isFrench ? 'Option A : Dépôt Direct en Entreprise' : 'Option A: Direct Corporate Deposit'}</span>
                     </div>
                     <h4 className="text-xs font-black text-slate-900">
-                      {isFrench ? 'Dépôt Physique contre Récépissé' : 'Physical Sealed Envelope Delivery (Sous pli scellé)'}
+                      {isFrench ? 'Dépôt Physique Sous Pli Scellé' : 'Physical Sealed Envelope Deposit'}
                     </h4>
                     <p className="text-xs text-slate-600 leading-relaxed font-medium">
                       {isFrench
-                        ? 'Imprimez 1 Original + 3 Copies. Déposez-les dans l\'urne des soumissions contre décharge avant l\'heure limite.'
-                        : 'Print 1 Original + 3 Copies. Deposit into the Contracting Authority\'s tender box before the deadline.'}
+                        ? `Imprimez votre dossier Bidora en 1 Original + 3 Copies. Apposez les étiquettes officielles et déposez à l'urne de ${tender.buyerName}.`
+                        : `Print your Bidora dossier (1 Original + 3 Copies). Affix official labels and deposit directly into the tender box at ${tender.buyerName}.`}
                     </p>
                   </div>
 
@@ -462,6 +434,51 @@ SUBMISSION INSTRUCTIONS:
                   >
                     <Printer className="w-3.5 h-3.5 text-slate-600" />
                     <span>{isFrench ? 'Imprimer les Étiquettes des Plis' : 'Print Envelope Labels'}</span>
+                  </button>
+                </div>
+
+                {/* Channel B: Concierge Runner Service */}
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition-all flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-[10px] font-extrabold">
+                      <span>{isFrench ? 'Option B : Coursier & Dépôt Assisté Bidora' : 'Option B: Bidora Concierge Runner'}</span>
+                    </div>
+                    <h4 className="text-xs font-black text-slate-900">
+                      {isFrench ? 'Déléguer le Dépôt à nos Agents de Liaison' : 'Delegate Drop-off to Bidora Liaison Team'}
+                    </h4>
+                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                      {isFrench
+                        ? 'Nos agents accrédités à Yaoundé, Douala et Abuja impriment, scellent et déposent vos plis contre récépissé officiel.'
+                        : 'Our accredited liaison agents in Yaoundé, Douala, and Abuja print, seal, and deposit your envelopes directly with official receipt.'}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = !conciergeRequested;
+                      setConciergeRequested(next);
+                      if (next) {
+                        toast.success(
+                          isFrench ? 'Demande de Dépôt Assisté Enregistrée' : 'Concierge Filing Requested',
+                          isFrench
+                            ? 'Un agent de liaison Bidora coordonnera la remise de votre pli avant l\'heure limite.'
+                            : 'A Bidora liaison officer will coordinate your physical submission before deadline.'
+                        );
+                      }
+                    }}
+                    className={`w-full py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs ${
+                      conciergeRequested
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                    }`}
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>
+                      {conciergeRequested
+                        ? (isFrench ? 'Dépôt Assisté Demandé ✓' : 'Concierge Runner Active ✓')
+                        : (isFrench ? 'Demander le Dépôt Assisté' : 'Request Concierge Runner')}
+                    </span>
                   </button>
                 </div>
               </div>
