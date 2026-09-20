@@ -33,6 +33,7 @@ import {
   Truck,
   Sprout,
   MapPin,
+  Check,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -186,7 +187,24 @@ export default function DashboardPage() {
                   </p>
                 </div>
 
-                <div className="flex items-center space-x-3 shrink-0 z-10">
+                <div className="flex flex-wrap items-center gap-2.5 shrink-0 z-10">
+                  <button
+                    onClick={() => setSelectedCountry(selectedCountry.toLowerCase() === 'cameroon' ? '' : 'Cameroon')}
+                    className={`px-4 py-3 rounded-2xl font-extrabold text-xs transition-all flex items-center space-x-2 border shadow-sm ${
+                      selectedCountry.toLowerCase() === 'cameroon'
+                        ? 'bg-emerald-700 text-white border-emerald-800 shadow-emerald-700/20'
+                        : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
+                    }`}
+                  >
+                    <MapPin className={`w-4 h-4 ${selectedCountry.toLowerCase() === 'cameroon' ? 'text-white' : 'text-emerald-600'}`} />
+                    <span>
+                      {selectedCountry.toLowerCase() === 'cameroon'
+                        ? (isFrench ? `Cameroun Actif (${countryCounts['Cameroon'] || 206})` : `Cameroon Active (${countryCounts['Cameroon'] || 206})`)
+                        : (isFrench ? `Marchés Cameroun (${countryCounts['Cameroon'] || 206})` : `Cameroon Tenders (${countryCounts['Cameroon'] || 206})`)}
+                    </span>
+                    {selectedCountry.toLowerCase() === 'cameroon' && <Check className="w-3.5 h-3.5 text-emerald-300 ml-1" />}
+                  </button>
+
                   <Link
                     href={`/tenders${
                       selectedIndustry || selectedCountry

@@ -94,7 +94,7 @@ export class TenderService {
       orderBy = { estimatedValue: 'desc' };
     }
 
-    const limit = query.limit ? Math.min(Number(query.limit), 200) : 100;
+    const limit = query.limit ? Math.min(Number(query.limit), 2000) : 1000;
     const skip = query.offset ? Number(query.offset) : undefined;
 
     // High-performance projection: omit rawContent (heavy scraped HTML) from list view

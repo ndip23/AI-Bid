@@ -162,7 +162,7 @@ export class ApiClient {
       if (params?.industry) queryParams.append('industry', params.industry);
       if (params?.country) queryParams.append('country', params.country);
       if (params?.minScore) queryParams.append('minScore', String(params.minScore));
-      if (params?.limit) queryParams.append('limit', String(params.limit));
+      queryParams.append('limit', String(params?.limit || 1000));
       if (params?.offset) queryParams.append('offset', String(params.offset));
 
       const res = await fetch(`${API_BASE_URL}/tenders?${queryParams.toString()}`, { headers: this.getHeaders() });
