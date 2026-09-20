@@ -164,7 +164,7 @@ export const QuickBiddingGuide: React.FC<Props> = ({
             </p>
           </div>
           <div className="pt-3 mt-2 border-t border-white/10 flex items-center justify-between text-xs font-black text-emerald-300">
-            <span>{isFrench ? '🚀 Lancer la Soumission' : '🚀 Start Submission Now'}</span>
+            <span>{isFrench ? 'Lancer la Soumission' : 'Start Submission Now'}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </div>
         </div>

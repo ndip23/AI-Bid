@@ -28,11 +28,13 @@ export const EligibilityChecklist: React.FC<Props> = ({ matchDetails }) => {
           </p>
         </div>
         <div className="flex items-center space-x-2 text-xs font-bold">
-          <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
-            ✔ {met.length} Met
+          <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>{met.length} Met</span>
           </span>
-          <span className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200">
-            ❌ {missing.length} Missing
+          <span className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+            <XCircle className="w-3.5 h-3.5" />
+            <span>{missing.length} Missing</span>
           </span>
         </div>
       </div>

@@ -9,7 +9,7 @@ import { useAuth } from '../../../lib/auth-context';
 import { useToast } from '../../../lib/toast-context';
 import { useLanguage } from '../../../lib/language-context';
 import { LanguageSwitcher } from '../../../components/ui/LanguageSwitcher';
-import { Sparkles, ArrowRight, Mail, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import { Sparkles, ArrowRight, Mail, Lock, Eye, EyeOff, CheckCircle2, Star } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail]       = useState('');
@@ -91,7 +91,7 @@ export default function LoginPage() {
           <div className="glassmorphic rounded-3xl p-6 space-y-4 shadow-lg border border-slate-200/80">
             <div className="flex space-x-1">
               {[...Array(5)].map((_, i) => (
-                <span key={i} className="text-amber-400 text-base">★</span>
+                <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
               ))}
             </div>
             <p className="text-slate-700 font-medium leading-relaxed text-xs italic">

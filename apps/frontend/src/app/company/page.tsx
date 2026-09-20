@@ -372,7 +372,8 @@ export default function CompanyCapabilityPage() {
                       key={idx}
                       className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-sky-50 border border-sky-200 text-sky-800 text-xs font-bold shadow-sm"
                     >
-                      <span>🌍 {c}</span>
+                      <Globe className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                      <span>{c}</span>
                       <button type="button" onClick={() => removeTag('country', idx)}>
                         <Trash2 className="w-3.5 h-3.5 text-rose-600 hover:text-rose-700" />
                       </button>

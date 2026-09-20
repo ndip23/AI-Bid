@@ -61,11 +61,11 @@ export default function TendersDiscoveryPage() {
   ];
 
   const MARKETS = [
-    { id: '', name: 'All Markets', fr: 'Tous Marchés', flag: '🌍' },
-    { id: 'Cameroon', name: 'Cameroon', fr: 'Cameroun', flag: '🇨🇲' },
-    { id: 'Nigeria', name: 'Nigeria', fr: 'Nigeria', flag: '🇳🇬' },
-    { id: "Cote d'Ivoire", name: "Côte d'Ivoire", fr: "Côte d'Ivoire", flag: '🇨🇮' },
-    { id: 'Pan-African', name: 'Global UNGM', fr: 'UN Global', flag: '🌐' },
+    { id: '', name: 'All Markets', fr: 'Tous Marchés' },
+    { id: 'Cameroon', name: 'Cameroon', fr: 'Cameroun' },
+    { id: 'Nigeria', name: 'Nigeria', fr: 'Nigeria' },
+    { id: "Cote d'Ivoire", name: "Côte d'Ivoire", fr: "Côte d'Ivoire" },
+    { id: 'Pan-African', name: 'Global UNGM', fr: 'UN Global' },
   ];
 
   const fetchTenders = async (bypassCache = false) => {
@@ -293,7 +293,7 @@ export default function TendersDiscoveryPage() {
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
-                  <span>{m.flag}</span>
+                  <Globe2 className="w-3.5 h-3.5 shrink-0 opacity-75" />
                   <span>{lang === 'fr' ? m.fr : m.name}</span>
                 </button>
               );
@@ -302,25 +302,25 @@ export default function TendersDiscoveryPage() {
             {/* Quick Opportunity Type Pills */}
             <button
               onClick={() => setOpportunityType(opportunityType === 'PRIVATE_TENDER' ? '' : 'PRIVATE_TENDER')}
-              className={`px-3 py-1 rounded-lg font-bold whitespace-nowrap flex items-center gap-1 transition-all shrink-0 text-xs ${
+              className={`px-3 py-1 rounded-lg font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shrink-0 text-xs ${
                 opportunityType === 'PRIVATE_TENDER'
                   ? 'bg-purple-600 text-white shadow-xs'
                   : 'bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100'
               }`}
             >
-              <span>💼</span>
+              <Briefcase className="w-3.5 h-3.5 shrink-0 opacity-80" />
               <span>{lang === 'fr' ? 'Marchés Privés' : 'Private RFPs'}</span>
             </button>
 
             <button
               onClick={() => setOpportunityType(opportunityType === 'SUBCONTRACTING' ? '' : 'SUBCONTRACTING')}
-              className={`px-3 py-1 rounded-lg font-bold whitespace-nowrap flex items-center gap-1 transition-all shrink-0 text-xs ${
+              className={`px-3 py-1 rounded-lg font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shrink-0 text-xs ${
                 opportunityType === 'SUBCONTRACTING'
                   ? 'bg-amber-600 text-white shadow-xs'
                   : 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100'
               }`}
             >
-              <span>🤝</span>
+              <Building2 className="w-3.5 h-3.5 shrink-0 opacity-80" />
               <span>{lang === 'fr' ? 'Sous-Traitance' : 'Subcontracting'}</span>
             </button>
           </div>
@@ -377,10 +377,10 @@ export default function TendersDiscoveryPage() {
                 className="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-700 focus:outline-none focus:border-emerald-600 font-medium shadow-xs"
               >
                 <option value="">{lang === 'fr' ? "Tous types d'opportunités" : 'All Opportunity Types'}</option>
-                <option value="PRIVATE_TENDER">{lang === 'fr' ? '💼 Marchés Privés & RFPs (MTN, Orange...)' : '💼 Private Corporate RFPs'}</option>
-                <option value="SUBCONTRACTING">{lang === 'fr' ? '🤝 Sous-Traitance (BSTP-CMR)' : '🤝 Subcontracting (BSTP)'}</option>
-                <option value="STATE_OWNED_ENTERPRISE">{lang === 'fr' ? '🏛️ Entreprises Publiques (PAD, ENEO)' : '🏛️ State Enterprises (SOE)'}</option>
-                <option value="PUBLIC_TENDER">{lang === 'fr' ? '🌐 Marchés Publics & Bailleurs' : '🌐 Public Procurement'}</option>
+                <option value="PRIVATE_TENDER">{lang === 'fr' ? 'Marchés Privés & RFPs (MTN, Orange...)' : 'Private Corporate RFPs'}</option>
+                <option value="SUBCONTRACTING">{lang === 'fr' ? 'Sous-Traitance (BSTP-CMR)' : 'Subcontracting (BSTP)'}</option>
+                <option value="STATE_OWNED_ENTERPRISE">{lang === 'fr' ? 'Entreprises Publiques (PAD, ENEO)' : 'State Enterprises (SOE)'}</option>
+                <option value="PUBLIC_TENDER">{lang === 'fr' ? 'Marchés Publics & Bailleurs' : 'Public Procurement'}</option>
               </select>
 
               {/* Country Filter */}
@@ -540,10 +540,10 @@ export default function TendersDiscoveryPage() {
                 onChange={(e) => setSortBy(e.target.value as any)}
                 className="bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-emerald-600 shadow-2xs"
               >
-                <option value="match">{lang === 'fr' ? '🎯 Meilleur Score IA' : '🎯 Best AI Match'}</option>
-                <option value="deadline">{lang === 'fr' ? '⏳ Clôture Plus Proche' : '⏳ Nearest Deadline'}</option>
-                <option value="value">{lang === 'fr' ? '💰 Plus Grand Budget' : '💰 Highest Value'}</option>
-                <option value="newest">{lang === 'fr' ? '🆕 Plus Récent' : '🆕 Newest Added'}</option>
+                <option value="match">{lang === 'fr' ? 'Meilleur Score IA' : 'Best AI Match'}</option>
+                <option value="deadline">{lang === 'fr' ? 'Clôture Plus Proche' : 'Nearest Deadline'}</option>
+                <option value="value">{lang === 'fr' ? 'Plus Grand Budget' : 'Highest Value'}</option>
+                <option value="newest">{lang === 'fr' ? 'Plus Récent' : 'Newest Added'}</option>
               </select>
             </div>
           </div>

@@ -22,6 +22,8 @@ import {
   BarChart3,
   Clock,
   FileText,
+  Check,
+  X,
 } from 'lucide-react';
 
 /* ─── Animated counter hook ─── */
@@ -437,7 +439,7 @@ export default function HomePage() {
                           : 'bg-rose-50 border border-rose-200 text-rose-700'
                       }`}
                     >
-                      <span>{item.ok ? '✓' : '✗'}</span>
+                      {item.ok ? <Check className="w-3.5 h-3.5 shrink-0" /> : <X className="w-3.5 h-3.5 shrink-0" />}
                       <span>{item.label}</span>
                     </div>
                   ))}

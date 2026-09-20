@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, ArrowRight, X } from 'lucide-react';
+import { AlertTriangle, ArrowRight, X, ShieldCheck } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -81,7 +81,7 @@ export const IncompleteProfileModal: React.FC<Props> = ({
 
         {/* Privacy & Trust Badge */}
         <div className="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200/80 text-[11px] text-emerald-900 flex items-center gap-2">
-          <span className="text-sm">🔒</span>
+          <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
           <span><strong>100% Confidential:</strong> Your information is strictly used for eligibility matching and proposal preparation. Never shared with third parties.</span>
         </div>
 

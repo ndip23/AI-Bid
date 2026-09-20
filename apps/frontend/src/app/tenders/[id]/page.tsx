@@ -266,7 +266,7 @@ export default function TenderDetailPage() {
                   className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md shadow-emerald-600/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.02]"
                 >
                   <Send className="w-4 h-4" />
-                  <span>{isFrench ? '🚀 Soumissionner / Déposer' : '🚀 Apply / Submit Bid'}</span>
+                  <span>{isFrench ? 'Soumissionner / Déposer' : 'Apply / Submit Bid'}</span>
                 </button>
 
                 <button
@@ -554,9 +554,10 @@ export default function TenderDetailPage() {
                               </span>
                               <button
                                 onClick={() => toggleTaskStatus(t.id)}
-                                className="text-xs font-bold text-emerald-600 hover:underline"
+                                className="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1"
                               >
-                                Complete ✓
+                                <span>Complete</span>
+                                <Check className="w-3 h-3" />
                               </button>
                             </div>
                           </div>

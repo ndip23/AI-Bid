@@ -73,24 +73,24 @@ MONTANT ESTIMATIF :  ${formatCurrency(tender.estimatedValue, tender.currency)}
 
 PLI A : PIÈCES ADMINISTRATIVES & JURIDIQUES
 ------------------------------------------------------------------------
-[✓] 1. Registre du Commerce et du Crédit Mobilier (RCCM)
-[✓] 2. Attestation de Non-Redevance (DGI < 3 mois)
-[✓] 3. Attestation de Conformité Sociale (CNPS)
-[✓] 4. Cautionnement Provisoire Bancaire (Original 2%)
-[✓] 5. Pouvoir de Signature et Mandat de Représentation
+[X] 1. Registre du Commerce et du Crédit Mobilier (RCCM)
+[X] 2. Attestation de Non-Redevance (DGI < 3 mois)
+[X] 3. Attestation de Conformité Sociale (CNPS)
+[X] 4. Cautionnement Provisoire Bancaire (Original 2%)
+[X] 5. Pouvoir de Signature et Mandat de Représentation
 
 PLI B : OFFRE TECHNIQUE & MÉTHODOLOGIE
 ------------------------------------------------------------------------
-[✓] 6. Note Méthodologique & Planning d'Exécution (GANTT)
-[✓] 7. CVs et Diplômes Certifiés du Personnel Clé
-[✓] 8. Références et Attestations de Bonne Fin d'Exécution Similaires
-[✓] 9. Certifications de Qualité et Agréments Techniques
+[X] 6. Note Méthodologique & Planning d'Exécution (GANTT)
+[X] 7. CVs et Diplômes Certifiés du Personnel Clé
+[X] 8. Références et Attestations de Bonne Fin d'Exécution Similaires
+[X] 9. Certifications de Qualité et Agréments Techniques
 
 PLI C : OFFRE FINANCIÈRE & BORDEREAU DE PRIX
 ------------------------------------------------------------------------
-[✓] 10. Lettre de Soumission Formelle Datée et Signée
-[✓] 11. Bordereau des Prix Unitaires & Détail Quantitatif (BPU/DQE)
-[✓] 12. Bilans Financiers et États Financiers Certifiés des 3 Derniers Exercices
+[X] 10. Lettre de Soumission Formelle Datée et Signée
+[X] 11. Bordereau des Prix Unitaires & Détail Quantitatif (BPU/DQE)
+[X] 12. Bilans Financiers et États Financiers Certifiés des 3 Derniers Exercices
 
 ========================================================================
 INSTRUCTIONS DE DÉPÔT RÉGLEMENTAIRE :
@@ -111,24 +111,24 @@ CURRENCY & VALUE:   ${formatCurrency(tender.estimatedValue, tender.currency)}
 
 ENVELOPE A: ADMINISTRATIVE & LEGAL
 ------------------------------------------------------------------------
-[✓] 1. Certificate of Incorporation & Trade Registry (RCCM)
-[✓] 2. Tax Clearance Certificate (Attestation de Non-Redevance)
-[✓] 3. Social Security Clearance Certificate (CNPS / Pension)
-[✓] 4. Official Bid Bond / Bank Guarantee of Tender Security
-[✓] 5. Power of Attorney for Authorized Signatory
+[X] 1. Certificate of Incorporation & Trade Registry (RCCM)
+[X] 2. Tax Clearance Certificate (Attestation de Non-Redevance)
+[X] 3. Social Security Clearance Certificate (CNPS / Pension)
+[X] 4. Official Bid Bond / Bank Guarantee of Tender Security
+[X] 5. Power of Attorney for Authorized Signatory
 
 ENVELOPE B: TECHNICAL PROPOSAL
 ------------------------------------------------------------------------
-[✓] 6. Comprehensive Technical Methodology & GANTT Work Plan
-[✓] 7. CVs & Certified Diplomas of Key Personnel
-[✓] 8. 3 Similar Past African Project Reference Certificates
-[✓] 9. ISO 9001 / ISO 27001 Quality & Security Accreditation
+[X] 6. Comprehensive Technical Methodology & GANTT Work Plan
+[X] 7. CVs & Certified Diplomas of Key Personnel
+[X] 8. 3 Similar Past African Project Reference Certificates
+[X] 9. ISO 9001 / ISO 27001 Quality & Security Accreditation
 
 ENVELOPE C: FINANCIAL PROPOSAL
 ------------------------------------------------------------------------
-[✓] 10. Official Bid Submission Letter (Lettre de Soumission)
-[✓] 11. Bill of Quantities & Unit Price Schedule (BPU & DQE)
-[✓] 12. 3 Years Certified Audited Balance Sheets
+[X] 10. Official Bid Submission Letter (Lettre de Soumission)
+[X] 11. Bill of Quantities & Unit Price Schedule (BPU & DQE)
+[X] 12. 3 Years Certified Audited Balance Sheets
 
 ========================================================================
 SUBMISSION INSTRUCTIONS:

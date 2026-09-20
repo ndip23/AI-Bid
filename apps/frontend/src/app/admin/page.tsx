@@ -27,6 +27,8 @@ import {
   ChevronRight,
   Layers,
   AlertTriangle,
+  MapPin,
+  X,
 } from 'lucide-react';
 
 export default function AdminPortalPage() {
@@ -222,7 +224,7 @@ export default function AdminPortalPage() {
                 {freshnessStatus?.current24hCount ?? 518} / {freshnessStatus?.targetDailyCount ?? 15}
               </p>
               <p className="text-[10px] md:text-[11px] font-semibold text-blue-600">
-                {freshnessStatus?.isTargetMet ? 'Target Guaranteed ✅' : 'Running Sync...'}
+                {freshnessStatus?.isTargetMet ? 'Target Guaranteed' : 'Running Sync...'}
               </p>
             </div>
 
@@ -336,7 +338,7 @@ export default function AdminPortalPage() {
                     {sources.map((src) => (
                       <tr key={src.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="py-3.5 px-4 font-bold text-slate-900 flex items-center gap-2">
-                          <span>📍</span>
+                          <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           <span>{src.country}</span>
                         </td>
                         <td className="py-3.5 px-4 font-bold text-slate-800">{src.sourceName}</td>
@@ -407,7 +409,7 @@ export default function AdminPortalPage() {
                     <div className="bg-emerald-600 h-full rounded-full w-full"></div>
                   </div>
                   <span className="text-[11px] text-emerald-700 font-bold block">
-                    {freshnessStatus?.isTargetMet ? 'Target Satisfied (100%+) ✅' : 'Pending Ingestion'}
+                    {freshnessStatus?.isTargetMet ? 'Target Satisfied (100%+)' : 'Pending Ingestion'}
                   </span>
                 </div>
 
@@ -574,9 +576,9 @@ export default function AdminPortalPage() {
                   </h3>
                   <button
                     onClick={() => setShowModal(false)}
-                    className="text-slate-400 hover:text-slate-600 font-bold text-sm p-1"
+                    className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
                   >
-                    ✕
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
 
@@ -613,14 +615,14 @@ export default function AdminPortalPage() {
                         onChange={(e) => setNewTender({ ...newTender, buyerCountry: e.target.value })}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-600 font-semibold"
                       >
-                        <option value="Cameroon">Cameroon 🇨🇲</option>
-                        <option value="Nigeria">Nigeria 🇳🇬</option>
-                        <option value="Cote d'Ivoire">Côte d'Ivoire 🇨🇮</option>
-                        <option value="Kenya">Kenya 🇰🇪</option>
-                        <option value="South Africa">South Africa 🇿🇦</option>
-                        <option value="Ghana">Ghana 🇬🇭</option>
-                        <option value="Rwanda">Rwanda 🇷🇼</option>
-                        <option value="Pan-African">Pan-African (AfDB / UNGM) 🌐</option>
+                        <option value="Cameroon">Cameroon</option>
+                        <option value="Nigeria">Nigeria</option>
+                        <option value="Cote d'Ivoire">Côte d'Ivoire</option>
+                        <option value="Kenya">Kenya</option>
+                        <option value="South Africa">South Africa</option>
+                        <option value="Ghana">Ghana</option>
+                        <option value="Rwanda">Rwanda</option>
+                        <option value="Pan-African">Pan-African (AfDB / UNGM)</option>
                       </select>
                     </div>
                   </div>

@@ -3,7 +3,7 @@
 import React from 'react';
 import { PublicNav } from '../../components/layout/PublicNav';
 import { PublicFooter } from '../../components/layout/PublicFooter';
-import { Briefcase, Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Briefcase, Sparkles, ArrowRight, CheckCircle2, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
 const openRoles = [
@@ -45,7 +45,7 @@ export default function CareersPage() {
                 <div>
                   <h3 className="text-sm font-extrabold text-slate-900">{role.title}</h3>
                   <div className="flex items-center space-x-3 text-xs text-slate-500 font-medium mt-1">
-                    <span>📍 {role.location}</span>
+                    <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-slate-400" /> {role.location}</span>
                     <span>•</span>
                     <span className="text-emerald-700 font-bold px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200">
                       {role.type}
