@@ -105,7 +105,7 @@ export class NotificationService {
       pref = await this.prisma.notificationPreference.create({
         data: {
           userId,
-          whatsappNumber: '+237 681 10 84 39',
+          whatsappNumber: '+237 683 616 584',
           notifyWhatsApp: true,
           notifyEmail: true,
           notifySms: false,
@@ -132,7 +132,7 @@ export class NotificationService {
       where: { userId },
       create: {
         userId,
-        whatsappNumber: dto.whatsappNumber ?? '+237 681 10 84 39',
+        whatsappNumber: dto.whatsappNumber ?? '+237 683 616 584',
         notifyWhatsApp: dto.notifyWhatsApp ?? true,
         notifyEmail: dto.notifyEmail ?? true,
         notifySms: dto.notifySms ?? false,
@@ -198,7 +198,7 @@ export class NotificationService {
       throw new NotFoundException('No active tender found for dispatch test');
     }
 
-    const targetPhone = dto.targetPhone || pref.whatsappNumber || '+237 681 10 84 39';
+    const targetPhone = dto.targetPhone || pref.whatsappNumber || '+237 683 616 584';
     const targetEmail = dto.targetEmail || user.email;
 
     const dispatchResults = await this.alertDispatcher.dispatch({

@@ -46,7 +46,7 @@ export default function UserProfilePage() {
   const [passError, setPassError] = useState('');
 
   // Multi-Channel Alert State
-  const [whatsappNumber, setWhatsappNumber] = useState('+237 681 10 84 39');
+  const [whatsappNumber, setWhatsappNumber] = useState('+237 683 616 584');
   const [notifyWhatsApp, setNotifyWhatsApp] = useState(true);
   const [notifyEmail, setNotifyEmail] = useState(true);
   const [notifySms, setNotifySms] = useState(false);
@@ -381,7 +381,7 @@ export default function UserProfilePage() {
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 flex items-center justify-between">
                       <span>{isFrench ? 'Numéro WhatsApp / Mobile (avec indicatif pays)' : 'WhatsApp / Mobile Phone Number (with Country Code)'}</span>
-                      <span className="text-[10px] font-bold text-emerald-600">e.g. +237 681 10 84 39, +234 803..., +225 07...</span>
+                      <span className="text-[10px] font-bold text-emerald-600">e.g. +237 683 616 584, +234 803..., +225 07...</span>
                     </label>
                     <div className="relative">
                       <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />

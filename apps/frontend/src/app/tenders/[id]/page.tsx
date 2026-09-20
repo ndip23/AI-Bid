@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Header } from '../../../components/layout/Header';
 import { Sidebar } from '../../../components/layout/Sidebar';
+import { Footer } from '../../../components/layout/Footer';
 import { MatchScoreWidget } from '../../../components/tenders/MatchScoreWidget';
 import { AISummaryView } from '../../../components/tenders/AISummaryView';
 import { EligibilityChecklist } from '../../../components/tenders/EligibilityChecklist';
@@ -614,6 +615,8 @@ export default function TenderDetailPage() {
           </div>
         </main>
       </div>
+
+      <Footer />
 
       {/* Warning Modal if Capability Profile is Incomplete */}
       <IncompleteProfileModal

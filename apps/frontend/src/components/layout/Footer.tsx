@@ -24,8 +24,13 @@ export const Footer: React.FC = () => {
           </a>
         </div>
 
-        <div className="text-slate-400 text-[11px] font-medium">
-          © {new Date().getFullYear()} Bidora SaaS Platform. All rights reserved.
+        <div className="text-slate-400 text-[11px] font-medium flex flex-wrap items-center gap-2">
+          <span>© {new Date().getFullYear()} Bidora SaaS Platform. All rights reserved.</span>
+          <span className="text-slate-300">•</span>
+          <span className="font-bold text-slate-600 flex items-center gap-1">
+            <span>Powered by</span>
+            <span className="text-emerald-600 font-black tracking-wide">MasCode</span>
+          </span>
         </div>
       </div>
     </footer>

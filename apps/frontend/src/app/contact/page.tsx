@@ -84,7 +84,7 @@ export default function ContactPage() {
                   {
                     icon: Phone,
                     label: isFrench ? 'Téléphone (Afrique / CEMAC)' : 'Phone (UK)',
-                    value: '+237 681 10 84 39',
+                    value: '+237 683 616 584',
                     sub: isFrench ? 'Lun–Ven, 8h–18h GMT+1' : 'Mon–Fri, 9am–6pm GMT',
                   },
                   {

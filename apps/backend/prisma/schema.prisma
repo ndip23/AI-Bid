@@ -375,7 +375,7 @@ model NotificationPreference {
   id                    String   @id @default(uuid())
   userId                String   @unique
   user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  whatsappNumber        String?  @default("+237 681 10 84 39")
+  whatsappNumber        String?  @default("+237 683 616 584")
   notifyWhatsApp        Boolean  @default(true)
   notifyEmail           Boolean  @default(true)
   notifySms             Boolean  @default(false)

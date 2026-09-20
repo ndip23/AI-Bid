@@ -114,6 +114,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile, isM
           <LogOut className="w-4 h-4" />
           <span>{t('nav.logout', 'Sign Out')}</span>
         </button>
+
+        <div className="text-[10px] text-center font-bold text-slate-400 pt-0.5 tracking-wider flex items-center justify-center gap-1">
+          <span>Powered by</span>
+          <span className="text-emerald-700 font-black">MasCode</span>
+        </div>
       </div>
     </div>
   );

@@ -117,7 +117,14 @@ export const PublicFooter: React.FC = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="space-y-1 text-center md:text-left">
-            <span>&copy; {new Date().getFullYear()} Bidora, Inc. {isFrench ? 'Tous droits réservés.' : 'All rights reserved.'}</span>
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+              <span>&copy; {new Date().getFullYear()} Bidora, Inc. {isFrench ? 'Tous droits réservés.' : 'All rights reserved.'}</span>
+              <span className="text-slate-600">•</span>
+              <span className="font-bold text-slate-300 flex items-center gap-1">
+                <span>Powered by</span>
+                <span className="text-emerald-400 font-black tracking-wide">MasCode</span>
+              </span>
+            </div>
             <p className="text-[11px] text-slate-500 max-w-2xl leading-relaxed">
               {isFrench
                 ? 'Bidora est un fournisseur technologique indépendant et n\'est affilié à aucun ministère gouvernemental, organisme de marchés publics ou banque internationale de développement.'
