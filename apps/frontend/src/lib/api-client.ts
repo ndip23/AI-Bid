@@ -246,6 +246,46 @@ export class ApiClient {
     };
   }
 
+  static async getAdminCompanies() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/admin/companies`, { headers: this.getHeaders() });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error('Failed to fetch admin companies', e);
+    }
+    return [];
+  }
+
+  static async getAdminUsers() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/admin/users`, { headers: this.getHeaders() });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error('Failed to fetch admin users', e);
+    }
+    return [];
+  }
+
+  static async getDailyFreshnessStatus() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/publishers/daily-freshness/status`, { headers: this.getHeaders() });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error('Failed to fetch freshness status', e);
+    }
+    return null;
+  }
+
+  static async triggerDailyFreshness(target = 15) {
+    const res = await fetch(`${API_BASE_URL}/publishers/daily-freshness`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ target }),
+    });
+    if (!res.ok) throw new Error('Failed to trigger daily freshness engine');
+    return await res.json();
+  }
+
   static async createTender(data: any) {
     const res = await fetch(`${API_BASE_URL}/tenders`, {
       method: 'POST',
