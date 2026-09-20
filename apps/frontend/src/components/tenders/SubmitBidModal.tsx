@@ -20,6 +20,8 @@ import {
   DollarSign,
   AlertTriangle,
   Send,
+  MapPin,
+  Clock,
 } from 'lucide-react';
 
 interface Props {
@@ -412,6 +414,23 @@ SUBMISSION INSTRUCTIONS:
                 </p>
               </div>
 
+              {/* Mandatory Physical Submission Warning Banner */}
+              <div className="p-4 rounded-2xl bg-amber-50 border-2 border-amber-400 flex items-start gap-3.5 shadow-xs">
+                <div className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-xs font-black text-amber-950 uppercase tracking-wide flex items-center gap-1.5">
+                    <span>{isFrench ? 'Attention : Dépôt Physique Obligatoire en Main Propre' : 'Important: Mandatory Physical Hand-Delivery Required'}</span>
+                  </h4>
+                  <p className="text-xs text-amber-900 font-medium leading-relaxed">
+                    {isFrench
+                      ? 'Ce bouton n\'envoie PAS votre offre par internet. La loi impose de déposer physiquement un dossier papier sous double enveloppe scellée dans l\'urne du Maître d\'Ouvrage avant la date limite.'
+                      : 'Clicking submit does NOT transmit your bid over the internet. Procurement law strictly requires hand-delivering a physical sealed paper package into the buyer\'s tender box before deadline.'}
+                  </p>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Channel A: Direct Corporate Submission with Bidora Dossier */}
                 <div 
@@ -544,6 +563,127 @@ SUBMISSION INSTRUCTIONS:
                   </div>
                 </div>
               </div>
+
+              {/* Option A: Drop-off Location & 3-Step Protocol */}
+              {submissionMethod === 'SELF' && (
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 animate-fade-in">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-black text-xs">
+                        <MapPin className="w-4 h-4" />
+                      </div>
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide">
+                        {isFrench ? 'Lieu & Modalités de Dépôt Physique de l\'Acheteur' : 'Buyer Drop-off Office & Submission Protocol'}
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-200 flex items-center gap-1.5 w-fit">
+                      <Clock className="w-3.5 h-3.5 text-amber-700" />
+                      <span>{isFrench ? 'Heure Limite Impérative :' : 'Strict Deadline:'} {new Date(tender.deadline).toLocaleDateString()} {new Date(tender.deadline).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-1">
+                      <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                        {isFrench ? 'Lieu de Dépôt / Autorité' : 'Drop-off Office / Authority'}
+                      </span>
+                      <p className="font-black text-slate-900">{tender.buyerName}</p>
+                      <p className="text-[11px] text-slate-500 font-medium">
+                        {isFrench ? 'Secrétariat Général / Service des Marchés' : 'Tender Secretariat / Procurement Division'} • {tender.buyerCountry}
+                      </p>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-1">
+                      <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                        {isFrench ? 'Conditionnement Requis' : 'Packaging Standard'}
+                      </span>
+                      <p className="font-black text-slate-900">
+                        {isFrench ? '1 Original + 3 Copies (Plis A, B, C)' : '1 Original + 3 Copies (Envelopes A, B, C)'}
+                      </p>
+                      <p className="text-[11px] text-emerald-700 font-bold">
+                        {isFrench ? 'À insérer dans 1 grande enveloppe extérieure scellée' : 'Place all inside 1 large outer sealed envelope'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 3 Steps */}
+                  <div className="space-y-2 pt-1">
+                    <h5 className="text-[11px] font-black text-slate-700 uppercase tracking-wider">
+                      {isFrench ? 'Comment Déposer Votre Dossier (3 Étapes) :' : 'Physical Drop-off Checklist (3 Steps):'}
+                    </h5>
+                    <div className="space-y-2 text-xs">
+                      <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-slate-200">
+                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                          1
+                        </span>
+                        <div>
+                          <strong className="text-slate-900">{isFrench ? 'Assembler les 3 Plis' : 'Assemble the 3 Envelopes'} :</strong>
+                          <p className="text-[11px] text-slate-600 font-medium mt-0.5">
+                            {isFrench
+                              ? 'Téléchargez le dossier (Étape 1). Répartissez les documents dans vos chemises ou enveloppes (A = Administratif, B = Technique, C = Financier).'
+                              : 'Download your dossier (Step 1). Place documents into 3 separate envelopes (A = Administrative, B = Technical, C = Financial).'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-slate-200">
+                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                          2
+                        </span>
+                        <div>
+                          <strong className="text-slate-900">{isFrench ? 'Coller l\'Étiquette Officielle Extérieure' : 'Affix Official Outer Label'} :</strong>
+                          <p className="text-[11px] text-slate-600 font-medium mt-0.5">
+                            {isFrench
+                              ? 'Insérez les 3 plis dans une grande enveloppe extérieure fermée et scellée. Cliquez sur "Imprimer les Étiquettes" et collez-la sur le devant.'
+                              : 'Insert the 3 envelopes inside 1 large outer envelope. Click "Print Envelope Labels" and glue it onto the front.'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-slate-200">
+                        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                          3
+                        </span>
+                        <div>
+                          <strong className="text-slate-900">{isFrench ? 'Déposer en Main Propre & Exiger la Décharge' : 'Hand-Deliver & Demand Stamped Receipt'} :</strong>
+                          <p className="text-[11px] text-slate-600 font-medium mt-0.5">
+                            {isFrench
+                              ? `Rendez-vous à l'adresse ci-dessus de ${tender.buyerName} avant l'heure limite. Déposez dans l'urne et exigez obligatoirement votre décharge ou récépissé tamponné.`
+                              : `Visit ${tender.buyerName} headquarters before the deadline. Deposit into the tender box and demand your official stamped receipt / slip.`}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Option B: Concierge Runner Service Details */}
+              {submissionMethod === 'CONCIERGE' && (
+                <div className="p-5 rounded-2xl bg-indigo-50/80 border border-indigo-200 space-y-3 animate-fade-in text-xs">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black text-xs">
+                      <Briefcase className="w-4 h-4" />
+                    </div>
+                    <h4 className="font-black text-indigo-950 uppercase tracking-wide">
+                      {isFrench ? 'Délégation Complète : Nous Effectuons le Dépôt Physique Pour Vous' : 'Full Delegation: We Handle the Physical Drop-off For You'}
+                    </h4>
+                  </div>
+                  <p className="text-indigo-900 font-medium leading-relaxed">
+                    {isFrench
+                      ? `Vous n'avez pas besoin de vous déplacer ! Notre agent de liaison accrédité à ${tender.buyerCountry || 'Yaoundé'} imprime vos 3 plis, appose l'étiquette réglementaire, se rend directement au siège de ${tender.buyerName}, et dépose votre offre avant l'heure limite.`
+                      : `You do not need to travel! Our verified liaison runner in ${tender.buyerCountry || 'Yaoundé'} will print your 3 envelopes, affix labels, physically visit ${tender.buyerName}, and deposit your bid before the deadline.`}
+                  </p>
+                  <div className="p-3 rounded-xl bg-white border border-indigo-200 flex items-center gap-2 font-bold text-indigo-900">
+                    <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
+                    <span>
+                      {isFrench
+                        ? 'Une photo de la décharge officielle tamponnée vous sera envoyée sur WhatsApp dès la remise effectuée.'
+                        : 'A photo of the buyer\'s official stamped receipt will be sent to your WhatsApp right after delivery.'}
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {/* Printable Envelope Preview */}
               <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 text-xs text-amber-950 space-y-2">
