@@ -22,6 +22,7 @@ import {
   Send,
   MapPin,
   Clock,
+  MessageSquare,
 } from 'lucide-react';
 
 interface Props {
@@ -57,6 +58,12 @@ export const SubmitBidModal: React.FC<Props> = ({
   const [conciergeRequested, setConciergeRequested] = useState(false);
   const [submissionMethod, setSubmissionMethod] = useState<'SELF' | 'CONCIERGE'>('SELF');
   const [contactPhone, setContactPhone] = useState('');
+
+  const whatsappUrl = `https://wa.me/237683616584?text=${encodeURIComponent(
+    isFrench
+      ? `Bonjour Bidora Dispatch,\n\nJe souhaite réserver le Service Coursier / Dépôt Assisté pour l'offre suivante :\n📋 Marché : ${tender.title}\n🔢 Réf : ${tender.refNumber}\n🏢 Acheteur : ${tender.buyerName}\n⏰ Date Limite : ${new Date(tender.deadline).toLocaleDateString()}\n🏢 Entreprise : ${companyName}\n\nMerci de me confirmer la prise en charge et les modalités de dépôt physique.`
+      : `Hello Bidora Dispatch,\n\nI want to book the Concierge Runner Service for the following tender:\n📋 Tender: ${tender.title}\n🔢 Ref: ${tender.refNumber}\n🏢 Buyer: ${tender.buyerName}\n⏰ Deadline: ${new Date(tender.deadline).toLocaleDateString()}\n🏢 Company: ${companyName}\n\nPlease confirm availability and physical filing procedure.`
+  )}`;
 
   if (!isOpen) return null;
 
@@ -560,6 +567,16 @@ SUBMISSION INSTRUCTIONS:
                           : (isFrench ? 'Choisir Coursier Assisté' : 'Choose Concierge Runner')}
                       </span>
                     </button>
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-2xs mt-2"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      <span>{isFrench ? 'Discuter sur WhatsApp' : 'Chat on WhatsApp'}</span>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -682,6 +699,19 @@ SUBMISSION INSTRUCTIONS:
                         : 'A photo of the buyer\'s official stamped receipt will be sent to your WhatsApp right after delivery.'}
                     </span>
                   </div>
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-emerald-600/20 hover:scale-[1.01]"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>
+                      {isFrench
+                        ? 'Contacter Notre Dispatch sur WhatsApp (+237 683 616 584)'
+                        : 'Contact Dispatch on WhatsApp (+237 683 616 584)'}
+                    </span>
+                  </a>
                 </div>
               )}
 
@@ -796,6 +826,30 @@ SUBMISSION INSTRUCTIONS:
                   </div>
                 )}
               </div>
+
+              {submissionMethod === 'CONCIERGE' && (
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <div className="space-y-0.5 text-center sm:text-left">
+                    <span className="font-black text-emerald-950 block">
+                      {isFrench ? 'Ligne WhatsApp Directe :' : 'Direct Dispatch WhatsApp Line:'} +237 683 616 584
+                    </span>
+                    <span className="text-[11px] text-emerald-800 font-medium block">
+                      {isFrench
+                        ? 'Cliquez pour envoyer directement les détails du dossier à notre coursier :'
+                        : 'Click to directly send tender details to our dispatch runner:'}
+                    </span>
+                  </div>
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center gap-1.5 shrink-0 transition-colors shadow-sm"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>{isFrench ? 'Ouvrir WhatsApp' : 'Open WhatsApp'}</span>
+                  </a>
+                </div>
+              )}
 
               {/* Certification Checkbox */}
               <label className="flex items-start space-x-3 cursor-pointer p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
