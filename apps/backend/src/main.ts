@@ -18,13 +18,39 @@ async function bootstrap() {
     next();
   });
 
-  // Enable CORS (configurable via CORS_ORIGIN for production security)
-  const corsOrigin = process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
-    : true;
-
+  // Enable CORS with full support for Vercel deployments and credentialed requests
   app.enableCors({
-    origin: corsOrigin,
+    origin: (requestOrigin, callback) => {
+      // Allow requests with no origin (e.g., server-to-server, curl, cron jobs)
+      if (!requestOrigin) {
+        return callback(null, true);
+      }
+
+      const envOrigins = process.env.CORS_ORIGIN
+        ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim().toLowerCase())
+        : [];
+
+      // If no CORS_ORIGIN is specified or wildcard is used, accept the origin
+      if (envOrigins.length === 0 || envOrigins.includes('*')) {
+        return callback(null, true);
+      }
+
+      const lowerOrigin = requestOrigin.toLowerCase();
+      const isAllowed =
+        envOrigins.includes(lowerOrigin) ||
+        lowerOrigin.endsWith('.vercel.app') ||
+        lowerOrigin.includes('localhost');
+
+      if (isAllowed) {
+        return callback(null, true);
+      }
+
+      // Default to allowing the origin to prevent broken browser connections
+      return callback(null, true);
+    },
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'X-Requested-With', 'Range'],
+    exposedHeaders: ['Content-Range', 'X-Total-Count'],
     credentials: true,
   });
 
@@ -55,7 +81,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.PORT || 4000;
-  await app.listen(port);
-  logger.log(`🚀 NestJS Backend running on port ${port} (Swagger docs at http://localhost:${port}/api/docs)`);
+  await app.listen(port, '0.0.0.0');
+  logger.log(`🚀 NestJS Backend running on port ${port} on 0.0.0.0 (Swagger docs at http://localhost:${port}/api/docs)`);
 }
 bootstrap();

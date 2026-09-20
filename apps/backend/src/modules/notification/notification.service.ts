@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AlertDispatcherService } from './alert-dispatcher.service';
 import { UpdateNotificationPreferenceDto, TestDispatchDto } from './dto/notification-preference.dto';
@@ -11,6 +11,9 @@ export class NotificationService {
   ) {}
 
   async getUserNotifications(userId: string) {
+    if (!userId) {
+      throw new UnauthorizedException('Authentication required');
+    }
     let notifs = await this.prisma.notification.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
@@ -91,6 +94,9 @@ export class NotificationService {
    * Retrieves or initializes multi-channel notification preferences for a user.
    */
   async getPreferences(userId: string) {
+    if (!userId) {
+      throw new UnauthorizedException('Authentication required');
+    }
     let pref = await this.prisma.notificationPreference.findUnique({
       where: { userId },
     });
@@ -119,6 +125,9 @@ export class NotificationService {
    * Updates multi-channel notification preferences.
    */
   async updatePreferences(userId: string, dto: UpdateNotificationPreferenceDto) {
+    if (!userId) {
+      throw new UnauthorizedException('Authentication required');
+    }
     return this.prisma.notificationPreference.upsert({
       where: { userId },
       create: {
@@ -151,6 +160,9 @@ export class NotificationService {
    * Triggers an immediate test alert dispatch across WhatsApp or Email.
    */
   async testDispatch(userId: string, dto: TestDispatchDto) {
+    if (!userId) {
+      throw new UnauthorizedException('Authentication required');
+    }
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: { notificationPreference: true, company: true },

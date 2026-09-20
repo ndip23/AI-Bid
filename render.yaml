@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: bidora-backend
+    runtime: node
+    rootDir: apps/backend
+    buildCommand: npm install && npm run build:prod
+    startCommand: npm run start
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: "*"

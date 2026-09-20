@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
+    "build:prod": "npx prisma generate && tsc",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "node dist/src/main.js",
     "dev": "node dist/src/main.js",
