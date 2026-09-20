@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Header } from '../../components/layout/Header';
 import { Sidebar } from '../../components/layout/Sidebar';
+import { Footer } from '../../components/layout/Footer';
 import { TenderCard } from '../../components/tenders/TenderCard';
 import { BidBondCalculatorModal } from '../../components/tenders/BidBondCalculatorModal';
 import { ApiClient } from '../../lib/api-client';
@@ -580,6 +581,8 @@ export default function TendersDiscoveryPage() {
           )}
         </main>
       </div>
+
+      <Footer />
 
       {/* Bid Bond Calculator Modal */}
       {calculatorTender && (

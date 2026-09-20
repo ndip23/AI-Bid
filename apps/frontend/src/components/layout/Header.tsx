@@ -24,7 +24,7 @@ import { useLanguage } from '../../lib/language-context';
 
 export const Header: React.FC = () => {
   const { user, company } = useAuth();
-  const { t } = useLanguage();
+  const { t, isFrench } = useLanguage();
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -105,10 +105,10 @@ export const Header: React.FC = () => {
       const diffHours = Math.floor(diffMins / 60);
       const diffDays = Math.floor(diffHours / 24);
 
-      if (diffSecs < 60) return 'Just now';
-      if (diffMins < 60) return `${diffMins}m ago`;
-      if (diffHours < 24) return `${diffHours}h ago`;
-      return `${diffDays}d ago`;
+      if (diffSecs < 60) return isFrench ? 'À l\'instant' : 'Just now';
+      if (diffMins < 60) return isFrench ? `il y a ${diffMins}m` : `${diffMins}m ago`;
+      if (diffHours < 24) return isFrench ? `il y a ${diffHours}h` : `${diffHours}h ago`;
+      return isFrench ? `il y a ${diffDays}j` : `${diffDays}d ago`;
     } catch {
       return '';
     }
@@ -214,8 +214,8 @@ export const Header: React.FC = () => {
                       </div>
                       <p className="text-xs text-slate-500 font-medium">
                         {filter === 'unread'
-                          ? 'You have caught up on all alerts!'
-                          : 'No notifications at this time.'}
+                          ? (isFrench ? 'Toutes vos alertes sont à jour !' : 'You have caught up on all alerts!')
+                          : (isFrench ? 'Aucune notification pour le moment.' : 'No notifications at this time.')}
                       </p>
                     </div>
                   ) : (
@@ -278,7 +278,7 @@ export const Header: React.FC = () => {
 
                             <div className="flex items-center justify-between pt-1">
                               <span className="text-[10px] font-extrabold text-emerald-600 flex items-center gap-0.5 group-hover:underline">
-                                <span>Take Action</span>
+                                <span>{isFrench ? 'Voir l\'offre' : 'Take Action'}</span>
                                 <ChevronRight className="w-3 h-3" />
                               </span>
 
@@ -286,9 +286,9 @@ export const Header: React.FC = () => {
                                 <button
                                   onClick={(e) => handleMarkSingleRead(n.id, e)}
                                   className="text-[10px] text-slate-400 hover:text-slate-700 font-bold px-1.5 py-0.5 rounded-md hover:bg-slate-200/60 transition-colors"
-                                  title="Mark read"
+                                  title={isFrench ? 'Marquer lu' : 'Mark read'}
                                 >
-                                  Mark read
+                                  {isFrench ? 'Marquer lu' : 'Mark read'}
                                 </button>
                               )}
                             </div>
@@ -306,14 +306,14 @@ export const Header: React.FC = () => {
                     onClick={() => setShowNotifications(false)}
                     className="hover:text-emerald-700 transition-colors"
                   >
-                    Capability Profile →
+                    {isFrench ? 'Profil Entreprise →' : 'Capability Profile →'}
                   </Link>
                   <Link
                     href="/saved"
                     onClick={() => setShowNotifications(false)}
                     className="hover:text-emerald-700 transition-colors"
                   >
-                    Saved Pipeline →
+                    {isFrench ? 'Pipeline Sauvegardé →' : 'Saved Pipeline →'}
                   </Link>
                 </div>
               </div>

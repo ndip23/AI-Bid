@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from '../../components/layout/Header';
 import { Sidebar } from '../../components/layout/Sidebar';
+import { Footer } from '../../components/layout/Footer';
 import { useAuth } from '../../lib/auth-context';
 import { useToast } from '../../lib/toast-context';
 import { useLanguage } from '../../lib/language-context';
@@ -689,6 +690,8 @@ export default function UserProfilePage() {
           </div>
         </main>
       </div>
+
+      <Footer />
     </div>
   );
 }

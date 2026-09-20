@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Header } from '../../components/layout/Header';
 import { Sidebar } from '../../components/layout/Sidebar';
+import { Footer } from '../../components/layout/Footer';
 import { useAuth } from '../../lib/auth-context';
 import { useLanguage } from '../../lib/language-context';
 import { ApiClient } from '../../lib/api-client';
@@ -514,6 +515,8 @@ export default function CompanyCapabilityPage() {
           </form>
         </main>
       </div>
+
+      <Footer />
     </div>
   );
 }

@@ -17,12 +17,14 @@ import {
   User,
   HelpCircle,
 } from 'lucide-react';
+import { useLanguage } from '../../lib/language-context';
 
 interface Props {
   tender: Tender;
 }
 
 export const TenderSpecificationView: React.FC<Props> = ({ tender }) => {
+  const { isFrench } = useLanguage();
   const [showRawJson, setShowRawJson] = useState(false);
 
   // Try parsing raw content as JSON (World Bank or structured procurement data)
@@ -87,13 +89,15 @@ export const TenderSpecificationView: React.FC<Props> = ({ tender }) => {
           <div>
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold border border-emerald-200 mb-2">
               <FileText className="w-3.5 h-3.5" />
-              <span>Official Procurement Specifications</span>
+              <span>{isFrench ? 'Spécifications Officielles du Marché' : 'Official Procurement Specifications'}</span>
             </div>
             <h2 className="text-xl md:text-2xl font-black text-slate-900 leading-tight">
               {projectName}
             </h2>
             <p className="text-xs text-slate-500 font-medium mt-1">
-              Project Identifier: <strong className="text-slate-800 font-mono">{projectId}</strong> • Financed by World Bank & Regional Authorities
+              {isFrench ? 'Identifiant du Projet :' : 'Project Identifier:'}{' '}
+              <strong className="text-slate-800 font-mono">{projectId}</strong> •{' '}
+              {isFrench ? 'Financé par la Banque Mondiale & Autorités Publiques' : 'Financed by World Bank & Regional Authorities'}
             </p>
           </div>
 
@@ -105,17 +109,17 @@ export const TenderSpecificationView: React.FC<Props> = ({ tender }) => {
                 rel="noreferrer"
                 className="px-4 py-2.5 rounded-xl gradient-bg text-white font-bold text-xs shadow-sm hover:opacity-95 transition-all flex items-center gap-1.5"
               >
-                <span>Official Project Portal</span>
+                <span>{isFrench ? 'Portail Officiel du Projet' : 'Official Project Portal'}</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
             <button
               onClick={() => setShowRawJson(!showRawJson)}
               className="px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
-              title="Inspect Raw System JSON"
+              title={isFrench ? 'Inspecter les Données Brutes JSON' : 'Inspect Raw System JSON'}
             >
               <Code2 className="w-3.5 h-3.5 text-slate-500" />
-              <span>{showRawJson ? 'Hide JSON' : 'View Code'}</span>
+              <span>{showRawJson ? (isFrench ? 'Masquer le JSON' : 'Hide JSON') : (isFrench ? 'Voir le Code' : 'View Code')}</span>
             </button>
           </div>
         </div>
@@ -124,35 +128,53 @@ export const TenderSpecificationView: React.FC<Props> = ({ tender }) => {
         <div>
           <h3 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <DollarSign className="w-4 h-4 text-emerald-600" />
-            Financing Structure & Commitments
+            <span>{isFrench ? 'Structure de Financement & Engagements' : 'Financing Structure & Commitments'}</span>
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1">
-              <span className="text-[11px] font-bold text-emerald-800 block">Total Program Budget</span>
+              <span className="text-[11px] font-bold text-emerald-800 block">
+                {isFrench ? 'Budget Global du Projet' : 'Total Program Budget'}
+              </span>
               <div className="text-xl font-black text-emerald-950">{totalCommitment}</div>
-              <p className="text-[10px] text-emerald-700 font-medium">Verified contract budget envelope</p>
+              <p className="text-[10px] text-emerald-700 font-medium">
+                {isFrench ? 'Enveloppe contractuelle vérifiée' : 'Verified contract budget envelope'}
+              </p>
             </div>
 
             {idaCommitment && (
               <div className="p-4 rounded-2xl bg-sky-50/70 border border-sky-200/80 space-y-1">
-                <span className="text-[11px] font-bold text-sky-800 block">IDA Concessional Funding</span>
+                <span className="text-[11px] font-bold text-sky-800 block">
+                  {isFrench ? 'Financement Concessionnel IDA' : 'IDA Concessional Funding'}
+                </span>
                 <div className="text-xl font-black text-sky-950">{idaCommitment}</div>
-                <p className="text-[10px] text-sky-700 font-medium">International Development Association</p>
+                <p className="text-[10px] text-sky-700 font-medium">
+                  {isFrench ? 'Association Internationale de Développement' : 'International Development Association'}
+                </p>
               </div>
             )}
 
             {ibrdCommitment && (
               <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 space-y-1">
-                <span className="text-[11px] font-bold text-blue-800 block">IBRD Allocation</span>
+                <span className="text-[11px] font-bold text-blue-800 block">
+                  {isFrench ? 'Allocation BIRD' : 'IBRD Allocation'}
+                </span>
                 <div className="text-xl font-black text-blue-950">{ibrdCommitment}</div>
-                <p className="text-[10px] text-blue-700 font-medium">World Bank Reconstruction Bank</p>
+                <p className="text-[10px] text-blue-700 font-medium">
+                  {isFrench ? 'Banque Mondiale pour la Reconstruction' : 'World Bank Reconstruction Bank'}
+                </p>
               </div>
             )}
 
             <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1">
-              <span className="text-[11px] font-bold text-amber-800 block">Environmental Risk Rating</span>
-              <div className="text-xl font-black text-amber-950">Category {envCategory}</div>
-              <p className="text-[10px] text-amber-700 font-medium">ESCP Compliance Required</p>
+              <span className="text-[11px] font-bold text-amber-800 block">
+                {isFrench ? 'Évaluation Risques Environnementaux' : 'Environmental Risk Rating'}
+              </span>
+              <div className="text-xl font-black text-amber-950">
+                {isFrench ? 'Catégorie' : 'Category'} {envCategory}
+              </div>
+              <p className="text-[10px] text-amber-700 font-medium">
+                {isFrench ? 'Conformité PCES Requise' : 'ESCP Compliance Required'}
+              </p>
             </div>
           </div>
         </div>
@@ -163,26 +185,26 @@ export const TenderSpecificationView: React.FC<Props> = ({ tender }) => {
           <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
               <Building2 className="w-4 h-4 text-emerald-600" />
-              Contracting Authority & Execution Agency
+              <span>{isFrench ? 'Autorité Contractante & Agence d\'Exécution' : 'Contracting Authority & Execution Agency'}</span>
             </h4>
             <div className="space-y-2 text-xs">
               <div className="flex justify-between py-1 border-b border-slate-200/60">
-                <span className="text-slate-500 font-medium">Borrower / Country:</span>
+                <span className="text-slate-500 font-medium">{isFrench ? 'Emprunteur / Pays :' : 'Borrower / Country:'}</span>
                 <span className="font-extrabold text-slate-900">{borrower}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-200/60">
-                <span className="text-slate-500 font-medium">Executing Agency:</span>
+                <span className="text-slate-500 font-medium">{isFrench ? 'Organisme d\'Exécution :' : 'Executing Agency:'}</span>
                 <span className="font-extrabold text-slate-900 text-right max-w-[240px]">{agency}</span>
               </div>
               {teamLead && (
                 <div className="flex justify-between py-1 border-b border-slate-200/60">
-                  <span className="text-slate-500 font-medium">Task Team Leader:</span>
+                  <span className="text-slate-500 font-medium">{isFrench ? 'Chef d\'Équipe de Projet :' : 'Task Team Leader:'}</span>
                   <span className="font-bold text-slate-800">{teamLead}</span>
                 </div>
               )}
               {lendingInstr && (
                 <div className="flex justify-between py-1">
-                  <span className="text-slate-500 font-medium">Procurement Instrument:</span>
+                  <span className="text-slate-500 font-medium">{isFrench ? 'Instrument de Passation :' : 'Procurement Instrument:'}</span>
                   <span className="font-bold text-slate-800">{lendingInstr}</span>
                 </div>
               )}
@@ -193,25 +215,25 @@ export const TenderSpecificationView: React.FC<Props> = ({ tender }) => {
           <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
               <Calendar className="w-4 h-4 text-sky-600" />
-              Procurement Windows & Key Dates
+              <span>{isFrench ? 'Calendrier & Dates Clés de Passation' : 'Procurement Windows & Key Dates'}</span>
             </h4>
             <div className="space-y-2 text-xs">
               {approvalDate && (
                 <div className="flex justify-between py-1 border-b border-slate-200/60">
-                  <span className="text-slate-500 font-medium">Board Approval Date:</span>
+                  <span className="text-slate-500 font-medium">{isFrench ? 'Date d\'Approbation du Conseil :' : 'Board Approval Date:'}</span>
                   <span className="font-extrabold text-slate-900">{approvalDate}</span>
                 </div>
               )}
               <div className="flex justify-between py-1 border-b border-slate-200/60">
-                <span className="text-slate-500 font-medium">Tender Submission Cutoff:</span>
+                <span className="text-slate-500 font-medium">{isFrench ? 'Date Limite de Soumission :' : 'Tender Submission Cutoff:'}</span>
                 <span className="font-extrabold text-rose-600 font-mono">{closingDate}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-200/60">
-                <span className="text-slate-500 font-medium">Operational Geography:</span>
+                <span className="text-slate-500 font-medium">{isFrench ? 'Zone Géographique :' : 'Operational Geography:'}</span>
                 <span className="font-bold text-slate-800">{tender.buyerCountry}</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-slate-500 font-medium">Procurement Status:</span>
+                <span className="text-slate-500 font-medium">{isFrench ? 'Statut du Marché :' : 'Procurement Status:'}</span>
                 <span className="font-extrabold text-emerald-600 uppercase">{tender.status}</span>
               </div>
             </div>
@@ -223,7 +245,7 @@ export const TenderSpecificationView: React.FC<Props> = ({ tender }) => {
           <div className="space-y-3 pt-2">
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
               <PieChart className="w-4 h-4 text-indigo-600" />
-              Sector Allocation & Weighting
+              <span>{isFrench ? 'Répartition Sectorielle & Pondération' : 'Sector Allocation & Weighting'}</span>
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {sectors.map((sec, idx) => (
@@ -248,7 +270,7 @@ export const TenderSpecificationView: React.FC<Props> = ({ tender }) => {
         {themes.length > 0 && (
           <div className="space-y-2 pt-2">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-              Core Strategic Pillars & Themes
+              {isFrench ? 'Piliers Stratégiques & Domaines Clés' : 'Core Strategic Pillars & Themes'}
             </span>
             <div className="flex flex-wrap gap-2">
               {themes.map((theme, i) => (
@@ -257,7 +279,7 @@ export const TenderSpecificationView: React.FC<Props> = ({ tender }) => {
                   className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-800 text-xs font-semibold border border-slate-200 flex items-center gap-1.5"
                 >
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  {theme}
+                  <span>{theme}</span>
                 </span>
               ))}
             </div>
@@ -268,7 +290,7 @@ export const TenderSpecificationView: React.FC<Props> = ({ tender }) => {
         {tender.description && (
           <div className="space-y-2 pt-2 border-t border-slate-100">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-              Scope of Work & Objectives
+              {isFrench ? 'Étendue des Travaux & Objectifs' : 'Scope of Work & Objectives'}
             </span>
             <p className="text-xs md:text-sm text-slate-700 leading-relaxed font-normal bg-slate-50 p-4 rounded-xl border border-slate-200">
               {tender.description}
@@ -276,11 +298,10 @@ export const TenderSpecificationView: React.FC<Props> = ({ tender }) => {
           </div>
         )}
 
-        {/* Raw JSON Developer Toggle Drawer */}
         {showRawJson && (
           <div className="space-y-2 pt-4 border-t border-slate-200 animate-in fade-in">
             <div className="flex items-center justify-between text-xs text-slate-500 font-bold">
-              <span>Raw JSON Specifications Output</span>
+              <span>{isFrench ? 'Données Brutes du Cahier des Charges (JSON)' : 'Raw JSON Specifications Output'}</span>
               <span className="font-mono text-[11px]">{tender.rawContent?.length || 0} bytes</span>
             </div>
             <pre className="p-4 rounded-xl bg-slate-900 text-emerald-400 text-xs font-mono whitespace-pre-wrap leading-relaxed max-h-96 overflow-y-auto">

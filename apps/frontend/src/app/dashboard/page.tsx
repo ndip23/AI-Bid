@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Header } from '../../components/layout/Header';
 import { Sidebar } from '../../components/layout/Sidebar';
+import { Footer } from '../../components/layout/Footer';
 import { TenderCard } from '../../components/tenders/TenderCard';
 import { useAuth } from '../../lib/auth-context';
 import { useLanguage } from '../../lib/language-context';
@@ -513,6 +514,7 @@ export default function DashboardPage() {
           )}
         </main>
       </div>
+      <Footer />
     </div>
   );
 }

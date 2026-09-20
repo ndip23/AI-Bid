@@ -3,19 +3,26 @@
 import React from 'react';
 import { AiSummary, ExtractedRequirement, ExtractedRisk } from '../../types';
 import { Sparkles, Calendar, AlertTriangle, FileText, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { useLanguage } from '../../lib/language-context';
 
 interface Props {
   summary?: AiSummary | null;
 }
 
 export const AISummaryView: React.FC<Props> = ({ summary }) => {
+  const { isFrench } = useLanguage();
+
   if (!summary) {
     return (
       <div className="glass-panel rounded-2xl p-8 text-center space-y-3 bg-white border border-slate-200">
         <Sparkles className="w-8 h-8 text-emerald-600 mx-auto animate-pulse" />
-        <h4 className="text-slate-900 font-extrabold text-base">Generating AI Executive Summary</h4>
+        <h4 className="text-slate-900 font-extrabold text-base">
+          {isFrench ? 'Génération de la Synthèse Exécutive IA...' : 'Generating AI Executive Summary'}
+        </h4>
         <p className="text-slate-500 text-xs max-w-md mx-auto font-medium">
-          Bidora is parsing specifications, extracting requirements, and evaluating risk factors...
+          {isFrench
+            ? 'Bidora analyse le cahier des charges, extrait les exigences et évalue les facteurs de risque...'
+            : 'Bidora is parsing specifications, extracting requirements, and evaluating risk factors...'}
         </p>
       </div>
     );
@@ -114,11 +121,11 @@ export const AISummaryView: React.FC<Props> = ({ summary }) => {
       <div className="glass-panel rounded-2xl p-6 relative overflow-hidden bg-white border border-slate-200 shadow-sm">
         <div className="flex items-center space-x-2 text-emerald-800 font-extrabold text-sm mb-3">
           <Sparkles className="w-4 h-4 text-emerald-600" />
-          <span>AI Executive Summary</span>
+          <span>{isFrench ? 'Synthèse Exécutive IA' : 'AI Executive Summary'}</span>
         </div>
 
         <p className="text-slate-800 text-sm leading-relaxed font-medium bg-slate-50 border border-slate-200 p-4 rounded-xl">
-          {summary.executiveSummary || 'No executive summary available for this tender notice.'}
+          {summary.executiveSummary || (isFrench ? 'Aucun résumé disponible pour cet appel d\'offres.' : 'No executive summary available for this tender notice.')}
         </p>
       </div>
 
@@ -128,7 +135,7 @@ export const AISummaryView: React.FC<Props> = ({ summary }) => {
         <div className="glass-panel rounded-2xl p-6 space-y-4 bg-white border border-slate-200 shadow-sm">
           <h4 className="text-slate-900 font-extrabold text-sm flex items-center gap-2">
             <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600" />
-            Mandatory Requirements ({reqs.length})
+            <span>{isFrench ? 'Exigences Obligatoires' : 'Mandatory Requirements'} ({reqs.length})</span>
           </h4>
           <div className="space-y-2.5">
             {reqs.map((req, idx) => (
@@ -138,7 +145,7 @@ export const AISummaryView: React.FC<Props> = ({ summary }) => {
               >
                 <div className="space-y-1">
                   <span className="inline-block text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-slate-200 text-slate-700 border border-slate-300">
-                    {req.category || 'Requirement'}
+                    {req.category || (isFrench ? 'Exigence' : 'Requirement')}
                   </span>
                   <p className="text-slate-800 font-semibold leading-normal">{req.description}</p>
                 </div>
@@ -149,7 +156,9 @@ export const AISummaryView: React.FC<Props> = ({ summary }) => {
                       : 'bg-slate-200 text-slate-600'
                   }`}
                 >
-                  {req.isMandatory !== false ? 'Mandatory' : 'Optional'}
+                  {isFrench
+                    ? (req.isMandatory !== false ? 'Obligatoire' : 'Optionnel')
+                    : (req.isMandatory !== false ? 'Mandatory' : 'Optional')}
                 </span>
               </div>
             ))}
@@ -160,23 +169,23 @@ export const AISummaryView: React.FC<Props> = ({ summary }) => {
         <div className="glass-panel rounded-2xl p-6 space-y-4 bg-white border border-slate-200 shadow-sm">
           <h4 className="text-slate-900 font-extrabold text-sm flex items-center gap-2">
             <FileText className="w-4.5 h-4.5 text-emerald-600" />
-            Deliverables & Timeline ({delivs.length})
+            <span>{isFrench ? 'Livrables & Calendrier' : 'Deliverables & Timeline'} ({delivs.length})</span>
           </h4>
 
           {/* Deadline Summary Box */}
           <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs space-y-1">
             <div className="flex items-center space-x-1.5 text-emerald-800 font-bold">
               <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Key Schedule & Cutoffs</span>
+              <span>{isFrench ? 'Calendrier Clé & Délais' : 'Key Schedule & Cutoffs'}</span>
             </div>
             <p className="text-slate-700 font-medium leading-relaxed">
-              {summary.deadlineSummary || 'Standard submission window applies.'}
+              {summary.deadlineSummary || (isFrench ? 'Fenêtre standard de soumission applicable.' : 'Standard submission window applies.')}
             </p>
           </div>
 
           <div className="space-y-2">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-              Core Scope Items
+              {isFrench ? 'Périmètre & Éléments Clés' : 'Core Scope Items'}
             </span>
             {delivs.map((item, i) => (
               <div
@@ -195,7 +204,7 @@ export const AISummaryView: React.FC<Props> = ({ summary }) => {
       <div className="glass-panel rounded-2xl p-6 space-y-4 bg-white border border-slate-200 shadow-sm">
         <h4 className="text-slate-900 font-extrabold text-sm flex items-center gap-2">
           <ShieldAlert className="w-4.5 h-4.5 text-rose-600" />
-          AI Risk Assessment Matrix ({riskList.length})
+          <span>{isFrench ? 'Matrice d\'Évaluation des Risques IA' : 'AI Risk Assessment Matrix'} ({riskList.length})</span>
         </h4>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -220,12 +229,12 @@ export const AISummaryView: React.FC<Props> = ({ summary }) => {
                       isHigh ? 'bg-rose-600 text-white' : 'bg-amber-600 text-white'
                     }`}
                   >
-                    {r.severity || 'MEDIUM'}
+                    {r.severity || (isFrench ? 'MOYEN' : 'MEDIUM')}
                   </span>
                 </div>
                 <div className="text-slate-700 pt-1 border-t border-slate-200/80 font-medium">
-                  <span className="font-bold text-slate-900">Mitigation: </span>
-                  {r.mitigation || 'Standard technical oversight'}
+                  <span className="font-bold text-slate-900">{isFrench ? 'Atténuation : ' : 'Mitigation: '}</span>
+                  {r.mitigation || (isFrench ? 'Supervision technique rigoureuse' : 'Standard technical oversight')}
                 </div>
               </div>
             );

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../components/layout/Header';
 import { Sidebar } from '../../components/layout/Sidebar';
+import { Footer } from '../../components/layout/Footer';
 import { ApiClient } from '../../lib/api-client';
 import { useToast } from '../../lib/toast-context';
 import { useLanguage } from '../../lib/language-context';
@@ -79,14 +80,14 @@ export default function SavedPipelinePage() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="glass-panel h-64 rounded-2xl animate-pulse bg-white border border-slate-200" />
               <div className="glass-panel h-64 rounded-2xl animate-pulse bg-white border border-slate-200" />
               <div className="glass-panel h-64 rounded-2xl animate-pulse bg-white border border-slate-200" />
               <div className="glass-panel h-64 rounded-2xl animate-pulse bg-white border border-slate-200" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {columns.map((col) => {
                 const itemsInCol = savedItems.filter((item) => item.status === col.status);
                 return (
@@ -181,6 +182,8 @@ export default function SavedPipelinePage() {
           )}
         </main>
       </div>
+
+      <Footer />
     </div>
   );
 }

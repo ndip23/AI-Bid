@@ -204,7 +204,7 @@ export default function TenderDetailPage() {
             className="inline-flex items-center space-x-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Discovery</span>
+            <span>{isFrench ? '← Retour aux Appels d\'Offres' : 'Back to Discovery'}</span>
           </Link>
 
           {/* Tender Header Banner */}
@@ -256,7 +256,9 @@ export default function TenderDetailPage() {
                 <h1 className="text-xl md:text-3xl font-extrabold text-slate-900 leading-snug">
                   {tender.title}
                 </h1>
-                <p className="text-xs font-bold text-emerald-600">Buyer: {tender.buyerName}</p>
+                <p className="text-xs font-bold text-emerald-600">
+                  {isFrench ? 'Acheteur :' : 'Buyer:'} {tender.buyerName}
+                </p>
               </div>
 
               {/* Action Bar & Score Pill */}
@@ -264,7 +266,9 @@ export default function TenderDetailPage() {
                 {tender.matchScore !== undefined && (
                   <div className="p-3 sm:p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center shadow-sm shrink-0">
                     <div className="text-xl sm:text-2xl font-black text-slate-900">{tender.matchScore}%</div>
-                    <div className="text-[10px] uppercase font-extrabold text-emerald-600">Match Score</div>
+                    <div className="text-[10px] uppercase font-extrabold text-emerald-600">
+                      {isFrench ? 'Score IA' : 'Match Score'}
+                    </div>
                   </div>
                 )}
 
@@ -288,7 +292,7 @@ export default function TenderDetailPage() {
                   className="px-4 py-3 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-800 font-extrabold text-xs border border-sky-200 shadow-xs flex items-center justify-center space-x-2 transition-colors w-full sm:w-auto"
                 >
                   <FolderArchive className="w-4 h-4 text-sky-600" />
-                  <span>Documents & Dossier (12)</span>
+                  <span>{isFrench ? 'Documents & Dossier (12)' : 'Documents & Dossier (12)'}</span>
                 </button>
 
                 <div className="relative w-full sm:w-auto">
@@ -297,7 +301,7 @@ export default function TenderDetailPage() {
                     className="w-full sm:w-auto px-5 py-3 rounded-2xl gradient-bg text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center space-x-2 hover:opacity-95 transition-opacity"
                   >
                     <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-white' : ''}`} />
-                    <span>{isSaved ? savedStatus.replace('_', ' ') : 'Save Tender'}</span>
+                    <span>{isSaved ? savedStatus.replace('_', ' ') : (isFrench ? 'Enregistrer' : 'Save Tender')}</span>
                   </button>
 
                   {showStatusMenu && (
@@ -321,25 +325,33 @@ export default function TenderDetailPage() {
             {/* Quick Meta Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-slate-100 text-xs">
               <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">Est. Value</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                  {isFrench ? 'Valeur Estimée' : 'Est. Value'}
+                </span>
                 <span className="text-sm font-extrabold text-slate-900">
                   {formatCurrency(tender.estimatedValue, tender.currency)}
                 </span>
               </div>
               <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">Closing Deadline</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                  {isFrench ? 'Date Limite' : 'Closing Deadline'}
+                </span>
                 <span className="text-sm font-extrabold text-sky-700">
-                  {new Date(tender.deadline).toLocaleDateString()}
+                  {new Date(tender.deadline).toLocaleDateString(isFrench ? 'fr-FR' : 'en-US')}
                 </span>
               </div>
               <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">Status</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                  {isFrench ? 'Statut' : 'Status'}
+                </span>
                 <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
                   {tender.status}
                 </span>
               </div>
               <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">Source Portal</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                  {isFrench ? 'Portail Source' : 'Source Portal'}
+                </span>
                 {tender.sourceUrl ? (
                   <a
                     href={tender.sourceUrl}
@@ -347,10 +359,12 @@ export default function TenderDetailPage() {
                     rel="noreferrer"
                     className="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1"
                   >
-                    <span>View Official Specs</span> <ExternalLink className="w-3 h-3" />
+                    <span>{isFrench ? 'Consulter le Dossier' : 'View Official Specs'}</span> <ExternalLink className="w-3 h-3" />
                   </a>
                 ) : (
-                  <span className="text-xs font-semibold text-slate-500">Verified Direct</span>
+                  <span className="text-xs font-semibold text-slate-500">
+                    {isFrench ? 'Vérifié Direct' : 'Verified Direct'}
+                  </span>
                 )}
               </div>
             </div>
@@ -382,7 +396,7 @@ export default function TenderDetailPage() {
               }`}
             >
               <Sparkles className="w-4 h-4" />
-              AI Executive Summary
+              <span>{isFrench ? 'Synthèse Exécutive IA' : 'AI Executive Summary'}</span>
             </button>
 
             <button
@@ -394,7 +408,7 @@ export default function TenderDetailPage() {
               }`}
             >
               <FileText className="w-4 h-4 text-sky-600" />
-              <span>Project Documents & Submission Dossier</span>
+              <span>{isFrench ? 'Documents & Dossier de Soumission' : 'Project Documents & Submission Dossier'}</span>
               <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 text-[10px] font-extrabold border border-sky-200">
                 12 Docs
               </span>
@@ -409,7 +423,7 @@ export default function TenderDetailPage() {
               }`}
             >
               <Layers className="w-4 h-4 text-emerald-600" />
-              <span>Full Specifications & Blueprint</span>
+              <span>{isFrench ? 'Cahier des Charges & Spécifications' : 'Full Specifications & Blueprint'}</span>
             </button>
 
             <button
@@ -421,7 +435,7 @@ export default function TenderDetailPage() {
               }`}
             >
               <Award className="w-4 h-4" />
-              Company Match Score
+              <span>{isFrench ? 'Score de Correspondance' : 'Company Match Score'}</span>
             </button>
 
             <button
@@ -433,7 +447,7 @@ export default function TenderDetailPage() {
               }`}
             >
               <ShieldCheck className="w-4 h-4" />
-              Eligibility Checklist
+              <span>{isFrench ? 'Critères d\'Éligibilité' : 'Eligibility Checklist'}</span>
             </button>
 
             <button
@@ -445,9 +459,9 @@ export default function TenderDetailPage() {
               }`}
             >
               <Kanban className="w-4 h-4 text-indigo-600" />
-              <span>Bid Workspace (Jira for Bids)</span>
+              <span>{isFrench ? 'Espace Collaboratif Équipe' : 'Bid Workspace (Team Tasks)'}</span>
               <span className="px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold border border-indigo-200">
-                Team
+                {isFrench ? 'Équipe' : 'Team'}
               </span>
             </button>
           </div>
@@ -470,10 +484,12 @@ export default function TenderDetailPage() {
                   <div>
                     <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                       <Kanban className="w-5 h-5 text-indigo-600" />
-                      Collaborative Proposal Task Board
+                      {isFrench ? 'Tableau Collaboratif de Soumission' : 'Collaborative Proposal Task Board'}
                     </h3>
                     <p className="text-xs text-slate-500 font-medium mt-0.5">
-                      Assign tasks to Legal, Engineering, Finance, and CEO for this bid. Track progress to submission.
+                      {isFrench
+                        ? 'Assignez les tâches au Juridique, Technique, Finance et Direction pour ce dossier.'
+                        : 'Assign tasks to Legal, Engineering, Finance, and CEO for this bid. Track progress to submission.'}
                     </p>
                   </div>
 
@@ -482,7 +498,7 @@ export default function TenderDetailPage() {
                     className="px-4 py-2.5 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold hover:bg-indigo-100 transition-colors flex items-center gap-2 shrink-0 shadow-xs"
                   >
                     <FileCheck2 className="w-4 h-4 text-indigo-600" />
-                    <span>Auto-Reuse from Company Vault</span>
+                    <span>{isFrench ? 'Réutiliser les Documents Entreprise' : 'Auto-Reuse from Company Vault'}</span>
                   </button>
                 </div>
 
@@ -493,7 +509,11 @@ export default function TenderDetailPage() {
                     required
                     value={newTaskTitle}
                     onChange={(e) => setNewTaskTitle(e.target.value)}
-                    placeholder="Assign new proposal task (e.g. Prepare Tax Clearance Certificate)..."
+                    placeholder={
+                      isFrench
+                        ? 'Attribuer une tâche (ex: Préparer le quitus fiscal, finaliser l\'offre technique)...'
+                        : 'Assign new proposal task (e.g. Prepare Tax Clearance Certificate)...'
+                    }
                     className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-emerald-600 font-medium shadow-sm"
                   />
                   <select
@@ -501,16 +521,16 @@ export default function TenderDetailPage() {
                     onChange={(e) => setNewTaskAssignee(e.target.value)}
                     className="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-700 font-bold focus:outline-none focus:border-emerald-600 shadow-sm"
                   >
-                    <option value="Lead Engineer">Lead Engineer</option>
-                    <option value="Lawyer / Legal">Lawyer / Legal</option>
-                    <option value="Accountant">Accountant</option>
-                    <option value="Procurement VP / CEO">Procurement VP / CEO</option>
+                    <option value="Lead Engineer">{isFrench ? 'Ingénieur en Chef' : 'Lead Engineer'}</option>
+                    <option value="Lawyer / Legal">{isFrench ? 'Juriste / Avocat' : 'Lawyer / Legal'}</option>
+                    <option value="Accountant">{isFrench ? 'Comptable / DAF' : 'Accountant'}</option>
+                    <option value="Procurement VP / CEO">{isFrench ? 'Directeur Général' : 'Procurement VP / CEO'}</option>
                   </select>
                   <button
                     type="submit"
                     className="px-4 py-2 rounded-xl gradient-bg text-white font-extrabold text-xs shadow-sm hover:opacity-95 flex items-center gap-1 shrink-0 justify-center"
                   >
-                    <Plus className="w-4 h-4" /> Add Task
+                    <Plus className="w-4 h-4" /> {isFrench ? 'Ajouter' : 'Add Task'}
                   </button>
                 </form>
 
@@ -519,7 +539,7 @@ export default function TenderDetailPage() {
                   {/* TODO */}
                   <div className="glass-panel rounded-2xl p-4 bg-slate-50/80 border border-slate-200/80 space-y-3">
                     <div className="flex items-center justify-between font-extrabold text-xs text-slate-700 border-b border-slate-200 pb-2">
-                      <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-amber-600" /> To Do</span>
+                      <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-amber-600" /> {isFrench ? 'À Faire' : 'To Do'}</span>
                       <span className="px-2 py-0.5 rounded-full bg-slate-200 text-slate-800 text-[10px]">
                         {tasks.filter((t) => t.status === 'TODO').length}
                       </span>
@@ -539,7 +559,7 @@ export default function TenderDetailPage() {
                                 onClick={() => toggleTaskStatus(t.id)}
                                 className="text-xs font-bold text-emerald-600 hover:underline"
                               >
-                                Start →
+                                {isFrench ? 'Démarrer →' : 'Start →'}
                               </button>
                             </div>
                           </div>
@@ -550,7 +570,7 @@ export default function TenderDetailPage() {
                   {/* IN PROGRESS */}
                   <div className="glass-panel rounded-2xl p-4 bg-emerald-50/40 border border-emerald-200/80 space-y-3">
                     <div className="flex items-center justify-between font-extrabold text-xs text-emerald-800 border-b border-emerald-200 pb-2">
-                      <span className="flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" /> In Progress</span>
+                      <span className="flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" /> {isFrench ? 'En Cours' : 'In Progress'}</span>
                       <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px]">
                         {tasks.filter((t) => t.status === 'IN_PROGRESS').length}
                       </span>
@@ -570,7 +590,7 @@ export default function TenderDetailPage() {
                                 onClick={() => toggleTaskStatus(t.id)}
                                 className="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1"
                               >
-                                <span>Complete</span>
+                                <span>{isFrench ? 'Terminer' : 'Complete'}</span>
                                 <Check className="w-3 h-3" />
                               </button>
                             </div>
@@ -582,7 +602,7 @@ export default function TenderDetailPage() {
                   {/* DONE */}
                   <div className="glass-panel rounded-2xl p-4 bg-emerald-50/40 border border-emerald-200/80 space-y-3">
                     <div className="flex items-center justify-between font-extrabold text-xs text-emerald-800 border-b border-emerald-200 pb-2">
-                      <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Done & Verified</span>
+                      <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> {isFrench ? 'Terminé & Validé' : 'Done & Verified'}</span>
                       <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px]">
                         {tasks.filter((t) => t.status === 'DONE').length}
                       </span>
@@ -596,13 +616,13 @@ export default function TenderDetailPage() {
                             <p className="text-xs font-bold text-slate-900 leading-snug line-through text-slate-500">{t.title}</p>
                             <div className="flex items-center justify-between text-[11px]">
                               <span className="text-emerald-700 font-bold flex items-center gap-1">
-                                <CheckCircle2 className="w-3.5 h-3.5" /> Verified
+                                <CheckCircle2 className="w-3.5 h-3.5" /> {isFrench ? 'Validé' : 'Verified'}
                               </span>
                               <button
                                 onClick={() => toggleTaskStatus(t.id)}
                                 className="text-xs text-slate-400 hover:text-slate-700"
                               >
-                                Reopen
+                                {isFrench ? 'Rouvrir' : 'Reopen'}
                               </button>
                             </div>
                           </div>

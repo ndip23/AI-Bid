@@ -55,7 +55,12 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
       if (!completeness.isComplete) {
         setShowStatusMenu(false);
         setShowIncompleteModal(true);
-        toast.error('Capability Profile Incomplete', 'You must fill and submit your company credentials to enter the Bidding stage.');
+        toast.error(
+          lang === 'fr' ? 'Profil Entreprise Incomplet' : 'Capability Profile Incomplete',
+          lang === 'fr'
+            ? 'Vous devez renseigner vos identifiants d\'entreprise pour passer à l\'étape de soumission.'
+            : 'You must fill and submit your company credentials to enter the Bidding stage.'
+        );
         return;
       }
     }
@@ -65,10 +70,15 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
       setIsSaved(true);
       setSavedStatus(status);
       setShowStatusMenu(false);
-      toast.success('Tender Saved to Pipeline!', `Moved to ${status.replace('_', ' ')} tracking stage.`);
+      toast.success(
+        lang === 'fr' ? 'Offre Enregistrée dans le Pipeline !' : 'Tender Saved to Pipeline!',
+        lang === 'fr'
+          ? `Marché déplacé vers l'étape ${getStatusLabel(status)}.`
+          : `Moved to ${status.replace('_', ' ')} tracking stage.`
+      );
       onSavedChange?.();
     } catch (e) {
-      toast.error('Failed to save tender');
+      toast.error(lang === 'fr' ? 'Échec de l\'enregistrement' : 'Failed to save tender');
     }
   };
 
@@ -158,13 +168,17 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
       <div className="pt-3.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center space-x-3 sm:space-x-4">
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Est. Budget</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400 block">
+              {lang === 'fr' ? 'Budget Estimé' : 'Est. Budget'}
+            </span>
             <span className="font-extrabold text-slate-900">
               {formatCurrency(tender.estimatedValue, tender.currency)}
             </span>
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Closing Date</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400 block">
+              {lang === 'fr' ? 'Date Limite' : 'Closing Date'}
+            </span>
             <span className="font-bold text-emerald-700 flex items-center gap-1">
               <Calendar className="w-3 h-3" />
               {calculateDaysLeft(tender.deadline)}
