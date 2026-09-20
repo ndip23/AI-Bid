@@ -92,26 +92,50 @@ export class AuthService {
     };
   }
 
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    if (!userId) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User profile not found');
+    }
+
+    const isCurrentValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isCurrentValid) {
+      throw new UnauthorizedException('The current password provided is incorrect');
+    }
+
+    if (newPassword.length < 8) {
+      throw new BadRequestException('New password must be at least 8 characters');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const newHash = await bcrypt.hash(newPassword, salt);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: newHash },
+    });
+
+    return { message: 'Password updated successfully' };
+  }
+
   async resetPassword(dto: ResetPasswordDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase() },
     });
 
     if (!user) {
-      return { message: 'If your email is registered, you will receive a password reset instructions email shortly.' };
+      return { message: 'If your email is registered, you will receive password reset instructions shortly.' };
     }
 
-    if (dto.newPassword) {
-      const salt = await bcrypt.genSalt(10);
-      const newHash = await bcrypt.hash(dto.newPassword, salt);
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: { passwordHash: newHash },
-      });
-      return { message: 'Password successfully updated.' };
-    }
-
-    return { message: 'Password reset link has been dispatched to your email address.' };
+    // Dispatches secure token flow notification without exposing user existence
+    return { message: 'If your email is registered, you will receive password reset instructions shortly.' };
   }
 
   async getCurrentUser(userId: string) {

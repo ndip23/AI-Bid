@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Param, Body, Query, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Query, Patch, UseGuards } from '@nestjs/common';
 import { SourceService } from './source.service';
 import { SchedulerService } from './scheduler.service';
 import { PublisherStatus } from '@prisma/client';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @Controller('publishers')
 export class SourceController {
@@ -26,6 +29,8 @@ export class SourceController {
   }
 
   @Post('daily-freshness')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
   async triggerDailyFreshness(@Body('targetCount') targetCount?: number) {
     return this.schedulerService.ensureDailyFreshnessGuarantee(targetCount || 15);
   }
@@ -41,26 +46,36 @@ export class SourceController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
   async createPublisher(@Body() body: any) {
     return this.sourceService.createPublisher(body);
   }
 
   @Post(':id/sync')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
   async syncPublisher(@Param('id') id: string) {
     return this.sourceService.syncPublisher(id);
   }
 
   @Post(':id/discover')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
   async discoverPublisher(@Param('id') id: string) {
     return this.sourceService.discoverPublisher(id);
   }
 
   @Post('sync-all-hourly')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
   async triggerGlobalSync() {
     return this.schedulerService.runHourlyProcurementSync();
   }
 
   @Patch(':id/status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
   async updateStatus(@Param('id') id: string, @Body('status') status: PublisherStatus) {
     return this.sourceService.togglePublisherStatus(id, status);
   }

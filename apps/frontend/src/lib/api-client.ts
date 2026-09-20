@@ -85,6 +85,19 @@ export class ApiClient {
     return await res.json();
   }
 
+  static async changePassword(data: { currentPassword: string; newPassword: string }): Promise<{ message: string }> {
+    const res = await fetch(`${API_BASE_URL}/auth/change-password`, {
+      method: 'PUT',
+      headers: this.getHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(sanitizeErrorMessage(err, 'Failed to change password. Please verify your current password.'));
+    }
+    return await res.json();
+  }
+
   static async getCompanyProfile(): Promise<Company | null> {
     try {
       const res = await fetch(`${API_BASE_URL}/company/profile`, { headers: this.getHeaders() });

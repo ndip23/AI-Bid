@@ -109,13 +109,23 @@ export default function UserProfilePage() {
     e.preventDefault();
     setPassError('');
     setPassMsg('');
-    if (newPassword.length < 6) {
+
+    if (!currentPassword) {
+      toast.error(
+        isFrench ? 'Mot de passe actuel requis' : 'Current Password Required',
+        isFrench ? 'Veuillez saisir votre mot de passe actuel.' : 'Please enter your current password.'
+      );
+      return setPassError(isFrench ? 'Veuillez renseigner votre mot de passe actuel.' : 'Please enter your current password.');
+    }
+
+    if (newPassword.length < 8) {
       toast.error(
         isFrench ? 'Mot de passe trop court' : 'Password Too Short',
-        isFrench ? 'Le mot de passe doit comporter au moins 6 caractères.' : 'Must be at least 6 characters.'
+        isFrench ? 'Le mot de passe doit comporter au moins 8 caractères.' : 'Must be at least 8 characters.'
       );
-      return setPassError(isFrench ? 'Le nouveau mot de passe doit comporter au moins 6 caractères.' : 'New password must be at least 6 characters.');
+      return setPassError(isFrench ? 'Le nouveau mot de passe doit comporter au moins 8 caractères.' : 'New password must be at least 8 characters.');
     }
+
     if (newPassword !== confirmPassword) {
       toast.error(isFrench ? 'Les mots de passe ne correspondent pas' : 'Passwords Do Not Match');
       return setPassError(isFrench ? 'La confirmation ne correspond pas au mot de passe.' : 'New password and confirmation do not match.');
@@ -123,17 +133,18 @@ export default function UserProfilePage() {
 
     setSavingPassword(true);
     try {
+      await ApiClient.changePassword({ currentPassword, newPassword });
       setPassMsg(isFrench ? 'Mot de passe modifié avec succès !' : 'Password successfully changed!');
       toast.success(
         isFrench ? 'Mot de passe Modifié !' : 'Password Changed!',
-        isFrench ? 'Votre mot de passe a été mis à jour.' : 'Your password has been successfully updated.'
+        isFrench ? 'Votre mot de passe a été mis à jour en toute sécurité.' : 'Your password has been securely updated.'
       );
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (e: any) {
       setPassError(e.message || (isFrench ? 'Échec de la modification' : 'Failed to change password'));
-      toast.error(isFrench ? 'Échec du changement de mot de passe' : 'Password Change Failed');
+      toast.error(isFrench ? 'Échec du changement de mot de passe' : 'Password Change Failed', e.message);
     } finally {
       setSavingPassword(false);
     }

@@ -12,7 +12,7 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(6)
+  @MinLength(8, { message: 'Password must be at least 8 characters' })
   password: string;
 
   @IsString()
@@ -22,6 +22,17 @@ export class RegisterDto {
   @IsString()
   @IsOptional()
   industry?: string;
+}
+
+export class ChangePasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  currentPassword: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8, { message: 'New password must be at least 8 characters' })
+  newPassword: string;
 }
 
 export class LoginDto {
