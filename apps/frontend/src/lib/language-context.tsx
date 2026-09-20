@@ -14,24 +14,8 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [lang, setLangState] = useState<Language>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const savedLang = localStorage.getItem('bidora_lang') as Language | null;
-        if (savedLang === 'en' || savedLang === 'fr') {
-          return savedLang;
-        }
-        const browserLang = (navigator.language || (navigator.languages && navigator.languages[0]) || 'en').toLowerCase();
-        if (browserLang.startsWith('fr')) {
-          return 'fr';
-        }
-      } catch (e) {
-        // Storage access restricted
-      }
-    }
-    return 'en';
-  });
-
+  // Always initialize with 'en' so server SSR and initial client hydration match identically
+  const [lang, setLangState] = useState<Language>('en');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
