@@ -265,7 +265,7 @@ export const Header: React.FC = () => {
                                     : 'font-bold text-slate-700'
                                 }`}
                               >
-                                {n.title}
+                                {n.title ? n.title.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{FE00}-\u{FE0F}]/gu, '').trim() : ''}
                               </h4>
                               <span className="text-[10px] text-slate-400 shrink-0 font-medium">
                                 {formatRelativeTime(n.createdAt)}
@@ -273,7 +273,7 @@ export const Header: React.FC = () => {
                             </div>
 
                             <p className="text-xs text-slate-600 leading-snug line-clamp-2">
-                              {n.message}
+                              {n.message ? n.message.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{FE00}-\u{FE0F}]/gu, '').trim() : ''}
                             </p>
 
                             <div className="flex items-center justify-between pt-1">

@@ -246,21 +246,21 @@ async function main() {
       data: [
         {
           userId: u.id,
-          title: '🔥 New High-Priority Match (95%)',
+          title: 'New High-Priority Match (95%)',
           message: `Your company profile matched tender "${tenders[0]?.title.slice(0, 50)}..." with 95% compatibility score.`,
           type: 'NEW_MATCH',
           isRead: false,
         },
         {
           userId: u.id,
-          title: '⏳ Bid Submission Deadline Approaching',
+          title: 'Bid Submission Deadline Approaching',
           message: `The submission deadline for ref "${tenders[0]?.refNumber}" expires soon. Make sure to download and submit your 3-envelope package.`,
           type: 'DEADLINE_WARNING',
           isRead: false,
         },
         {
           userId: u.id,
-          title: '📁 Knowledge Vault Synchronized',
+          title: 'Knowledge Vault Synchronized',
           message: 'RCCM, Tax Clearance, CNPS and ISO 27001 credentials have been verified and linked to your corporate vault.',
           type: 'STATUS_CHANGE',
           isRead: true,

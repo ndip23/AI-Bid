@@ -72,7 +72,7 @@ export class QueueService {
         await this.prisma.notification.create({
           data: {
             userId: user.id,
-            title: `⏰ Deadline Alert: ${daysLeft} Days Left`,
+            title: `Deadline Alert: ${daysLeft} Days Left`,
             message: `Your saved tender "${tenderTitle}" closes in ${daysLeft} days. Ensure your bid submission is ready.`,
             type: 'DEADLINE_WARNING',
           },
@@ -97,7 +97,7 @@ export class QueueService {
       await this.prisma.notification.create({
         data: {
           userId: user.id,
-          title: `✨ New ${score}% Match Opportunity!`,
+          title: `New ${score}% Match Opportunity`,
           message: `A new tender "${tenderTitle}" has been published matching your company's capabilities at ${score}%.`,
           type: 'NEW_MATCH',
         },
@@ -113,7 +113,7 @@ export class QueueService {
     await this.prisma.notification.create({
       data: {
         userId: userId as string,
-        title: `📋 Pipeline Update`,
+        title: `Pipeline Update`,
         message: `Tender "${tenderTitle}" status has been updated to "${newStatus}".`,
         type: 'STATUS_CHANGE',
       },

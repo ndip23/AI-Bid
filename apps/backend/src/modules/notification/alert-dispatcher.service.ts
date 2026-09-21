@@ -63,19 +63,19 @@ export class AlertDispatcherService {
     }
 
     return (
-      `🚀 *BIDORA PROCUREMENT ALERT*\n` +
-      `🎯 Match Score: *${matchScore}% Highly Compatible*\n` +
+      `*BIDORA PROCUREMENT ALERT*\n` +
+      `Match Score: *${matchScore}% Highly Compatible*\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
-      `📌 *${tender.title}*\n\n` +
-      `🏛️ *Buyer:* ${tender.buyerName}\n` +
-      `🌍 *Market:* ${tender.buyerCountry}\n` +
-      `💰 *Budget:* ${valueStr}\n` +
-      `⏳ *Deadline:* ${deadlineStr} (${daysLeft} days left)\n` +
-      `📁 *Sector:* ${tender.industry}\n` +
-      `🔖 *Ref:* ${tender.refNumber || 'N/A'}\n\n` +
-      `🔑 *Key Qualification Criteria:*\n` +
+      `*${tender.title}*\n\n` +
+      `*Buyer:* ${tender.buyerName}\n` +
+      `*Market:* ${tender.buyerCountry}\n` +
+      `*Budget:* ${valueStr}\n` +
+      `*Deadline:* ${deadlineStr} (${daysLeft} days left)\n` +
+      `*Sector:* ${tender.industry}\n` +
+      `*Ref:* ${tender.refNumber || 'N/A'}\n\n` +
+      `*Key Qualification Criteria:*\n` +
       `${reqsText}\n\n` +
-      `🔗 *View Full AI Dossier & Apply:*\n` +
+      `*View Full AI Dossier & Apply:*\n` +
       `https://ai-bid.app/tenders/${tender.id}\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
       `_Bidora Automated Procurement Gateway • Reply STOP to pause alerts._`
@@ -132,7 +132,7 @@ export class AlertDispatcherService {
 <body>
   <div class="card">
     <div class="header">
-      <div class="badge">🎯 ${matchScore}% Match Score</div>
+      <div class="badge">${matchScore}% Match Score</div>
       <h2 style="margin: 12px 0 0 0; font-size: 20px; font-weight: 900;">New High-Priority Tender Alert</h2>
       <p style="margin: 4px 0 0 0; font-size: 13px; opacity: 0.9;">AI Match detected for your corporate capabilities</p>
     </div>
@@ -214,7 +214,7 @@ export class AlertDispatcherService {
     // 2. Email Dispatch
     if (params.channels.includes('EMAIL') && params.recipientEmail) {
       const emailHtml = this.formatEmailHtml(params);
-      const emailSubject = `🚀 [${params.matchScore}% Match] ${params.tender.buyerName}: ${params.tender.title.substring(0, 65)}`;
+      const emailSubject = `[${params.matchScore}% Match] ${params.tender.buyerName}: ${params.tender.title.substring(0, 65)}`;
       this.logger.log(`[Email Dispatch] Sending to ${params.recipientEmail} (${emailSubject})`);
 
       const log = await this.prisma.alertLog.create({

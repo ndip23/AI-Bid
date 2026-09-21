@@ -368,7 +368,7 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
           await this.prisma.notification.create({
             data: {
               userId: user.id,
-              title: '🎯 Daily Fresh Opportunities Added',
+              title: 'Daily Fresh Opportunities Added',
               message: `${newIngestedThisRun} new verified procurement opportunities have just been added to your discovery feed!`,
               type: 'NEW_MATCH',
             },

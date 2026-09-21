@@ -61,8 +61,8 @@ export const SubmitBidModal: React.FC<Props> = ({
 
   const whatsappUrl = `https://wa.me/237683616584?text=${encodeURIComponent(
     isFrench
-      ? `Bonjour Bidora Dispatch,\n\nJe souhaite réserver le Service Coursier / Dépôt Assisté pour l'offre suivante :\n📋 Marché : ${tender.title}\n🔢 Réf : ${tender.refNumber}\n🏢 Acheteur : ${tender.buyerName}\n⏰ Date Limite : ${new Date(tender.deadline).toLocaleDateString()}\n🏢 Entreprise : ${companyName}\n\nMerci de me confirmer la prise en charge et les modalités de dépôt physique.`
-      : `Hello Bidora Dispatch,\n\nI want to book the Concierge Runner Service for the following tender:\n📋 Tender: ${tender.title}\n🔢 Ref: ${tender.refNumber}\n🏢 Buyer: ${tender.buyerName}\n⏰ Deadline: ${new Date(tender.deadline).toLocaleDateString()}\n🏢 Company: ${companyName}\n\nPlease confirm availability and physical filing procedure.`
+      ? `Bonjour Bidora Dispatch,\n\nJe souhaite réserver le Service Coursier / Dépôt Assisté pour l'offre suivante :\nMarché : ${tender.title}\nRéf : ${tender.refNumber}\nAcheteur : ${tender.buyerName}\nDate Limite : ${new Date(tender.deadline).toLocaleDateString()}\nEntreprise : ${companyName}\n\nMerci de me confirmer la prise en charge et les modalités de dépôt physique.`
+      : `Hello Bidora Dispatch,\n\nI want to book the Concierge Runner Service for the following tender:\nTender: ${tender.title}\nRef: ${tender.refNumber}\nBuyer: ${tender.buyerName}\nDeadline: ${new Date(tender.deadline).toLocaleDateString()}\nCompany: ${companyName}\n\nPlease confirm availability and physical filing procedure.`
   )}`;
 
   if (!isOpen) return null;
@@ -457,8 +457,9 @@ SUBMISSION INSTRUCTIONS:
                         <span>{isFrench ? 'Option A : Dépôt Direct par l\'Entreprise' : 'Option A: Direct Corporate Deposit'}</span>
                       </div>
                       {submissionMethod === 'SELF' && (
-                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-                          {isFrench ? 'Sélectionné ✓' : 'Selected ✓'}
+                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                          <Check className="w-3 h-3 text-emerald-700" />
+                          <span>{isFrench ? 'Sélectionné' : 'Selected'}</span>
                         </span>
                       )}
                     </div>
@@ -490,15 +491,18 @@ SUBMISSION INSTRUCTIONS:
                         setSubmissionMethod('SELF');
                         setConciergeRequested(false);
                       }}
-                      className={`w-full py-2 rounded-xl font-bold text-xs transition-colors ${
+                      className={`w-full py-2 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${
                         submissionMethod === 'SELF'
                           ? 'bg-emerald-600 text-white'
                           : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                       }`}
                     >
-                      {submissionMethod === 'SELF'
-                        ? (isFrench ? 'Mode Sélectionné ✓' : 'Mode Selected ✓')
-                        : (isFrench ? 'Choisir Dépôt Direct' : 'Choose Direct Deposit')}
+                      {submissionMethod === 'SELF' && <Check className="w-3.5 h-3.5" />}
+                      <span>
+                        {submissionMethod === 'SELF'
+                          ? (isFrench ? 'Mode Sélectionné' : 'Mode Selected')
+                          : (isFrench ? 'Choisir Dépôt Direct' : 'Choose Direct Deposit')}
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -521,8 +525,9 @@ SUBMISSION INSTRUCTIONS:
                         <span>{isFrench ? 'Option B : Coursier & Dépôt Assisté' : 'Option B: Concierge Runner Desk'}</span>
                       </div>
                       {submissionMethod === 'CONCIERGE' ? (
-                        <span className="text-[10px] font-black text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">
-                          {isFrench ? 'Sélectionné ✓' : 'Selected ✓'}
+                        <span className="text-[10px] font-black text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                          <Check className="w-3 h-3 text-indigo-700" />
+                          <span>{isFrench ? 'Sélectionné' : 'Selected'}</span>
                         </span>
                       ) : (
                         <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-md">
@@ -563,7 +568,7 @@ SUBMISSION INSTRUCTIONS:
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>
                         {submissionMethod === 'CONCIERGE'
-                          ? (isFrench ? 'Coursier Sélectionné ✓' : 'Concierge Runner Selected ✓')
+                          ? (isFrench ? 'Coursier Sélectionné' : 'Concierge Runner Selected')
                           : (isFrench ? 'Choisir Coursier Assisté' : 'Choose Concierge Runner')}
                       </span>
                     </button>
