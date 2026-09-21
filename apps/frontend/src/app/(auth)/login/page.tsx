@@ -17,10 +17,16 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
-  const { login }  = useAuth();
+  const { login, user, isLoading } = useAuth();
   const { toast }  = useToast();
   const { isFrench } = useLanguage();
   const router     = useRouter();
+
+  React.useEffect(() => {
+    if (!isLoading && user) {
+      router.replace('/dashboard');
+    }
+  }, [user, isLoading, router]);
 
   const perks = isFrench ? [
     'Essai gratuit de 14 jours — sans carte bancaire',

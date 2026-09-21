@@ -3,14 +3,16 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sparkles, Menu, X, ArrowRight } from 'lucide-react';
+import { Sparkles, Menu, X, ArrowRight, LayoutDashboard, LogOut } from 'lucide-react';
 import { BidoraLogo } from '../ui/BidoraLogo';
 import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { useLanguage } from '../../lib/language-context';
+import { useAuth } from '../../lib/auth-context';
 
 export const PublicNav: React.FC = () => {
   const pathname = usePathname();
-  const { t } = useLanguage();
+  const { t, isFrench } = useLanguage();
+  const { user, isLoading, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -36,8 +38,8 @@ export const PublicNav: React.FC = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-10 h-18 flex items-center justify-between py-4">
-        {/* Brand */}
-        <Link href="/" className="hover:opacity-90 transition-opacity">
+        {/* Brand - Leads to dashboard if logged in, otherwise homepage */}
+        <Link href={user ? '/dashboard' : '/'} className="hover:opacity-90 transition-opacity">
           <BidoraLogo size="md" />
         </Link>
 
@@ -65,19 +67,41 @@ export const PublicNav: React.FC = () => {
         <div className="hidden md:flex items-center space-x-3">
           <LanguageSwitcher />
 
-          <Link
-            href="/login"
-            className="px-4 py-2 rounded-lg text-sm font-bold text-slate-700 hover:text-emerald-700 transition-colors"
-          >
-            {t('nav.signIn', 'Sign In')}
-          </Link>
-          <Link
-            href="/register"
-            className="px-5 py-2.5 rounded-xl gradient-bg text-white font-bold text-sm gradient-glow hover:opacity-95 hover:scale-[1.02] transition-all flex items-center space-x-1.5"
-          >
-            <span>{t('nav.getStarted', 'Get Started Free')}</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          {!isLoading && user ? (
+            <div className="flex items-center space-x-2">
+              <Link
+                href="/dashboard"
+                className="px-5 py-2.5 rounded-xl gradient-bg text-white font-bold text-sm gradient-glow hover:opacity-95 hover:scale-[1.02] transition-all flex items-center space-x-1.5 shadow-sm shadow-emerald-600/20"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>{isFrench ? 'Tableau de Bord' : 'Go to Dashboard'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <button
+                onClick={logout}
+                className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                title={isFrench ? 'Se déconnecter' : 'Sign Out'}
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="px-4 py-2 rounded-lg text-sm font-bold text-slate-700 hover:text-emerald-700 transition-colors"
+              >
+                {t('nav.signIn', 'Sign In')}
+              </Link>
+              <Link
+                href="/register"
+                className="px-5 py-2.5 rounded-xl gradient-bg text-white font-bold text-sm gradient-glow hover:opacity-95 hover:scale-[1.02] transition-all flex items-center space-x-1.5"
+              >
+                <span>{t('nav.getStarted', 'Get Started Free')}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -107,20 +131,44 @@ export const PublicNav: React.FC = () => {
             </Link>
           ))}
           <div className="pt-3 border-t border-slate-100 space-y-2">
-            <Link
-              href="/login"
-              onClick={() => setMobileOpen(false)}
-              className="block w-full py-2.5 text-center text-sm font-bold text-slate-700 hover:text-emerald-700"
-            >
-              {t('nav.signIn', 'Sign In')}
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setMobileOpen(false)}
-              className="block w-full py-2.5 text-center rounded-xl gradient-bg text-white font-bold text-sm shadow-md"
-            >
-              {t('nav.getStarted', 'Get Started Free')}
-            </Link>
+            {!isLoading && user ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  className="block w-full py-2.5 text-center rounded-xl gradient-bg text-white font-bold text-sm shadow-md flex items-center justify-center gap-2"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span>{isFrench ? 'Accéder au Tableau de Bord' : 'Go to Dashboard'}</span>
+                </Link>
+                <button
+                  onClick={() => {
+                    setMobileOpen(false);
+                    logout();
+                  }}
+                  className="block w-full py-2.5 text-center text-sm font-bold text-slate-600 hover:text-rose-600"
+                >
+                  {isFrench ? 'Déconnexion' : 'Sign Out'}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="block w-full py-2.5 text-center text-sm font-bold text-slate-700 hover:text-emerald-700"
+                >
+                  {t('nav.signIn', 'Sign In')}
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMobileOpen(false)}
+                  className="block w-full py-2.5 text-center rounded-xl gradient-bg text-white font-bold text-sm shadow-md"
+                >
+                  {t('nav.getStarted', 'Get Started Free')}
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

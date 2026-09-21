@@ -96,11 +96,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile, isM
         </div>
 
         <div className="flex items-center justify-between text-[10px] text-slate-400 px-1 font-semibold">
-          <Link href="/terms" target="_blank" className="hover:text-emerald-700 hover:underline">
+          <Link href="/terms" className="hover:text-emerald-700 hover:underline">
             {t('nav.terms', 'Terms & Disclaimers')}
           </Link>
           <span>•</span>
-          <Link href="/privacy" target="_blank" className="hover:text-emerald-700 hover:underline">
+          <Link href="/privacy" className="hover:text-emerald-700 hover:underline">
             Privacy
           </Link>
           <span>•</span>

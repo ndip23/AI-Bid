@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PublicNav } from '../../../components/layout/PublicNav';
@@ -45,9 +45,15 @@ export default function RegisterPage() {
   const [agreed, setAgreed]         = useState(false);
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState('');
-  const { register } = useAuth();
+  const { register, user, isLoading } = useAuth();
   const { toast }    = useToast();
   const router       = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace('/dashboard');
+    }
+  }, [user, isLoading, router]);
 
   const set = (field: string) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

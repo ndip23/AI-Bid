@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Sparkles, Shield, Cpu } from 'lucide-react';
 import { BidoraLogo } from '../ui/BidoraLogo';
 import { useLanguage } from '../../lib/language-context';
@@ -22,16 +23,16 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-4 text-slate-600 font-semibold">
-          <a href="/privacy" className="hover:text-emerald-600 transition-colors">
+          <Link href="/privacy" className="hover:text-emerald-600 transition-colors">
             {isFrench ? 'Confidentialité' : 'Privacy'}
-          </a>
-          <a href="/terms" className="hover:text-emerald-600 transition-colors">
+          </Link>
+          <Link href="/terms" className="hover:text-emerald-600 transition-colors">
             {isFrench ? 'Conditions' : 'Terms'}
-          </a>
-          <a href="/docs" className="hover:text-emerald-600 transition-colors flex items-center gap-1">
+          </Link>
+          <Link href="/docs" className="hover:text-emerald-600 transition-colors flex items-center gap-1">
             <Cpu className="w-3.5 h-3.5 text-emerald-600" />
             <span>{isFrench ? 'Documentation API' : 'API Docs'}</span>
-          </a>
+          </Link>
         </div>
 
         <div className="text-slate-400 text-[11px] font-medium flex flex-wrap items-center gap-2">

@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { PublicNav } from '../components/layout/PublicNav';
 import { PublicFooter } from '../components/layout/PublicFooter';
 import { ApiClient } from '../lib/api-client';
 import { useLanguage } from '../lib/language-context';
+import { useAuth } from '../lib/auth-context';
 import {
   Sparkles,
   ArrowRight,
@@ -58,10 +60,18 @@ const colorMap: Record<string, string> = {
    ════════════════════════════════════════════ */
 export default function HomePage() {
   const { isFrench } = useLanguage();
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [statsVisible, setStatsVisible] = useState(false);
   const [liveStats, setLiveStats] = useState<any>(null);
   const statsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace('/dashboard');
+    }
+  }, [user, isLoading, router]);
 
   useEffect(() => {
     ApiClient.getAdminStats().then((data) => {

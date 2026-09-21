@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { Twitter, Linkedin, Github, ArrowRight } from 'lucide-react';
 import { BidoraLogo } from '../ui/BidoraLogo';
 import { useLanguage } from '../../lib/language-context';
+import { useAuth } from '../../lib/auth-context';
 
 export const PublicFooter: React.FC = () => {
   const { isFrench } = useLanguage();
+  const { user, isLoading } = useAuth();
 
   const footerLinks = {
     product: {
@@ -49,13 +51,23 @@ export const PublicFooter: React.FC = () => {
               ? 'Rejoignez plus de 500 équipes d\'appels d\'offres qui identifient des opportunités qualifiées plus rapidement grâce à l\'IA.'
               : 'Join 500+ enterprise bid management teams discovering matching procurement opportunities faster with AI.'}
           </p>
-          <Link
-            href="/register"
-            className="inline-flex items-center space-x-2 px-8 py-3.5 rounded-xl bg-white text-emerald-800 font-extrabold text-sm shadow-lg hover:bg-emerald-50 hover:scale-105 transition-all"
-          >
-            <span>{isFrench ? 'Démarrer l\'Essai Gratuit de 14 Jours' : 'Start Free 14-Day Trial'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          {!isLoading && user ? (
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center space-x-2 px-8 py-3.5 rounded-xl bg-white text-emerald-800 font-extrabold text-sm shadow-lg hover:bg-emerald-50 hover:scale-105 transition-all"
+            >
+              <span>{isFrench ? 'Accéder au Tableau de Bord' : 'Go to Dashboard'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          ) : (
+            <Link
+              href="/register"
+              className="inline-flex items-center space-x-2 px-8 py-3.5 rounded-xl bg-white text-emerald-800 font-extrabold text-sm shadow-lg hover:bg-emerald-50 hover:scale-105 transition-all"
+            >
+              <span>{isFrench ? 'Démarrer l\'Essai Gratuit de 14 Jours' : 'Start Free 14-Day Trial'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          )}
         </div>
       </div>
 
@@ -64,7 +76,7 @@ export const PublicFooter: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
           {/* Brand Column */}
           <div className="md:col-span-2 space-y-5">
-            <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
+            <Link href={user ? '/dashboard' : '/'} className="inline-block hover:opacity-90 transition-opacity">
               <BidoraLogo variant="dark" size="lg" showTagline={true} />
             </Link>
 
