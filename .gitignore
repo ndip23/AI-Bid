@@ -3,6 +3,8 @@ node_modules
 .pnpm-store
 
 # Next.js build outputs
+.next/
+out/
 apps/frontend/.next/
 apps/frontend/out/
 
