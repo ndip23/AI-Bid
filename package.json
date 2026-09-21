@@ -7,14 +7,14 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build:frontend",
-    "build:frontend": "npm --prefix apps/frontend run build && node -e \"const fs=require('fs'); if(fs.existsSync('apps/frontend/.next')) { fs.cpSync('apps/frontend/.next', '.next', {recursive:true}); }\"",
-    "build:backend": "npm --prefix apps/backend run build:prod",
-    "start": "npm run start:frontend",
-    "start:frontend": "npm --prefix apps/frontend run start",
-    "start:backend": "npm --prefix apps/backend run start",
-    "dev:backend": "npm --prefix apps/backend run start:dev",
-    "dev:frontend": "npm --prefix apps/frontend run dev",
+    "build": "node init && npm run build:frontend",
+    "build:frontend": "node init && npm --prefix apps/frontend run build && node -e \"const fs=require('fs'); if(fs.existsSync('apps/frontend/.next')) { fs.cpSync('apps/frontend/.next', '.next', {recursive:true}); }\"",
+    "build:backend": "node init && npm --prefix apps/backend run build:prod",
+    "start": "node init && npm run start:frontend",
+    "start:frontend": "node init && npm --prefix apps/frontend run start",
+    "start:backend": "node init && npm --prefix apps/backend run start",
+    "dev:backend": "node init && npm --prefix apps/backend run start:dev",
+    "dev:frontend": "node init && npm --prefix apps/frontend run dev",
     "prisma:generate": "npm --prefix apps/backend run prisma:generate",
     "prisma:seed": "npm --prefix apps/backend run prisma:seed"
   },
