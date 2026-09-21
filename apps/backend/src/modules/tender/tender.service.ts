@@ -163,7 +163,11 @@ export class TenderService {
     const enriched = tenders.map((tender) => {
       let matchScoreData = null;
       if (userCompany) {
-        matchScoreData = this.matchService.calculateMatch(userCompany, tender as any, tender.aiSummary as any);
+        try {
+          matchScoreData = this.matchService.calculateMatch(userCompany, tender as any, tender.aiSummary as any);
+        } catch (err) {
+          matchScoreData = null;
+        }
       }
 
       const savedInfo = tender.savedTenders?.[0] || null;

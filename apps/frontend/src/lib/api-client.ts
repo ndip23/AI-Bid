@@ -98,9 +98,22 @@ export class ApiClient {
     return await res.json();
   }
 
+  static handleAuthFailure() {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('company');
+      window.dispatchEvent(new Event('auth:unauthorized'));
+    }
+  }
+
   static async getCompanyProfile(): Promise<Company | null> {
     try {
       const res = await fetch(`${API_BASE_URL}/company/profile`, { headers: this.getHeaders() });
+      if (res.status === 401) {
+        this.handleAuthFailure();
+        return null;
+      }
       if (res.ok) return await res.json();
     } catch (e) {
       console.error('Failed to fetch company profile', e);
@@ -114,6 +127,10 @@ export class ApiClient {
       headers: this.getHeaders(),
       body: JSON.stringify(data),
     });
+    if (res.status === 401) {
+      this.handleAuthFailure();
+      throw new Error('Session expired. Please sign in again.');
+    }
     if (!res.ok) {
       throw new Error('Failed to update company profile');
     }
@@ -156,31 +173,58 @@ export class ApiClient {
       return this.tendersCache.data;
     }
 
-    try {
-      const queryParams = new URLSearchParams();
-      if (params?.search) queryParams.append('search', params.search);
-      if (params?.industry) queryParams.append('industry', params.industry);
-      if (params?.country) queryParams.append('country', params.country);
-      if (params?.minScore) queryParams.append('minScore', String(params.minScore));
-      queryParams.append('limit', String(params?.limit || 1000));
-      if (params?.offset) queryParams.append('offset', String(params.offset));
+    const queryParams = new URLSearchParams();
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.industry) queryParams.append('industry', params.industry);
+    if (params?.country) queryParams.append('country', params.country);
+    if (params?.minScore) queryParams.append('minScore', String(params.minScore));
+    queryParams.append('limit', String(params?.limit || 1000));
+    if (params?.offset) queryParams.append('offset', String(params.offset));
 
-      const res = await fetch(`${API_BASE_URL}/tenders?${queryParams.toString()}`, { headers: this.getHeaders() });
-      if (res.ok) {
-        const data = await res.json();
-        this.tendersCache = { key, data, timestamp: now };
-        // Seed tenderDetailsCache with basic items so clicking them is instantly fast
-        if (Array.isArray(data)) {
-          data.slice(0, 30).forEach((t) => {
-            if (t?.id && !this.tenderDetailsCache.has(t.id)) {
-              this.tenderDetailsCache.set(t.id, { data: t, timestamp: now });
-            }
-          });
+    const url = `${API_BASE_URL}/tenders?${queryParams.toString()}`;
+    const maxRetries = 2;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const res = await fetch(url, { headers: this.getHeaders() });
+
+        if (res.status === 401) {
+          this.handleAuthFailure();
+          throw new Error('UNAUTHORIZED: Session expired. Please log in again.');
         }
-        return data;
+
+        if (res.ok) {
+          const data = await res.json();
+          this.tendersCache = { key, data, timestamp: now };
+          // Seed tenderDetailsCache with basic items so clicking them is instantly fast
+          if (Array.isArray(data)) {
+            data.slice(0, 30).forEach((t) => {
+              if (t?.id && !this.tenderDetailsCache.has(t.id)) {
+                this.tenderDetailsCache.set(t.id, { data: t, timestamp: now });
+              }
+            });
+          }
+          return data;
+        }
+
+        // On server error / gateway timeout (e.g. Render free-tier cold spin up)
+        if (res.status >= 500 && attempt < maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, 1500 * (attempt + 1)));
+          continue;
+        }
+
+        throw new Error(`Server returned HTTP ${res.status}`);
+      } catch (e: any) {
+        if (e?.message?.includes('UNAUTHORIZED')) {
+          throw e;
+        }
+        if (attempt < maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, 1500 * (attempt + 1)));
+          continue;
+        }
+        console.error('Failed to fetch tenders after retries:', e);
+        throw e;
       }
-    } catch (e) {
-      console.error('Failed to fetch tenders', e);
     }
     return [];
   }

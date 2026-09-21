@@ -107,59 +107,85 @@ export class MatchService {
     const metRequirements: string[] = [];
     const missingRequirements: string[] = [];
 
+    // Safe fallbacks for company attributes
+    const companyIndustry = company?.industry || '';
+    const companyCountries = Array.isArray(company?.countries) ? company.countries : [];
+    const companyCerts = Array.isArray(company?.certifications) ? company.certifications : [];
+    const companyServices = Array.isArray(company?.services) ? company.services : [];
+
+    // Safe fallbacks for tender attributes
+    const tenderIndustry = tender?.industry || '';
+    const tenderCountry = tender?.buyerCountry || '';
+    const tenderTitle = tender?.title || '';
+    const tenderDesc = tender?.description || '';
+    const tenderRaw = (tender as any)?.rawContent || '';
+
     // 1. Industry Match
     let industryScore = 40;
-    const compIndustryLower = company.industry.toLowerCase();
-    const tendIndustryLower = tender.industry.toLowerCase();
+    const compIndustryLower = companyIndustry.toLowerCase();
+    const tendIndustryLower = tenderIndustry.toLowerCase();
 
-    if (compIndustryLower === tendIndustryLower || tendIndustryLower.includes(compIndustryLower) || compIndustryLower.includes(tendIndustryLower)) {
+    if (compIndustryLower && tendIndustryLower && (compIndustryLower === tendIndustryLower || tendIndustryLower.includes(compIndustryLower) || compIndustryLower.includes(tendIndustryLower))) {
       industryScore = 100;
-      reasons.push(`Industry Match (100%): Perfect alignment in ${tender.industry}`);
+      reasons.push(`Industry Match (100%): Perfect alignment in ${tenderIndustry || 'relevant sector'}`);
     } else if (
       (compIndustryLower.includes('technology') || compIndustryLower.includes('it')) &&
-      (tendIndustryLower.includes('cloud') || tendIndustryLower.includes('software') || tendIndustryLower.includes('cyber'))
+      (tendIndustryLower.includes('cloud') || tendIndustryLower.includes('software') || tendIndustryLower.includes('cyber') || tendIndustryLower.includes('telecom'))
     ) {
       industryScore = 85;
-      reasons.push(`Industry Alignment (85%): ${company.industry} aligns closely with ${tender.industry}`);
+      reasons.push(`Industry Alignment (85%): ${companyIndustry} aligns closely with ${tenderIndustry}`);
     } else {
-      reasons.push(`Industry Mismatch (${industryScore}%): Company is focused on ${company.industry} while Tender requires ${tender.industry}`);
+      reasons.push(`Industry Alignment (${industryScore}%): Evaluated against ${tenderIndustry || 'procurement category'}`);
     }
 
     // 2. Country / Geography Match
     let countryScore = 0;
     const normalizeCountry = (c: string) => {
+      if (!c) return '';
       const lower = c.trim().toLowerCase();
       if (/cote d'?ivoire|côte d'?ivoire|ivory coast/i.test(lower)) return "cote d'ivoire";
       if (/cameroon|cameroun/i.test(lower)) return 'cameroon';
       if (/nigeria/i.test(lower)) return 'nigeria';
       return lower;
     };
-    const tenderCountryNorm = normalizeCountry(tender.buyerCountry);
-    const isCountryMatch = company.countries.some((c) => {
+    const tenderCountryNorm = normalizeCountry(tenderCountry);
+    const isCountryMatch = companyCountries.some((c) => {
       const cNorm = normalizeCountry(c);
       return cNorm === tenderCountryNorm || cNorm === 'global' || tenderCountryNorm === 'global';
     });
 
     if (isCountryMatch) {
       countryScore = 100;
-      reasons.push(`Country Coverage (100%): Buyer country (${tender.buyerCountry}) is within company operating regions`);
-      metRequirements.push(`Operational presence in ${tender.buyerCountry}`);
+      reasons.push(`Country Coverage (100%): Buyer country (${tenderCountry}) is within company operating regions`);
+      metRequirements.push(`Operational presence in ${tenderCountry}`);
     } else {
       countryScore = 0;
-      reasons.push(`Geographic Exclusion (0%): Buyer is in ${tender.buyerCountry}, which is not in company operational regions (${company.countries.join(', ')})`);
-      missingRequirements.push(`Active business registration / operations in ${tender.buyerCountry}`);
+      reasons.push(`Geographic Target (0%): Buyer is in ${tenderCountry || 'unspecified region'}`);
+      missingRequirements.push(`Active business registration / operations in ${tenderCountry || 'region'}`);
     }
 
     // 3. Certifications Match
     let certScore = 100;
-    const reqs = (aiSummary?.requirements as unknown as any[]) || [];
-    const certReqs = reqs.filter((r) => r.category === 'Certification' || (r.description && (r.description.toLowerCase().includes('iso') || r.description.toLowerCase().includes('soc'))));
+    let reqs: any[] = [];
+    const rawRequirements = aiSummary?.requirements;
+    if (Array.isArray(rawRequirements)) {
+      reqs = rawRequirements;
+    } else if (typeof rawRequirements === 'string') {
+      try {
+        const parsed = JSON.parse(rawRequirements);
+        if (Array.isArray(parsed)) reqs = parsed;
+      } catch {}
+    } else if (rawRequirements && typeof rawRequirements === 'object') {
+      reqs = Object.values(rawRequirements).flatMap((v) => (Array.isArray(v) ? v : [v]));
+    }
+
+    const certReqs = reqs.filter((r) => r && (r.category === 'Certification' || (r.description && (r.description.toLowerCase().includes('iso') || r.description.toLowerCase().includes('soc')))));
 
     if (certReqs.length > 0) {
       let matchedCertsCount = 0;
       for (const req of certReqs) {
         const desc = req.description || req.requirement || '';
-        const hasCert = company.certifications.some((cert) =>
+        const hasCert = companyCerts.some((cert) =>
           desc.toLowerCase().includes(cert.toLowerCase()),
         );
         if (hasCert) {
@@ -172,20 +198,20 @@ export class MatchService {
 
       certScore = Math.round((matchedCertsCount / certReqs.length) * 100);
       if (certScore === 100) {
-        reasons.push(`Certification Coverage (100%): Holds all required certifications (${company.certifications.join(', ')})`);
+        reasons.push(`Certification Coverage (100%): Holds all required certifications (${companyCerts.join(', ')})`);
       } else {
         reasons.push(`Certification Deficit (${certScore}%): Missing required certifications mandated by tender specification`);
       }
     } else {
-      reasons.push(`Certification Standard (100%): Company holds recognized industry certifications (${company.certifications.join(', ')})`);
+      reasons.push(`Certification Standard (100%): Company holds recognized industry certifications (${companyCerts.join(', ')})`);
       metRequirements.push('Standard compliance & certification baseline');
     }
 
     // 4. Experience & Capabilities Match
     let experienceScore = 70;
-    const tenderText = `${tender.title} ${tender.description} ${tender.rawContent}`.toLowerCase();
-    const matchedServices = company.services.filter((service) =>
-      tenderText.includes(service.toLowerCase()),
+    const tenderText = `${tenderTitle} ${tenderDesc} ${tenderRaw}`.toLowerCase();
+    const matchedServices = companyServices.filter((service) =>
+      service && tenderText.includes(service.toLowerCase()),
     );
 
     if (matchedServices.length > 0) {

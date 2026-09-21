@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: bidora-backend
+    name: AI-Bid
     runtime: node
     rootDir: apps/backend
-    buildCommand: npm install && npm run build:prod
+    buildCommand: npm install && npm run build
     startCommand: npx prisma db push --skip-generate && npm run start
     plan: free
     healthCheckPath: /health

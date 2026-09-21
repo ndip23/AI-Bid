@@ -55,7 +55,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(null);
     }
     setIsLoading(false);
-  }, []);
+
+    const handleUnauthorized = () => {
+      setUser(null);
+      setCompany(null);
+      setToken(null);
+      router.push('/login?expired=true');
+    };
+
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('auth:unauthorized', handleUnauthorized);
+    };
+  }, [router]);
 
   const refreshCompany = async () => {
     try {

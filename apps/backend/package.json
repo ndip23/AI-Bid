@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "tsc",
+    "build": "npx prisma generate && tsc",
     "build:prod": "npx prisma generate && tsc",
+    "postinstall": "npx prisma generate",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "node dist/src/main.js",
     "dev": "node dist/src/main.js",

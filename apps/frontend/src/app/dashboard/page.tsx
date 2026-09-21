@@ -44,14 +44,17 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const loadData = async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const data = await ApiClient.getTenders();
       setTenders(data);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setFetchError(e?.message || 'Failed to connect to procurement engine');
     } finally {
       setLoading(false);
     }
@@ -497,7 +500,30 @@ export default function DashboardPage() {
                   </Link>
                 </div>
 
-                {filteredTenders.length === 0 ? (
+                {fetchError ? (
+                  <div className="glass-panel rounded-2xl p-8 md:p-12 text-center space-y-4 bg-white border border-amber-200 shadow-sm animate-fade-in">
+                    <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mx-auto">
+                      <Activity className="w-6 h-6 animate-pulse" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-slate-900 font-extrabold text-base">
+                        {isFrench ? 'Connexion au Serveur en cours...' : 'Connecting to Procurement Engine...'}
+                      </h3>
+                      <p className="text-xs text-slate-500 max-w-md mx-auto font-medium">
+                        {isFrench
+                          ? 'Le serveur de données se synchronise ou sort de veille. Cliquez ci-dessous pour actualiser les données.'
+                          : 'The procurement engine is syncing or spinning up from sleep. Click below to reconnect and fetch all tenders.'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => loadData()}
+                      className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all inline-flex items-center gap-2"
+                    >
+                      <Zap className="w-4 h-4" />
+                      <span>{isFrench ? 'Réessayer la Connexion' : 'Retry Connection'}</span>
+                    </button>
+                  </div>
+                ) : filteredTenders.length === 0 ? (
                   <div className="glass-panel rounded-2xl p-8 md:p-12 text-center space-y-3 bg-white border border-slate-200 shadow-sm animate-fade-in">
                     <Sparkles className="w-8 h-8 text-slate-400 mx-auto" />
                     <h3 className="text-slate-900 font-extrabold text-base">
