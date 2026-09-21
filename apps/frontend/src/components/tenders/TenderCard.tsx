@@ -10,7 +10,7 @@ import { useAuth } from '../../lib/auth-context';
 import { checkProfileCompleteness } from '../../lib/profile-utils';
 import { IncompleteProfileModal } from '../ui';
 import { formatCurrency } from '../../lib/formatters';
-import { Bookmark, Calendar, Globe, Sparkles, ChevronRight, Check } from 'lucide-react';
+import { Bookmark, Calendar, Globe, Sparkles, ChevronRight, Check, Calculator } from 'lucide-react';
 import { useLanguage } from '../../lib/language-context';
 
 interface Props {
@@ -221,12 +221,24 @@ export const TenderCard: React.FC<Props> = ({ tender, onSavedChange }) => {
             </div>
           )}
 
+          {/* Quick Calculate Caution / Bond */}
+          <Link
+            href={`/tenders/${tender.id}?tab=calculator`}
+            onClick={(e) => e.stopPropagation()}
+            className="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center gap-1 transition-all"
+            title={lang === 'fr' ? 'Calculer la caution bancaire (bid bond)' : 'Calculate bid bond guarantee'}
+          >
+            <Calculator className="w-3.5 h-3.5 text-sky-600" />
+            <span className="hidden sm:inline">{lang === 'fr' ? 'Caution' : 'Bond'}</span>
+          </Link>
+
+          {/* Primary View / Bid CTA */}
           <Link
             href={`/tenders/${tender.id}`}
             onClick={(e) => e.stopPropagation()}
             className="px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white font-extrabold text-xs flex items-center gap-1 hover:bg-emerald-700 hover:shadow-md transition-all shadow-sm shadow-emerald-600/20"
           >
-            <span>{lang === 'fr' ? 'Postuler' : 'Bid Now'}</span>
+            <span>{lang === 'fr' ? 'Dossier & Soumission' : 'View & Bid'}</span>
             <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>

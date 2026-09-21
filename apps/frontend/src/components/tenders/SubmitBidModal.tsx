@@ -23,6 +23,7 @@ import {
   MapPin,
   Clock,
   MessageSquare,
+  Check,
 } from 'lucide-react';
 
 interface Props {

@@ -35,6 +35,7 @@ import {
   MapPin,
   Check,
 } from 'lucide-react';
+import { BiddingProcessGuide } from '../../components/tenders/BiddingProcessGuide';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -44,6 +45,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
+  const [quickFilter, setQuickFilter] = useState<'ALL' | 'HIGH_MATCH' | 'CLOSING_SOON'>('ALL');
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   const loadData = async () => {
@@ -116,8 +118,8 @@ export default function DashboardPage() {
     { name: 'Ukraine', code: 'UA', fr: 'Ukraine' },
   ];
 
-  // Filter tenders based on selected country and sector
-  const filteredTenders = useMemo(() => {
+  // Base scoped tenders based on selected country and sector
+  const tendersInScope = useMemo(() => {
     return tenders.filter((t) => {
       const matchesCountry =
         !selectedCountry || (t.buyerCountry || '').toLowerCase() === selectedCountry.toLowerCase();
@@ -127,21 +129,37 @@ export default function DashboardPage() {
     });
   }, [tenders, selectedCountry, selectedIndustry]);
 
-  // Filtered metrics calculation
-  const savedCount = filteredTenders.filter((t) => t.isSaved).length;
-  const highMatchCount = filteredTenders.filter((t) => (t.matchScore || 0) >= 80).length;
-  const activeCount = filteredTenders.filter((t) => t.status === 'OPEN').length;
+  // Filtered metrics calculation across the scoped country & sector
+  const savedCount = tendersInScope.filter((t) => t.isSaved).length;
+  const highMatchCount = tendersInScope.filter((t) => (t.matchScore || 0) >= 80).length;
+  const activeCount = tendersInScope.filter((t) => t.status === 'OPEN').length;
 
   // Pipeline sum in USD (converts XAF at 600 for normalized combined amount)
   const totalPipelineSumUSD = useMemo(() => {
-    return filteredTenders.reduce((acc, t) => {
+    return tendersInScope.reduce((acc, t) => {
       const val = t.estimatedValue || 0;
       const valUSD = t.currency === 'XAF' ? val / 600 : val;
       return acc + valUSD;
     }, 0);
-  }, [filteredTenders]);
+  }, [tendersInScope]);
 
   const formattedPipelineValue = formatPipelineValue(totalPipelineSumUSD);
+
+  // Final filtered list with quick filter chips applied
+  const filteredTenders = useMemo(() => {
+    return tendersInScope.filter((t) => {
+      if (quickFilter === 'HIGH_MATCH') {
+        return (t.matchScore || 0) >= 80;
+      }
+      if (quickFilter === 'CLOSING_SOON') {
+        const deadline = new Date(t.deadline).getTime();
+        const now = new Date().getTime();
+        const diffDays = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+        return diffDays > 0 && diffDays <= 14;
+      }
+      return true;
+    });
+  }, [tendersInScope, quickFilter]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
@@ -404,66 +422,117 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Metrics Grid */}
+              {/* Interactive Metrics Grid with Deep Click-Through Links */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-                {/* Matching Opportunities */}
-                <div className="glass-panel rounded-2xl p-5 space-y-2 bg-white border border-slate-200 shadow-sm glass-panel-hover">
-                  <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
-                    <span>{isFrench ? 'Opportunités Qualifiées' : 'Matching Opportunities'}</span>
-                    <Sparkles className="w-4 h-4 text-emerald-600" />
+                {/* Matching Opportunities -> /tenders?minScore=80 */}
+                <Link
+                  href={`/tenders?minScore=80${selectedCountry ? `&country=${encodeURIComponent(selectedCountry)}` : ''}${selectedIndustry ? `&industry=${encodeURIComponent(selectedIndustry)}` : ''}`}
+                  className="glass-panel rounded-2xl p-5 space-y-2 bg-white border border-slate-200 shadow-sm glass-panel-hover hover:border-emerald-300 transition-all cursor-pointer group flex flex-col justify-between"
+                  title={isFrench ? 'Cliquez pour explorer les offres à forte adéquation (≥80%)' : 'Click to explore high-matching opportunities (≥80%)'}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
+                      <span className="group-hover:text-emerald-700 transition-colors">
+                        {isFrench ? 'Opportunités Qualifiées' : 'Matching Opportunities'}
+                      </span>
+                      <Sparkles className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div className="text-2xl md:text-3xl font-black text-slate-900">{highMatchCount}</div>
+                    <p className="text-[11px] text-emerald-600 font-bold">
+                      {isFrench
+                        ? `≥80% d'adéquation des capacités ${selectedCountry ? `(${selectedCountry})` : ''}`
+                        : `≥80% capability alignment ${selectedCountry ? `in ${selectedCountry}` : ''}`}
+                    </p>
                   </div>
-                  <div className="text-2xl font-black text-slate-900">{highMatchCount}</div>
-                  <p className="text-[11px] text-emerald-600 font-bold">
-                    {isFrench
-                      ? `≥80% d'adéquation des capacités ${selectedCountry ? `(${selectedCountry})` : ''}`
-                      : `≥80% capability alignment ${selectedCountry ? `in ${selectedCountry}` : ''}`}
-                  </p>
-                </div>
+                  <div className="flex items-center text-xs font-bold text-emerald-600 pt-2 border-t border-slate-100 group-hover:translate-x-1 transition-transform">
+                    <span>{isFrench ? 'Explorer les offres' : 'Explore matches'}</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </div>
+                </Link>
 
-                {/* Saved Tenders */}
-                <div className="glass-panel rounded-2xl p-5 space-y-2 bg-white border border-slate-200 shadow-sm glass-panel-hover">
-                  <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
-                    <span>{isFrench ? 'Offres Sauvegardées' : 'Saved Tenders'}</span>
-                    <BookmarkCheck className="w-4 h-4 text-sky-600" />
+                {/* Saved Tenders -> /saved */}
+                <Link
+                  href="/saved"
+                  className="glass-panel rounded-2xl p-5 space-y-2 bg-white border border-slate-200 shadow-sm glass-panel-hover hover:border-sky-300 transition-all cursor-pointer group flex flex-col justify-between"
+                  title={isFrench ? 'Cliquez pour ouvrir votre pipeline de soumission' : 'Click to open your bidding pipeline'}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
+                      <span className="group-hover:text-sky-700 transition-colors">
+                        {isFrench ? 'Offres Sauvegardées' : 'Saved Tenders'}
+                      </span>
+                      <BookmarkCheck className="w-4 h-4 text-sky-600 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div className="text-2xl md:text-3xl font-black text-slate-900">{savedCount}</div>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      {isFrench ? 'Dans votre pipeline de soumission actif' : 'In your active bidding pipeline'}
+                    </p>
                   </div>
-                  <div className="text-2xl font-black text-slate-900">{savedCount}</div>
-                  <p className="text-[11px] text-slate-500 font-medium">
-                    {isFrench ? 'Dans le pipeline d\'examen actif' : 'In active review pipeline'}
-                  </p>
-                </div>
+                  <div className="flex items-center text-xs font-bold text-sky-600 pt-2 border-t border-slate-100 group-hover:translate-x-1 transition-transform">
+                    <span>{isFrench ? 'Ouvrir le pipeline' : 'Open pipeline'}</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </div>
+                </Link>
 
-                {/* Closing Soon */}
-                <div className="glass-panel rounded-2xl p-5 space-y-2 bg-white border border-slate-200 shadow-sm glass-panel-hover">
-                  <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
-                    <span>{isFrench ? 'Clôture Imminente' : 'Closing Soon'}</span>
-                    <Calendar className="w-4 h-4 text-amber-600" />
+                {/* Closing Soon -> /tenders?sortBy=deadline */}
+                <Link
+                  href={`/tenders?sortBy=deadline${selectedCountry ? `&country=${encodeURIComponent(selectedCountry)}` : ''}${selectedIndustry ? `&industry=${encodeURIComponent(selectedIndustry)}` : ''}`}
+                  className="glass-panel rounded-2xl p-5 space-y-2 bg-white border border-slate-200 shadow-sm glass-panel-hover hover:border-amber-300 transition-all cursor-pointer group flex flex-col justify-between"
+                  title={isFrench ? 'Cliquez pour afficher les offres avec date limite urgente' : 'Click to view tenders closing soonest'}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
+                      <span className="group-hover:text-amber-700 transition-colors">
+                        {isFrench ? 'Clôture Imminente' : 'Closing Soon'}
+                      </span>
+                      <Calendar className="w-4 h-4 text-amber-600 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div className="text-2xl md:text-3xl font-black text-slate-900">{activeCount}</div>
+                    <p className="text-[11px] text-amber-600 font-bold">
+                      {isFrench
+                        ? `Dossiers ouverts ${selectedCountry ? `(${selectedCountry})` : ''}`
+                        : `Active procurement windows ${selectedCountry ? `(${selectedCountry})` : ''}`}
+                    </p>
                   </div>
-                  <div className="text-2xl font-black text-slate-900">{activeCount}</div>
-                  <p className="text-[11px] text-amber-600 font-bold">
-                    {isFrench
-                      ? `Dossiers en cours de soumission ${selectedCountry ? `(${selectedCountry})` : ''}`
-                      : `Active procurement windows ${selectedCountry ? `(${selectedCountry})` : ''}`}
-                  </p>
-                </div>
+                  <div className="flex items-center text-xs font-bold text-amber-600 pt-2 border-t border-slate-100 group-hover:translate-x-1 transition-transform">
+                    <span>{isFrench ? 'Voir les urgences' : 'View urgent tenders'}</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </div>
+                </Link>
 
-                {/* Open Budget */}
-                <div className="glass-panel rounded-2xl p-5 space-y-2 bg-white border border-slate-200 shadow-sm glass-panel-hover">
-                  <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
-                    <span>{isFrench ? 'Valeur Suivie du Pipeline' : 'Total Pipeline Value'}</span>
-                    <TrendingUp className="w-4 h-4 text-emerald-600" />
+                {/* Total Pipeline Value -> /saved */}
+                <Link
+                  href="/saved"
+                  className="glass-panel rounded-2xl p-5 space-y-2 bg-white border border-slate-200 shadow-sm glass-panel-hover hover:border-emerald-300 transition-all cursor-pointer group flex flex-col justify-between"
+                  title={isFrench ? 'Cliquez pour gérer la valeur financière de votre pipeline' : 'Click to manage the financial value of your pipeline'}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
+                      <span className="group-hover:text-emerald-700 transition-colors">
+                        {isFrench ? 'Valeur du Pipeline' : 'Total Pipeline Value'}
+                      </span>
+                      <TrendingUp className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <div className="text-2xl md:text-3xl font-black text-slate-900">{formattedPipelineValue}</div>
+                    <p className="text-[11px] text-slate-500 font-medium truncate">
+                      {isFrench
+                        ? `Estimé sur ${tendersInScope.length} offres ciblées`
+                        : `Combined across ${tendersInScope.length} scoped tenders`}
+                    </p>
                   </div>
-                  <div className="text-2xl font-black text-slate-900">{formattedPipelineValue}</div>
-                  <p className="text-[11px] text-slate-500 font-medium truncate">
-                    {isFrench
-                      ? `Estimé sur ${filteredTenders.length} opportunités actives`
-                      : `Combined across ${filteredTenders.length} active opportunities`}
-                  </p>
-                </div>
+                  <div className="flex items-center text-xs font-bold text-slate-700 pt-2 border-t border-slate-100 group-hover:translate-x-1 transition-transform">
+                    <span>{isFrench ? 'Gérer le montant' : 'Track pipeline'}</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </div>
+                </Link>
               </div>
 
-              {/* Main Opportunities Feed */}
+              {/* 3-Step Guided Bidding Directions */}
+              <BiddingProcessGuide />
+
+              {/* Main Opportunities Feed with Quick Filter Tabs */}
               <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <h2 className="text-base md:text-lg font-extrabold text-slate-900 flex items-center gap-2">
                       <ShieldCheck className="w-5 h-5 text-emerald-600" />
@@ -480,24 +549,41 @@ export default function DashboardPage() {
                     </p>
                   </div>
 
-                  <Link
-                    href={`/tenders${
-                      selectedIndustry || selectedCountry
-                        ? `?${new URLSearchParams({
-                            ...(selectedIndustry ? { industry: selectedIndustry } : {}),
-                            ...(selectedCountry ? { country: selectedCountry } : {}),
-                          }).toString()}`
-                        : ''
-                    }`}
-                    className="text-xs font-extrabold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 self-start sm:self-auto"
-                  >
-                    <span>
-                      {isFrench
-                        ? `Voir Toutes les Offres ${selectedIndustry || selectedCountry ? 'Correspondantes' : ''}`
-                        : `View All ${selectedIndustry || selectedCountry ? 'Matching ' : ''}Tenders`}
-                    </span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  {/* Quick Filter Pill Buttons */}
+                  <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl shrink-0 self-start sm:self-auto border border-slate-200">
+                    <button
+                      onClick={() => setQuickFilter('ALL')}
+                      className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        quickFilter === 'ALL'
+                          ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      {isFrench ? 'Toutes les Offres' : 'All Tenders'} ({tendersInScope.length})
+                    </button>
+                    <button
+                      onClick={() => setQuickFilter('HIGH_MATCH')}
+                      className={`px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                        quickFilter === 'HIGH_MATCH'
+                          ? 'bg-emerald-600 text-white shadow-sm'
+                          : 'text-emerald-700 hover:bg-emerald-50'
+                      }`}
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      <span>≥80% {isFrench ? 'Adéquation' : 'Match'}</span> ({highMatchCount})
+                    </button>
+                    <button
+                      onClick={() => setQuickFilter('CLOSING_SOON')}
+                      className={`px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                        quickFilter === 'CLOSING_SOON'
+                          ? 'bg-amber-600 text-white shadow-sm'
+                          : 'text-amber-700 hover:bg-amber-50'
+                      }`}
+                    >
+                      <Calendar className="w-3 h-3" />
+                      <span>{isFrench ? 'Urgent (<14j)' : 'Closing Soon'}</span>
+                    </button>
+                  </div>
                 </div>
 
                 {fetchError ? (
