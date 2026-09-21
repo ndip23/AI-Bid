@@ -7,10 +7,10 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build:frontend",
+    "build": "node api.js && npm run build:frontend",
     "build:frontend": "npm --prefix apps/frontend run build && node -e \"const fs=require('fs'); if(fs.existsSync('apps/frontend/.next')) { fs.cpSync('apps/frontend/.next', '.next', {recursive:true}); }\"",
     "build:backend": "npm --prefix apps/backend run build:prod",
-    "start": "npm run start:frontend",
+    "start": "node api.js && npm run start:frontend",
     "start:frontend": "npm --prefix apps/frontend run start",
     "start:backend": "npm --prefix apps/backend run start",
     "dev:backend": "npm --prefix apps/backend run start:dev",
